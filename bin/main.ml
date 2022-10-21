@@ -31,12 +31,64 @@
     sources https://ocaml.org/docs/file-manipulation
     https://stackoverflow.com/questions/5774934/how-do-i-read-in-lines-from-a-text-file-in-ocaml*)
 let read_logo_files filename =
+  print_endline "";
+  print_endline "";
+  print_endline "";
+  print_endline "";
+  print_endline "";
+  print_endline "";
+  print_endline "";
   let listener = open_in filename in
   try
     while true do
       print_endline (input_line listener)
     done
   with End_of_file -> print_endline ""
+
+let start_game filename =
+  print_endline filename;
+  print_endline "";
+  print_endline "";
+  print_endline "";
+  print_endline "";
+  print_endline "";
+  print_endline "";
+  print_endline "";
+  print_endline "";
+  print_endline "";
+  print_endline "";
+  print_endline "";
+  print_endline "";
+  print_endline "";
+  print_endline "";
+  print_endline "";
+  print_endline "";
+  print_endline "";
+  print_endline "";
+  print_endline "";
+  print_endline "";
+  ANSITerminal.print_string [ ANSITerminal.green ] "\n\nWelcome to CornQuest!\n";
+  ANSITerminal.print_string [ ANSITerminal.green ]
+    "You are currently in the far away land of Ithaca, New York";
+  print_endline "";
+  ANSITerminal.print_string [ ANSITerminal.green ]
+    "It is fall and the leaves have just started to change color";
+  print_endline "";
+  ANSITerminal.print_string [ ANSITerminal.green ]
+    "There has been reports of a enemies in Rhodes Hall, go check it out...";
+  print_endline "";
+  ANSITerminal.print_string [ ANSITerminal.green ] "Be careful out there..";
+  print_endline "";
+  print_endline "";
+  print_endline "";
+  print_endline "";
+
+  print_endline "You are in Rhodes Hall, feel free to explore ";
+  print_endline "";
+  print_endline "";
+  print_endline ""
+
+(**Start Game Now*)
 
 let main () =
   read_logo_files "data/cornlogo1.txt";
@@ -45,7 +97,7 @@ let main () =
   print_string "> ";
   match read_line () with
   | exception End_of_file -> ()
-  | file_name -> print_endline file_name
+  | file_name -> start_game file_name
 
 (* Execute the game engine. *)
 let () = main ()
