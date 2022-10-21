@@ -1,0 +1,26 @@
+{
+    "rooms": [
+        {
+            "id": "lobby",
+            "description": "You are in Rhodes Hall",
+            "exits": [
+                {
+                    "name": "CS Lounge",
+                    "room id": "CS Lounge"
+                }
+            ]
+        },
+        {
+            "id": "cs lounge",
+            "description": "You are at the entrance to Cornell Health. A sign advertises free flu shots. You briefly wonder how long it would take to get an appointment. Ho Plaza is to the northeast.",
+            "exits": [
+                {
+                    "name": "hallway",
+                    "room id": "Rhodes Hall"
+                }
+            ]
+        }
+    ],
+    "start room": "lobby",
+    "mob chance": 0.40
+}

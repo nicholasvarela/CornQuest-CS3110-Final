@@ -1,0 +1,2 @@
+(** @canonical Lib.Fmts *)
+module Fmts = Lib__Fmts
