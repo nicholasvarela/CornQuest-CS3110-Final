@@ -5,17 +5,31 @@
             "description": "You are in Rhodes Hall",
             "exits": [
                 {
-                    "name": "CS Lounge",
-                    "room id": "CS Lounge"
+                    "name": "cs lounge",
+                    "room id": "cs lounge"
+                },
+                {
+                    "name": "upson",
+                    "room id": "upon"
                 }
             ]
         },
         {
             "id": "cs lounge",
-            "description": "You are at the entrance to Cornell Health. A sign advertises free flu shots. You briefly wonder how long it would take to get an appointment. Ho Plaza is to the northeast.",
+            "description": "Whoa, CS Majors",
             "exits": [
                 {
-                    "name": "hallway",
+                    "name": "lobby",
+                    "room id": "Rhodes Hall"
+                }
+            ]
+        },
+        {
+            "id": "upson",
+            "description": "You are in Upson",
+            "exits": [
+                {
+                    "name": "rhodes",
                     "room id": "Rhodes Hall"
                 }
             ]
