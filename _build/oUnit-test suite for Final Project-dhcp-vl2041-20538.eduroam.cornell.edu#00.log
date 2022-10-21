@@ -1,80 +1,99 @@
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Runner: processes
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Chooser: simple
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Configuration suite_name = "test suite for Final Project"
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Configuration cache_filename = "/Users/nicholasvarela/cs3110-final-project/_build/oUnit-$(suite_name).cache"
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Configuration run_gc_full_major = "true"
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Configuration display = "true"
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Configuration results_style_1_X = "false"
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Configuration testdata_dir = "/Users/nicholasvarela/cs3110-final-project/data"
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Configuration health_check_interval = "1."
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Configuration verbose = "false"
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Configuration chooser = "simple"
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Configuration output_html_dir = "none"
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Configuration processes_kill_period = "5."
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Configuration runner = "processes"
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Configuration shards = "2"
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Configuration processes_grace_period = "5."
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Configuration log_encoding = "utf-8"
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Configuration output_junit_file = "none"
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Configuration ci = "false"
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Configuration output_file = "/Users/nicholasvarela/cs3110-final-project/_build/oUnit-$(suite_name)-$(shard_id).log"
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Using 2 workers maximum.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Starting worker number dhcp-vl2041-20538.eduroam.cornell.edu#01.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Worker dhcp-vl2041-20538.eduroam.cornell.edu#01 started.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Starting worker number dhcp-vl2041-20538.eduroam.cornell.edu#02.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Worker dhcp-vl2041-20538.eduroam.cornell.edu#02 started.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: 2 tests running: test suite for Final Project:1:Inital Room of Rhodes is [lobby], test suite for Final Project:0:n.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#01 I: Start test test suite for Final Project:0:n.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: 2 tests running: test suite for Final Project:1:Inital Room of Rhodes is [lobby], test suite for Final Project:0:n.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#02 I: Start test test suite for Final Project:1:Inital Room of Rhodes is [lobby].
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: 2 tests running: test suite for Final Project:1:Inital Room of Rhodes is [lobby], test suite for Final Project:0:n.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#01 I: Test test suite for Final Project:0:n is successful.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#02 I: Test test suite for Final Project:1:Inital Room of Rhodes is [lobby] is successful.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: 2 tests running: test suite for Final Project:1:Inital Room of Rhodes is [lobby], test suite for Final Project:0:n.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#01 I: End test test suite for Final Project:0:n.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#02 I: End test test suite for Final Project:1:Inital Room of Rhodes is [lobby].
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: 2 tests running: test suite for Final Project:1:Inital Room of Rhodes is [lobby], test suite for Final Project:0:n.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: 2 tests running: test suite for Final Project:3:Exits of Rhodes CS Lounge, test suite for Final Project:2:Exits of Lobby.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#02 I: Start test test suite for Final Project:2:Exits of Lobby.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#01 I: Start test test suite for Final Project:3:Exits of Rhodes CS Lounge.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: 2 tests running: test suite for Final Project:3:Exits of Rhodes CS Lounge, test suite for Final Project:2:Exits of Lobby.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#02 I: Test test suite for Final Project:2:Exits of Lobby is successful.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#01 I: Test test suite for Final Project:3:Exits of Rhodes CS Lounge is successful.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: 2 tests running: test suite for Final Project:3:Exits of Rhodes CS Lounge, test suite for Final Project:2:Exits of Lobby.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#02 I: End test test suite for Final Project:2:Exits of Lobby.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#01 I: End test test suite for Final Project:3:Exits of Rhodes CS Lounge.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: 2 tests running: test suite for Final Project:3:Exits of Rhodes CS Lounge, test suite for Final Project:2:Exits of Lobby.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Still 1 tests running : test suite for Final Project:4:Exits of upson.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: 1 tests running: test suite for Final Project:4:Exits of upson.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#01 I: Start test test suite for Final Project:4:Exits of upson.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Still 1 tests running : test suite for Final Project:4:Exits of upson.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: 1 tests running: test suite for Final Project:4:Exits of upson.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#01 I: Test test suite for Final Project:4:Exits of upson is successful.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Still 1 tests running : test suite for Final Project:4:Exits of upson.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: 1 tests running: test suite for Final Project:4:Exits of upson.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#01 I: End test test suite for Final Project:4:Exits of upson.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Still 1 tests running : test suite for Final Project:4:Exits of upson.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: 1 tests running: test suite for Final Project:4:Exits of upson.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Worker dhcp-vl2041-20538.eduroam.cornell.edu#02 died unexpectedly.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: 0 tests running: .
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Worker dhcp-vl2041-20538.eduroam.cornell.edu#01 has ended.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Used 2 worker during test execution.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Run 3 tests with shard dhcp-vl2041-20538.eduroam.cornell.edu#01.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Run 2 tests with shard dhcp-vl2041-20538.eduroam.cornell.edu#02.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Check health of shard dhcp-vl2041-20538.eduroam.cornell.edu#01, 1 times.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Check health of shard dhcp-vl2041-20538.eduroam.cornell.edu#02, 5 times.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: ==============
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Summary:
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Test test suite for Final Project:4:Exits of upson is successful.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Test test suite for Final Project:3:Exits of Rhodes CS Lounge is successful.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Test test suite for Final Project:2:Exits of Lobby is successful.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Test test suite for Final Project:1:Inital Room of Rhodes is [lobby] is successful.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Test test suite for Final Project:0:n is successful.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Ran: 5 tests in: 0.13 seconds.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Cases: 5.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Tried: 5.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Errors: 0.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Failures: 0.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Skip: 0.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Todo: 0.
-2022-10-21T19:23:31+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Timeout: 0.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Runner: processes
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Chooser: simple
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Configuration suite_name = "test suite for Final Project"
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Configuration cache_filename = "/Users/nicholasvarela/cs3110-final-project/_build/oUnit-$(suite_name).cache"
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Configuration run_gc_full_major = "true"
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Configuration display = "true"
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Configuration results_style_1_X = "false"
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Configuration testdata_dir = "/Users/nicholasvarela/cs3110-final-project/data"
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Configuration health_check_interval = "1."
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Configuration verbose = "false"
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Configuration chooser = "simple"
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Configuration output_html_dir = "none"
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Configuration processes_kill_period = "5."
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Configuration runner = "processes"
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Configuration shards = "2"
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Configuration processes_grace_period = "5."
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Configuration log_encoding = "utf-8"
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Configuration output_junit_file = "none"
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Configuration ci = "false"
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Configuration output_file = "/Users/nicholasvarela/cs3110-final-project/_build/oUnit-$(suite_name)-$(shard_id).log"
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Using 2 workers maximum.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Starting worker number dhcp-vl2041-20538.eduroam.cornell.edu#01.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Worker dhcp-vl2041-20538.eduroam.cornell.edu#01 started.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Starting worker number dhcp-vl2041-20538.eduroam.cornell.edu#02.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Worker dhcp-vl2041-20538.eduroam.cornell.edu#02 started.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: 2 tests running: test suite for Final Project:1:Inital Room of Rhodes is [lobby], test suite for Final Project:0:n.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#01 I: Start test test suite for Final Project:0:n.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: 2 tests running: test suite for Final Project:1:Inital Room of Rhodes is [lobby], test suite for Final Project:0:n.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#01 I: Test test suite for Final Project:0:n is successful.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#02 I: Start test test suite for Final Project:1:Inital Room of Rhodes is [lobby].
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: 2 tests running: test suite for Final Project:1:Inital Room of Rhodes is [lobby], test suite for Final Project:0:n.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#01 I: End test test suite for Final Project:0:n.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: 2 tests running: test suite for Final Project:1:Inital Room of Rhodes is [lobby], test suite for Final Project:0:n.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: 2 tests running: test suite for Final Project:2:Exits of Lobby, test suite for Final Project:1:Inital Room of Rhodes is [lobby].
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#02 I: Test test suite for Final Project:1:Inital Room of Rhodes is [lobby] is successful.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#01 I: Start test test suite for Final Project:2:Exits of Lobby.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: 2 tests running: test suite for Final Project:2:Exits of Lobby, test suite for Final Project:1:Inital Room of Rhodes is [lobby].
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#02 I: End test test suite for Final Project:1:Inital Room of Rhodes is [lobby].
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#01 I: Test test suite for Final Project:2:Exits of Lobby is successful.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: 2 tests running: test suite for Final Project:2:Exits of Lobby, test suite for Final Project:1:Inital Room of Rhodes is [lobby].
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#01 I: End test test suite for Final Project:2:Exits of Lobby.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: 2 tests running: test suite for Final Project:3:Exits of Rhodes CS Lounge, test suite for Final Project:2:Exits of Lobby.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: 2 tests running: test suite for Final Project:4:Exits of upson, test suite for Final Project:3:Exits of Rhodes CS Lounge.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#02 I: Start test test suite for Final Project:3:Exits of Rhodes CS Lounge.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#01 I: Start test test suite for Final Project:4:Exits of upson.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: 2 tests running: test suite for Final Project:4:Exits of upson, test suite for Final Project:3:Exits of Rhodes CS Lounge.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#02 I: Test test suite for Final Project:3:Exits of Rhodes CS Lounge is successful.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#01 I: Test test suite for Final Project:4:Exits of upson is successful.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: 2 tests running: test suite for Final Project:4:Exits of upson, test suite for Final Project:3:Exits of Rhodes CS Lounge.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#02 I: End test test suite for Final Project:3:Exits of Rhodes CS Lounge.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#01 I: End test test suite for Final Project:4:Exits of upson.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: 2 tests running: test suite for Final Project:4:Exits of upson, test suite for Final Project:3:Exits of Rhodes CS Lounge.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: 2 tests running: test suite for Final Project:6:Description of cs lounge, test suite for Final Project:5:Description of Rhodes.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#01 I: Start test test suite for Final Project:5:Description of Rhodes.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#02 I: Start test test suite for Final Project:6:Description of cs lounge.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: 2 tests running: test suite for Final Project:6:Description of cs lounge, test suite for Final Project:5:Description of Rhodes.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#01 I: Test test suite for Final Project:5:Description of Rhodes is successful.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#02 I: Test test suite for Final Project:6:Description of cs lounge is successful.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: 2 tests running: test suite for Final Project:6:Description of cs lounge, test suite for Final Project:5:Description of Rhodes.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#01 I: End test test suite for Final Project:5:Description of Rhodes.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#02 I: End test test suite for Final Project:6:Description of cs lounge.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: 2 tests running: test suite for Final Project:6:Description of cs lounge, test suite for Final Project:5:Description of Rhodes.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Still 1 tests running : test suite for Final Project:7:Description of upson.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: 1 tests running: test suite for Final Project:7:Description of upson.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#02 I: Start test test suite for Final Project:7:Description of upson.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Still 1 tests running : test suite for Final Project:7:Description of upson.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: 1 tests running: test suite for Final Project:7:Description of upson.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#02 I: Test test suite for Final Project:7:Description of upson is successful.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Still 1 tests running : test suite for Final Project:7:Description of upson.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: 1 tests running: test suite for Final Project:7:Description of upson.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#02 I: End test test suite for Final Project:7:Description of upson.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Still 1 tests running : test suite for Final Project:7:Description of upson.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: 1 tests running: test suite for Final Project:7:Description of upson.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: 0 tests running: .
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Worker dhcp-vl2041-20538.eduroam.cornell.edu#01 has ended.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Worker dhcp-vl2041-20538.eduroam.cornell.edu#02 died unexpectedly.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Used 2 worker during test execution.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Run 4 tests with shard dhcp-vl2041-20538.eduroam.cornell.edu#01.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Run 4 tests with shard dhcp-vl2041-20538.eduroam.cornell.edu#02.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Check health of shard dhcp-vl2041-20538.eduroam.cornell.edu#01, 5 times.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Check health of shard dhcp-vl2041-20538.eduroam.cornell.edu#02, 2 times.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: ==============
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Summary:
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Test test suite for Final Project:7:Description of upson is successful.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Test test suite for Final Project:6:Description of cs lounge is successful.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Test test suite for Final Project:5:Description of Rhodes is successful.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Test test suite for Final Project:4:Exits of upson is successful.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Test test suite for Final Project:3:Exits of Rhodes CS Lounge is successful.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Test test suite for Final Project:2:Exits of Lobby is successful.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Test test suite for Final Project:1:Inital Room of Rhodes is [lobby] is successful.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Test test suite for Final Project:0:n is successful.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Ran: 8 tests in: 0.14 seconds.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Cases: 8.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Tried: 8.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Errors: 0.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Failures: 0.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Skip: 0.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Todo: 0.
+2022-10-21T21:21:33+00:00 dhcp-vl2041-20538.eduroam.cornell.edu#00 I: Timeout: 0.

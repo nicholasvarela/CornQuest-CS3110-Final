@@ -1,5 +1,6 @@
 open OUnit2
-open Game.Adventure
+open Game
+open Adventure
 
 (** [cmp_set_like_lists lst1 lst2] compares two lists to see whether they are
     equivalent set-like lists. That means checking two things. First, they must
@@ -35,7 +36,7 @@ let rhodes = Yojson.Basic.from_file (prefix ^ "demo_game.json")
 let rhodes = from_json rhodes
 let start_test (name : string) : test = name >:: fun _ -> assert_equal true true
 
-let exits_test (name : string) (a : t) (s : string)
+let dirs_test (name : string) (a : t) (s : string)
     (expected_output : string list) : test =
   name >:: fun _ ->
   assert_equal expected_output (dirs a s) ~printer:(pp_list pp_string)
@@ -44,14 +45,26 @@ let initial_room_test (name : string) (a : t) (expected_output : string) : test
     =
   name >:: fun _ -> assert_equal expected_output (start_room a)
 
+(** constrcuts a OUnit test named [name ] that asserts the quality of
+    [expected_output] with [description] *)
+let description_test (name : string) (a : t) (s : string)
+    (expected_output : string) : test =
+  name >:: fun _ -> assert_equal expected_output (description a s)
+
+
 let basic_tests = [ start_test "n" ]
 
 let adventure_tests =
   [
     initial_room_test "Inital Room of Rhodes is [lobby]" rhodes "lobby";
-    exits_test "Exits of Lobby" rhodes "lobby" [ "cs lounge"; "upson" ];
-    exits_test "Exits of Rhodes CS Lounge" rhodes "cs lounge" [ "lobby" ];
-    exits_test "Exits of upson" rhodes "upson" [ "rhodes" ];
+    dirs_test "Exits of Lobby" rhodes "lobby" [ "cs lounge"; "upson" ];
+    dirs_test "Exits of Rhodes CS Lounge" rhodes "cs lounge" [ "lobby" ];
+    dirs_test "Exits of upson" rhodes "upson" [ "rhodes" ];
+    description_test "Description of Rhodes" rhodes "lobby"
+      "You are in Rhodes Hall";
+    description_test "Description of cs lounge" rhodes "cs lounge"
+      "Whoa, CS Majors";
+    description_test "Description of upson" rhodes "upson" "You are in Upson";
   ]
 
 let suite =
