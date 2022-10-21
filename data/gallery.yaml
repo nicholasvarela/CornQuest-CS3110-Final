@@ -1,0 +1,34 @@
+---
+# Members of your group.
+group:
+  - name: Aadarsh Balireddy
+    netid: ab2382
+  - name: Nicholas Varela
+    netid: njv27
+  - name: Kevin Weng
+    netid: kw444
+  - name: Luke Leh
+    netid: ll594
+# Your PM.
+pm:
+  name: James Goodling
+  netid: jcg284
+# Set to false if you don't want your gallery entry to be public.
+publish: true
+# Pithy title
+title: "Corn World"
+# OK if this is a Cornell Github link, but public gallery viewers won't be able to see it.
+git-repo: "https://github.coecis.cornell.edu/ll594/cs3110-final-project"
+# If you have no demo screencast, replace the url string with an empty string ""
+demo-video-url: ""
+# Write a short, attention-grabbing description of your project.
+desc: >
+
+  Our project is a classic Role-Playing Game similar to Final Fantasy games 
+  with a Cornell Theme. Players will traverse maps to explore different Cornell
+  locales. There is a flat world map interface where a player's party can travel
+  in. The game with include random enemy encounters which result in battles. 
+
+  Players will also have an inventory and character leveling system. NPCs will 
+  interact with the players along the way to exapnd the storyline. 
+  Estimated playtime will be around 2 hours. 
