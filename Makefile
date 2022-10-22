@@ -11,5 +11,13 @@ code:
 utop:
 	OCAMLRUNPARAM=b dune utop src
 
-test:
-	OCAMLRUNPARAM=b dune exec bin/main.exe
+battle:
+	OCAMLRUNPARAM=b dune exec bin/battle_main.exe
+
+test: 
+		OCAMLRUNPARAM=b dune exec test/test.exe
+
+zip:
+	rm -f cornquest.zip
+	zip -r cornquest.zip . -x@exclude.lst
+

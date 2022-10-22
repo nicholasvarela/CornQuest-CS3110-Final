@@ -44,20 +44,31 @@ type character = {
 exception UnknownAttribute
 exception WrongAttribute
 
-let get_enem_move_chance actor = actor.enem_hit_chances
+let get_enem_move_chance enem = enem.enem_hit_chances
 let get_skills actor = actor.skillset
+
+let unwrap = function
+  | HP h -> h
+  | Mana h -> h
+  | Strength h -> h
+  | Defense h -> h
+  | MagicResist h -> h
+  | Speed h -> h
+  | Accuracy h -> h
+  | MagicPower h -> h
+  | Luck h -> h
 
 let get_attribute attr character =
   match attr with
-  | HP _ -> character.hp
-  | Mana _ -> character.mana
-  | Strength _ -> character.str
-  | Defense _ -> character.def
-  | MagicResist _ -> character.mr
-  | Speed _ -> character.spd
-  | Accuracy _ -> character.acc
-  | MagicPower _ -> character.mag
-  | Luck _ -> character.luk
+  | HP _ -> unwrap character.hp
+  | Mana _ -> unwrap character.mana
+  | Strength _ -> unwrap character.str
+  | Defense _ -> unwrap character.def
+  | MagicResist _ -> unwrap character.mr
+  | Speed _ -> unwrap character.spd
+  | Accuracy _ -> unwrap character.acc
+  | MagicPower _ -> unwrap character.mag
+  | Luck _ -> unwrap character.luk
 
 let clear_temps character =
   {
@@ -96,6 +107,13 @@ let adjust_temps (attr : attribute) character =
     skillset = character.skillset;
     temp_stats = attr :: character.temp_stats;
   }
+
+let get_temps character =
+  match character.temp_stats with
+  | [] -> 0.
+  | h :: t -> unwrap h
+
+let get_name character = character.name
 
 let start_character nme =
   {
