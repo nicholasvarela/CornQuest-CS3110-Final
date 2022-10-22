@@ -48,7 +48,7 @@ let initial_room_test (name : string) (a : Adventure.t)
 
 (** constrcuts a OUnit test named [name ] that asserts the quality of
     [expected_output] with [description] *)
-let description_test (name : string) (a : t) (s : string)
+let description_test (name : string) (a : Adventure.t) (s : string)
     (expected_output : string) : test =
   name >:: fun _ -> assert_equal expected_output (description a s)
 
