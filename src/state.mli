@@ -26,7 +26,7 @@ type result =
   | Legal of t
   | Illegal
 
-val go : Command.direction -> Adventure.t -> t -> result
+val go : string -> Adventure.t -> t -> result
 (** [go dir adv st] is the result of attempting to go in the direction [dir] in
     state [st] and adventure [adv]:
 
@@ -37,15 +37,3 @@ val go : Command.direction -> Adventure.t -> t -> result
     - Otherwise, the result is [Illegal].
 
     Effects: none. In particular, [go] does not print anything. *)
-
-val fight : Command.action -> Adventure.t -> Character.character -> result
-(** [fight act st ch] is the result of attempting to take the action [act] in
-    state [st] and adventure [adv] while controlling character [ch]:
-
-    - If the player is currently in a battle AND [act] is a valid action for
-      [ch] to take, then the result is [Legal st'], where in [st'] the result of
-      the player's actions are reflected.
-
-    - Otherwise, the result is [Illegal].
-
-    Effects: none. In particular, [fight] does not print anything. *)
