@@ -1,0 +1,41 @@
+(lang dune 3.4)
+(name Lib)
+(sections (lib .) (libexec .) (doc ../../doc/Lib))
+(files
+ (lib
+  (META
+   dune-package
+   fmts.ml
+   lib.a
+   lib.cma
+   lib.cmi
+   lib.cmt
+   lib.cmx
+   lib.cmxa
+   lib.ml
+   lib__Fmts.cmi
+   lib__Fmts.cmt
+   lib__Fmts.cmx
+   opam))
+ (libexec (lib.cmxs))
+ (doc (README.md)))
+(library
+ (name Lib)
+ (kind normal)
+ (archives (byte lib.cma) (native lib.cmxa))
+ (plugins (byte lib.cma) (native lib.cmxs))
+ (native_archives lib.a)
+ (requires tsdl)
+ (main_module_name Lib)
+ (modes byte native)
+ (modules
+  (wrapped
+   (main_module_name Lib)
+   (modules ((name Fmts) (obj_name lib__Fmts) (visibility public) (impl)))
+   (alias_module
+    (name Lib)
+    (obj_name lib)
+    (visibility public)
+    (kind alias)
+    (impl))
+   (wrapped true))))

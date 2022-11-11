@@ -1,0 +1,22 @@
+(** @canonical Game.Adventure *)
+module Adventure = Game__Adventure
+
+
+(** @canonical Game.Battle *)
+module Battle = Game__Battle
+
+
+(** @canonical Game.Character *)
+module Character = Game__Character
+
+
+(** @canonical Game.Command *)
+module Command = Game__Command
+
+
+(** @canonical Game.Game_fmts *)
+module Game_fmts = Game__Game_fmts
+
+
+(** @canonical Game.State *)
+module State = Game__State
