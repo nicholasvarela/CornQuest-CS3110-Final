@@ -13,8 +13,16 @@ type action =
   | Flee
 
 (*TODO: Extract all print statements and delegate it to bin/main.ml*)
+let check_health (enem : Character.character) (actor : Character.character) =
+  if Character.get_attribute (HP 1.) enem < 0. then
+    let _ = exit 0 in
+    print_endline "Enemy Dead"
+  else if Character.get_attribute (HP 1.) actor < 0. then
+    let _ = exit 0 in
+    print_endline "Hero Dead"
 
 let attack (enem : Character.character) (actor : Character.character) =
+  check_health enem actor;
   let avoid = Character.get_attribute (Speed (-1.)) enem in
   let player_hit_chance =
     ((Character.get_attribute (Accuracy (-1.)) actor +. 60.) /. 100.0)

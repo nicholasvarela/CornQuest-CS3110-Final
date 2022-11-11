@@ -1,1 +1,0 @@
-src/adventure.mli: Yojson
