@@ -231,7 +231,6 @@ let adjust amt ch = function
 let level_up ch = { ch with exp = 0.; lvl = ch.lvl + 1 }
 let cost_calc sk user = adjust sk.hp_cost (adjust sk.mp_cost user "mp") "hp"
 let get_curr_attr attr chr = get_attribute attr chr +. get_temp_value attr chr
-let get_from_tuple (a, b) = b
 
 let use_skill sk user target =
   match sk.skill_type with
@@ -254,7 +253,7 @@ let use_skill sk user target =
   | Status ->
       let arr = sk.attribute_affected in
       for i = 0 to Array.length arr do
-        if get_from_tuple arr.(i) > 0 then target.temp_stats.(i) <- arr.(i)
+        if snd arr.(i) > 0 then target.temp_stats.(i) <- arr.(i)
       done;
       (user, target)
 

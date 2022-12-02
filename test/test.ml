@@ -43,8 +43,8 @@ let dirs_test (name : string) (a : Adventure.t) (s : string)
   assert_equal expected_output (dirs a s) ~printer:(pp_list pp_string)
 
 let initial_room_test (name : string) (a : Adventure.t)
-    (expected_output : string) : test =
-  name >:: fun _ -> assert_equal expected_output (start_room a)
+    (expected_output : Adventure.obj) : test =
+  name >:: fun _ -> assert_equal expected_output (spawn a)
 
 (** constrcuts a OUnit test named [name ] that asserts the quality of
     [expected_output] with [description] *)
@@ -53,19 +53,7 @@ let description_test (name : string) (a : Adventure.t) (s : string)
   name >:: fun _ -> assert_equal expected_output (description a s)
 
 let basic_tests = [ start_test "n" ]
-
-let adventure_tests =
-  [
-    initial_room_test "Inital Room of Rhodes is [lobby]" rhodes "lobby";
-    dirs_test "Exits of Lobby" rhodes "lobby" [ "cs lounge"; "upson" ];
-    dirs_test "Exits of Rhodes CS Lounge" rhodes "cs lounge" [ "lobby" ];
-    dirs_test "Exits of upson" rhodes "upson" [ "rhodes" ];
-    description_test "Description of Rhodes" rhodes "lobby"
-      "You are in Rhodes Hall";
-    description_test "Description of cs lounge" rhodes "cs lounge"
-      "Whoa, CS Majors";
-    description_test "Description of upson" rhodes "upson" "You are in Upson";
-  ]
+let adventure_tests = []
 
 let suite =
   "test suite for Final Project"
