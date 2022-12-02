@@ -14,26 +14,26 @@ type action =
 
 (*TODO: Extract all print statements and delegate it to bin/main.ml*)
 let check_health (enem : Character.character) (actor : Character.character) =
-  if Character.get_attribute (HP 1.) enem < 0. then
+  if Character.get_attribute "hp" enem < 0. then
     let _ = exit 0 in
     print_endline "Enemy Dead"
-  else if Character.get_attribute (HP 1.) actor < 0. then
+  else if Character.get_attribute "hp" actor < 0. then
     let _ = exit 0 in
     print_endline "Hero Dead"
 
 let attack (enem : Character.character) (actor : Character.character) =
   check_health enem actor;
-  let avoid = Character.get_attribute (Speed (-1.)) enem in
+  let avoid = Character.get_attribute "speed" enem in
   let player_hit_chance =
-    ((Character.get_attribute (Accuracy (-1.)) actor +. 60.) /. 100.0)
+    ((Character.get_attribute "accuracy" actor +. 60.) /. 100.0)
     -. (0.001 *. (avoid *. avoid))
   in
   let rand = Random.float 1. in
   if rand <= player_hit_chance then
     let damage =
-      (Character.get_attribute (Defense (-1.)) enem /. 2.)
+      (Character.get_attribute "defense" enem /. 2.)
       +. Character.get_temps enem
-      -. Character.get_attribute (Strength (-1.)) actor
+      -. Character.get_attribute "defense" actor
     in
     let _ =
       print_endline
@@ -46,10 +46,15 @@ let attack (enem : Character.character) (actor : Character.character) =
     let _ = print_endline (Character.get_name actor ^ " missed!") in
     enem
 
-let enem_guard enem = Character.adjust_temps (Defense 10.) enem
+let enem_guard enem = Character.adjust_temps (Defense 10., 2) enem
 
 let guard (actor : Character.character) =
-  Character.adjust_temps (Defense 2.) actor
+  Character.adjust_temps (Defense 2., 2) actor
+
+let upwrap_skill g =
+  match g with
+  | Some x -> x
+  | None -> failwith "up_wrap skill fail "
 
 let enemy_move_helper (actor, enem) (lst : float list) (rand : float) =
   match lst with
@@ -68,7 +73,7 @@ let enemy_move_helper (actor, enem) (lst : float list) (rand : float) =
               | [] -> failwith "invalid enemy"
               | _ ->
                   Character.use_skill
-                    (List.hd (Character.get_skills enem))
+                    (upwrap_skill (Character.get_skills enem).(0))
                     enem actor))
 
 let pick_enemy_move (actor, enem) =
