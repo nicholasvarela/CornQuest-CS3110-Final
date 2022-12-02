@@ -15,7 +15,6 @@ type attribute =
 
 type skill
 (**The abstract type representing a skill.*)
-
 type character = {
   name : string;
   hp : attribute;
