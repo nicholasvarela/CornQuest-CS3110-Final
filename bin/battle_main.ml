@@ -9,6 +9,8 @@ let enem : Character.character =
     hp = HP 100.;
     mana = Mana 100.;
     exp = 0.;
+    maxhp = HP 100.;
+    maxmana = Mana 100.;
     lvl = 1;
     str = Strength 10.;
     def = Defense 10.;
@@ -18,8 +20,8 @@ let enem : Character.character =
     mag = MagicPower 10.;
     luk = Luck 10.;
     enem_hit_chances = [ 1. ];
-    skillset = [];
-    temp_stats = [];
+    skillset = [||];
+    temp_stats = [||];
   }
 
 let read_logo_files filename =
@@ -38,11 +40,9 @@ let rec turn_handler (actor, enem) counter =
     turn_handler (actor, enem) 0
   else
     print_endline
-      ("Player HP: "
-      ^ string_of_float (Character.get_attribute (Character.HP 1.) actor));
+      ("Player HP: " ^ string_of_float (Character.get_attribute "hp" actor));
   print_endline
-    ("Enemy HP: "
-    ^ string_of_float (Character.get_attribute (Character.HP 1.) enem));
+    ("Enemy HP: " ^ string_of_float (Character.get_attribute "hp" enem));
   read_logo_files "data/menu.txt";
   match read_line () with
   | "attack" ->
