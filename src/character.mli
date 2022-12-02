@@ -19,7 +19,9 @@ type skill
 type character = {
   name : string;
   hp : attribute;
+  maxhp : attribute;
   mana : attribute;
+  maxmana : attribute;
   exp : float;
   lvl : int;
   mr : attribute;
@@ -30,17 +32,17 @@ type character = {
   mag : attribute;
   luk : attribute;
   enem_hit_chances : float list;
-  skillset : skill list;
-  temp_stats : attribute list;
+  skillset : skill option array;
+  temp_stats : (attribute * int) array;
 }
 (**The abstract type representing a character.*)
 
 val use_skill : skill -> character -> character -> character * character
 val get_enem_move_chance : character -> float list
-val get_attribute : attribute -> character -> float
-val get_skills : character -> skill list
+val get_attribute : string -> character -> float
+val get_skills : character -> skill option array
 val clear_temps : character -> character
-val adjust_temps : attribute -> character -> character
+val adjust_temps : attribute * int -> character -> character
 val get_name : character -> string
 
 val start_character : string -> character
