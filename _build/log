@@ -1,9 +1,9 @@
-# dune build
+# dune exec test/test.exe
 # OCAMLPARAM: unset
 # Shared cache: disabled
-# Workspace root: /home/dragonflamehotness/3110/trial2
-# Auto-detected concurrency: 8
-$ /home/dragonflamehotness/.opam/cs3110-2022fa/bin/ocamlc.opt -config > /tmp/dune_eccea0_output
+# Workspace root: /Users/nicholasvarela/cs3110-final-project
+# Auto-detected concurrency: 4
+$ /Users/nicholasvarela/.opam/cs3110-2022fa/bin/ocamlc.opt -config > /var/folders/2k/fpr2rlv90qb30gb3nxzr_wdc0000gq/T/dune_a8b65b_output
 # Dune context:
 #  { name = "default"
 #  ; kind = "default"
@@ -13,91 +13,85 @@ $ /home/dragonflamehotness/.opam/cs3110-2022fa/bin/ocamlc.opt -config > /tmp/dun
 #  ; fdo_target_exe = None
 #  ; build_dir = "default"
 #  ; toplevel_path =
-#      Some
-#        External "/home/dragonflamehotness/.opam/cs3110-2022fa/lib/toplevel"
-#  ; ocaml_bin = External "/home/dragonflamehotness/.opam/cs3110-2022fa/bin"
-#  ; ocaml =
-#      Ok External "/home/dragonflamehotness/.opam/cs3110-2022fa/bin/ocaml"
+#      Some External "/Users/nicholasvarela/.opam/cs3110-2022fa/lib/toplevel"
+#  ; ocaml_bin = External "/Users/nicholasvarela/.opam/cs3110-2022fa/bin"
+#  ; ocaml = Ok External "/Users/nicholasvarela/.opam/cs3110-2022fa/bin/ocaml"
 #  ; ocamlc =
-#      External "/home/dragonflamehotness/.opam/cs3110-2022fa/bin/ocamlc.opt"
+#      External "/Users/nicholasvarela/.opam/cs3110-2022fa/bin/ocamlc.opt"
 #  ; ocamlopt =
-#      Ok
-#        External
-#          "/home/dragonflamehotness/.opam/cs3110-2022fa/bin/ocamlopt.opt"
+#      Ok External "/Users/nicholasvarela/.opam/cs3110-2022fa/bin/ocamlopt.opt"
 #  ; ocamldep =
-#      Ok
-#        External
-#          "/home/dragonflamehotness/.opam/cs3110-2022fa/bin/ocamldep.opt"
+#      Ok External "/Users/nicholasvarela/.opam/cs3110-2022fa/bin/ocamldep.opt"
 #  ; ocamlmklib =
 #      Ok
 #        External
-#          "/home/dragonflamehotness/.opam/cs3110-2022fa/bin/ocamlmklib.opt"
+#          "/Users/nicholasvarela/.opam/cs3110-2022fa/bin/ocamlmklib.opt"
 #  ; env =
 #      map
 #        { "DUNE_OCAML_HARDCODED" :
-#            "/home/dragonflamehotness/.opam/cs3110-2022fa/lib"
+#            "/Users/nicholasvarela/.opam/cs3110-2022fa/lib"
 #        ; "DUNE_OCAML_STDLIB" :
-#            "/home/dragonflamehotness/.opam/cs3110-2022fa/lib/ocaml"
-#        ; "DUNE_SOURCEROOT" : "/home/dragonflamehotness/3110/trial2"
+#            "/Users/nicholasvarela/.opam/cs3110-2022fa/lib/ocaml"
+#        ; "DUNE_SOURCEROOT" : "/Users/nicholasvarela/cs3110-final-project"
 #        ; "INSIDE_DUNE" :
-#            "/home/dragonflamehotness/3110/trial2/_build/default"
+#            "/Users/nicholasvarela/cs3110-final-project/_build/default"
+#        ; "MANPATH" :
+#            "/Users/nicholasvarela/cs3110-final-project/_build/install/default/bin"
 #        ; "OCAMLFIND_IGNORE_DUPS_IN" :
-#            "/home/dragonflamehotness/3110/trial2/_build/install/default/lib"
+#            "/Users/nicholasvarela/cs3110-final-project/_build/install/default/lib"
 #        ; "OCAMLPATH" :
-#            "/home/dragonflamehotness/3110/trial2/_build/install/default/lib"
+#            "/Users/nicholasvarela/cs3110-final-project/_build/install/default/lib"
 #        ; "OCAMLTOP_INCLUDE_PATH" :
-#            "/home/dragonflamehotness/3110/trial2/_build/install/default/lib/toplevel"
+#            "/Users/nicholasvarela/cs3110-final-project/_build/install/default/lib/toplevel"
 #        ; "OCAML_COLOR" : "always"
 #        ; "OPAMCOLOR" : "always"
 #        }
 #  ; findlib_paths =
-#      [ External "/home/dragonflamehotness/.opam/cs3110-2022fa/lib" ]
+#      [ External "/Users/nicholasvarela/.opam/cs3110-2022fa/lib" ]
 #  ; arch_sixtyfour = true
 #  ; natdynlink_supported = true
 #  ; supports_shared_libraries = true
 #  ; ocaml_config =
 #      { version = "4.14.0"
 #      ; standard_library_default =
-#          "/home/dragonflamehotness/.opam/cs3110-2022fa/lib/ocaml"
+#          "/Users/nicholasvarela/.opam/cs3110-2022fa/lib/ocaml"
 #      ; standard_library =
-#          "/home/dragonflamehotness/.opam/cs3110-2022fa/lib/ocaml"
+#          "/Users/nicholasvarela/.opam/cs3110-2022fa/lib/ocaml"
 #      ; standard_runtime = "the_standard_runtime_variable_was_deleted"
 #      ; ccomp_type = "cc"
-#      ; c_compiler = "gcc"
+#      ; c_compiler = "cc"
 #      ; ocamlc_cflags =
-#          [ "-O2"; "-fno-strict-aliasing"; "-fwrapv"; "-pthread"; "-fPIC" ]
+#          [ "-O2"; "-fno-strict-aliasing"; "-fwrapv"; "-pthread" ]
 #      ; ocamlc_cppflags = [ "-D_FILE_OFFSET_BITS=64" ]
 #      ; ocamlopt_cflags =
-#          [ "-O2"; "-fno-strict-aliasing"; "-fwrapv"; "-pthread"; "-fPIC" ]
+#          [ "-O2"; "-fno-strict-aliasing"; "-fwrapv"; "-pthread" ]
 #      ; ocamlopt_cppflags = [ "-D_FILE_OFFSET_BITS=64" ]
 #      ; bytecomp_c_compiler =
-#          [ "gcc"
+#          [ "cc"
 #          ; "-O2"
 #          ; "-fno-strict-aliasing"
 #          ; "-fwrapv"
 #          ; "-pthread"
-#          ; "-fPIC"
 #          ; "-D_FILE_OFFSET_BITS=64"
 #          ]
-#      ; bytecomp_c_libraries = [ "-lm"; "-ldl"; "-lpthread" ]
+#      ; bytecomp_c_libraries = [ "-lm"; "-lpthread" ]
 #      ; native_c_compiler =
-#          [ "gcc"
+#          [ "cc"
 #          ; "-O2"
 #          ; "-fno-strict-aliasing"
 #          ; "-fwrapv"
 #          ; "-pthread"
-#          ; "-fPIC"
 #          ; "-D_FILE_OFFSET_BITS=64"
 #          ]
-#      ; native_c_libraries = [ "-lm"; "-ldl" ]
+#      ; native_c_libraries = [ "-lm" ]
 #      ; native_pack_linker = [ "ld"; "-r"; "-o" ]
 #      ; cc_profile = []
 #      ; architecture = "amd64"
 #      ; model = "default"
 #      ; int_size = 63
 #      ; word_size = 64
-#      ; system = "linux"
-#      ; asm = [ "as" ]
+#      ; system = "macosx"
+#      ; asm = [ "cc"; "-c"; "-Wno-trigraphs" ]
 #      ; asm_cfi_supported = true
 #      ; with_frame_pointers = false
 #      ; ext_exe = ""
@@ -108,8 +102,8 @@ $ /home/dragonflamehotness/.opam/cs3110-2022fa/bin/ocamlc.opt -config > /tmp/dun
 #      ; os_type = "Unix"
 #      ; default_executable_name = "a.out"
 #      ; systhread_supported = true
-#      ; host = "x86_64-pc-linux-gnu"
-#      ; target = "x86_64-pc-linux-gnu"
+#      ; host = "x86_64-apple-darwin21.5.0"
+#      ; target = "x86_64-apple-darwin21.5.0"
 #      ; profiling = false
 #      ; flambda = false
 #      ; spacetime = false
@@ -129,15 +123,5 @@ $ /home/dragonflamehotness/.opam/cs3110-2022fa/bin/ocamlc.opt -config > /tmp/dun
 #      ; windows_unicode = false
 #      }
 #  }
-$ (cd _build/default && /home/dragonflamehotness/.opam/cs3110-2022fa/bin/ocamlc.opt -w +a-4-6-7-9-27-29-30-32..42-44-45-48-50-60-66..70 -warn-error -a+31 -g -bin-annot -I src/.game.objs/byte -I /home/dragonflamehotness/.opam/cs3110-2022fa/lib/ANSITerminal -I /home/dragonflamehotness/.opam/cs3110-2022fa/lib/bigarray-compat -I /home/dragonflamehotness/.opam/cs3110-2022fa/lib/ctypes -I /home/dragonflamehotness/.opam/cs3110-2022fa/lib/integers -I /home/dragonflamehotness/.opam/cs3110-2022fa/lib/ocaml/threads -I /home/dragonflamehotness/.opam/cs3110-2022fa/lib/seq -I /home/dragonflamehotness/.opam/cs3110-2022fa/lib/stdlib-shims -I /home/dragonflamehotness/.opam/cs3110-2022fa/lib/tsdl -I /home/dragonflamehotness/.opam/cs3110-2022fa/lib/yojson -I lib/.lib.objs/byte -intf-suffix .ml -no-alias-deps -opaque -open Game -o src/.game.objs/byte/game__Battle.cmo -c -impl src/battle.ml)
-> File "src/battle.ml", line 64, characters 41-49:
-> 64 |         Character.use_skill (unwrap enem.skillset.(index)) enem actor
->                                               ^^^^^^^^
-> Error: Unbound record field skillset
-[2]
-$ (cd _build/default && /home/dragonflamehotness/.opam/cs3110-2022fa/bin/ocamlopt.opt -w +a-4-6-7-9-27-29-30-32..42-44-45-48-50-60-66..70 -warn-error -a+31 -g -I src/.game.objs/byte -I src/.game.objs/native -I /home/dragonflamehotness/.opam/cs3110-2022fa/lib/ANSITerminal -I /home/dragonflamehotness/.opam/cs3110-2022fa/lib/bigarray-compat -I /home/dragonflamehotness/.opam/cs3110-2022fa/lib/ctypes -I /home/dragonflamehotness/.opam/cs3110-2022fa/lib/integers -I /home/dragonflamehotness/.opam/cs3110-2022fa/lib/ocaml/threads -I /home/dragonflamehotness/.opam/cs3110-2022fa/lib/seq -I /home/dragonflamehotness/.opam/cs3110-2022fa/lib/stdlib-shims -I /home/dragonflamehotness/.opam/cs3110-2022fa/lib/tsdl -I /home/dragonflamehotness/.opam/cs3110-2022fa/lib/yojson -I lib/.lib.objs/byte -I lib/.lib.objs/native -intf-suffix .ml -no-alias-deps -opaque -open Game -o src/.game.objs/native/game__Battle.cmx -c -impl src/battle.ml)
-> File "src/battle.ml", line 64, characters 41-49:
-> 64 |         Character.use_skill (unwrap enem.skillset.(index)) enem actor
->                                               ^^^^^^^^
-> Error: Unbound record field skillset
-[2]
+$ (cd _build/default && /Users/nicholasvarela/.opam/cs3110-2022fa/bin/ocamlopt.opt -w +a-4-6-7-9-27-29-30-32..42-44-45-48-50-60-66..70 -warn-error -a+31 -g -I test/.test.eobjs/byte -I test/.test.eobjs/native -I /Users/nicholasvarela/.opam/cs3110-2022fa/lib/ANSITerminal -I /Users/nicholasvarela/.opam/cs3110-2022fa/lib/bigarray-compat -I /Users/nicholasvarela/.opam/cs3110-2022fa/lib/ctypes -I /Users/nicholasvarela/.opam/cs3110-2022fa/lib/integers -I /Users/nicholasvarela/.opam/cs3110-2022fa/lib/ocaml/threads -I /Users/nicholasvarela/.opam/cs3110-2022fa/lib/ounit2 -I /Users/nicholasvarela/.opam/cs3110-2022fa/lib/ounit2/advanced -I /Users/nicholasvarela/.opam/cs3110-2022fa/lib/seq -I /Users/nicholasvarela/.opam/cs3110-2022fa/lib/stdlib-shims -I /Users/nicholasvarela/.opam/cs3110-2022fa/lib/tsdl -I /Users/nicholasvarela/.opam/cs3110-2022fa/lib/yojson -I lib/.lib.objs/byte -I lib/.lib.objs/native -I src/.game.objs/byte -I src/.game.objs/native -intf-suffix .ml -no-alias-deps -opaque -o test/.test.eobjs/native/dune__exe__Test.cmx -c -impl test/test.ml)
+$ (cd _build/default && /Users/nicholasvarela/.opam/cs3110-2022fa/bin/ocamlopt.opt -w +a-4-6-7-9-27-29-30-32..42-44-45-48-50-60-66..70 -warn-error -a+31 -g -o test/test.exe /Users/nicholasvarela/.opam/cs3110-2022fa/lib/bigarray-compat/bigarray_compat.cmxa -I /Users/nicholasvarela/.opam/cs3110-2022fa/lib/ocaml /Users/nicholasvarela/.opam/cs3110-2022fa/lib/stdlib-shims/stdlib_shims.cmxa /Users/nicholasvarela/.opam/cs3110-2022fa/lib/integers/integers.cmxa -I /Users/nicholasvarela/.opam/cs3110-2022fa/lib/integers /Users/nicholasvarela/.opam/cs3110-2022fa/lib/ctypes/ctypes.cmxa -I /Users/nicholasvarela/.opam/cs3110-2022fa/lib/ctypes /Users/nicholasvarela/.opam/cs3110-2022fa/lib/ocaml/unix.cmxa -I /Users/nicholasvarela/.opam/cs3110-2022fa/lib/ocaml /Users/nicholasvarela/.opam/cs3110-2022fa/lib/ocaml/threads/threads.cmxa -I /Users/nicholasvarela/.opam/cs3110-2022fa/lib/ocaml /Users/nicholasvarela/.opam/cs3110-2022fa/lib/ctypes/ctypes-foreign.cmxa -I /Users/nicholasvarela/.opam/cs3110-2022fa/lib/ctypes /Users/nicholasvarela/.opam/cs3110-2022fa/lib/tsdl/tsdl.cmxa -I /Users/nicholasvarela/.opam/cs3110-2022fa/lib/tsdl lib/lib.cmxa /Users/nicholasvarela/.opam/cs3110-2022fa/lib/yojson/yojson.cmxa /Users/nicholasvarela/.opam/cs3110-2022fa/lib/ANSITerminal/ANSITerminal.cmxa -I /Users/nicholasvarela/.opam/cs3110-2022fa/lib/ANSITerminal src/game.cmxa /Users/nicholasvarela/.opam/cs3110-2022fa/lib/ounit2/advanced/oUnitAdvanced.cmxa /Users/nicholasvarela/.opam/cs3110-2022fa/lib/ounit2/oUnit.cmxa test/.test.eobjs/native/dune__exe__Test.cmx)

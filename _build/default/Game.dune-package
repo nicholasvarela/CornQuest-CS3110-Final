@@ -1,4 +1,4 @@
-(lang dune 3.5)
+(lang dune 3.4)
 (name Game)
 (sections (lib .) (libexec .) (doc ../../doc/Game))
 (files

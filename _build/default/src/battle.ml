@@ -61,7 +61,9 @@ let rec skill_traversal (actor, enem) lst rand index =
   | [] -> failwith "invalid enemy"
   | h :: t ->
       if rand < h then
-        Character.use_skill (unwrap enem.skillset.(index)) enem actor
+        Character.use_skill
+          (unwrap (Character.get_skills enem).(index))
+          enem actor
       else skill_traversal (actor, enem) t rand (index + 1)
 
 let enemy_move_helper (actor, enem) (lst : float list) (rand : float) =

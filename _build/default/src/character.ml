@@ -233,6 +233,13 @@ let cost_calc sk user = adjust sk.hp_cost (adjust sk.mp_cost user "mp") "hp"
 let get_curr_attr attr chr = get_attribute attr chr +. get_temp_value attr chr
 let get_from_tuple (a, b) = b
 
+let change_temps sk target =
+  let arr = sk.attribute_affected in
+  for i = 0 to Array.length arr do
+    if get_from_tuple arr.(i) > 0 then target.temp_stats.(i) <- arr.(i)
+  done;
+  target
+
 let use_skill sk user target =
   match sk.skill_type with
   | Magic ->
@@ -240,9 +247,9 @@ let use_skill sk user target =
         (get_curr_attr "magic power" user +. (unwrap user.mag *. sk.dmg_scaling))
         /. (1. +. (get_curr_attr "magic resist" user /. 50.))
       in
-      let new_targ = adjust (-.dmg) target "hp" in
+      let new_targ_stp1 = adjust (-.dmg) target "hp" in
       let new_usr = adjust (-.sk.mp_cost) target "mp" in
-      (new_usr, new_targ)
+      (new_usr, change_temps sk new_targ_stp1)
   | Physical ->
       let dmg =
         (unwrap user.str +. (unwrap user.mag *. sk.dmg_scaling))
@@ -251,12 +258,7 @@ let use_skill sk user target =
       let new_targ = adjust (-.dmg) target "hp" in
       let new_usr = adjust (-.sk.mp_cost) target "mp" in
       (new_usr, new_targ)
-  | Status ->
-      let arr = sk.attribute_affected in
-      for i = 0 to Array.length arr do
-        if get_from_tuple arr.(i) > 0 then target.temp_stats.(i) <- arr.(i)
-      done;
-      (user, target)
+  | Status -> (user, change_temps sk target)
 
 [@@@warning "-8"]
 
