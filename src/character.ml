@@ -66,6 +66,17 @@ let unwrap = function
   | MagicPower h -> h
   | Luck h -> h
 
+let change_temp_attr_overwrite amt = function
+  | HP _ -> HP amt
+  | Mana _ -> Mana amt
+  | Strength _ -> Strength amt
+  | Defense _ -> Defense amt
+  | MagicResist _ -> MagicResist amt
+  | Speed _ -> Speed amt
+  | Accuracy _ -> Accuracy amt
+  | MagicPower _ -> MagicPower amt
+  | Luck _ -> Luck amt
+
 let get_attribute attr character =
   match attr with
   | "hp" -> unwrap character.hp
@@ -81,6 +92,12 @@ let get_attribute attr character =
   | _ -> failwith "not valid attr"
 
 let clear_temps character =
+  let arr = character.temp_stats in
+  for i = 0 to Array.length arr - 1 do
+    let at, n = arr.(i) in
+    if n = 0 then arr.(i) <- (change_temp_attr_overwrite 0. at, -1)
+    else if n > 0 then arr.(i) <- (at, n - 1)
+  done;
   {
     name = character.name;
     hp = character.hp;
@@ -98,18 +115,7 @@ let clear_temps character =
     luk = character.luk;
     enem_hit_chances = character.enem_hit_chances;
     skillset = character.skillset;
-    temp_stats =
-      [|
-        (HP 0., -1);
-        (Mana 0., -1);
-        (Strength 0., -1);
-        (Defense 0., -1);
-        (MagicResist 0., -1);
-        (Speed 0., -1);
-        (Accuracy 0., -1);
-        (MagicPower 0., -1);
-        (Luck 0., -1);
-      |];
+    temp_stats = arr;
   }
 
 let get_temp_value attr chr =

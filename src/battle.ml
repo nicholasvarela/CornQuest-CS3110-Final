@@ -44,10 +44,10 @@ let attack (enem : Character.character) (actor : Character.character) =
     let _ = print_endline (Character.get_name actor ^ " missed!") in
     enem
 
-let enem_guard enem = Character.adjust_temps (Defense 10., 2) enem
+let enem_guard enem = Character.adjust_temps (Defense 10., 1) enem
 
 let guard (actor : Character.character) =
-  Character.adjust_temps (Defense 10., 2) actor
+  Character.adjust_temps (Defense 10., 1) actor
 
 let unwrap skop =
   match skop with
