@@ -38,13 +38,15 @@ type character = {
 
 val use_skill : skill -> character -> character -> character * character
 val get_enem_move_chance : character -> float list
+val get_curr_attr: string -> character -> float
 val get_attribute : string -> character -> float
 val get_skills : character -> skill option array
 val clear_temps : character -> character
 val adjust_temps : attribute * int -> character -> character
 val get_name : character -> string
-
+val get_temp_value: string-> character -> float
 val start_character : string -> character
+val change_temps: skill -> character -> character
 (**[start_character name] is a level 1 default starting character named [name]
    with initialized attributes.*)
 
