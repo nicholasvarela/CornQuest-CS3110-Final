@@ -1,1 +1,0 @@
-../../../../default/src/game_fmts.ml
