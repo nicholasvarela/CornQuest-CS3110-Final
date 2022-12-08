@@ -50,6 +50,11 @@ exception WrongAttribute
 let get_enem_move_chance enem = enem.enem_hit_chances
 let get_skills actor = actor.skillset
 
+let unwrap_skill sk =
+  match sk with
+  | None -> raise (Failure "Skill not at that index in array")
+  | Some s -> s
+
 let unwrap = function
   | HP h -> h
   | Mana h -> h
@@ -68,6 +73,7 @@ let get_attribute attr character =
   | "strength" -> unwrap character.str
   | "defense" -> unwrap character.def
   | "magic resist" -> unwrap character.mr
+  | "magic power" -> unwrap character.mag
   | "speed" -> unwrap character.spd
   | "accuracy" -> unwrap character.acc
   | "magic" -> unwrap character.mag
@@ -105,8 +111,6 @@ let clear_temps character =
         (Luck 0., -1);
       |];
   }
-
-let get_temps character = 5.
 
 let get_temp_value attr chr =
   match attr with
@@ -161,16 +165,18 @@ let icicle =
         (Strength 0., -1);
         (Defense 0., -1);
         (MagicResist 0., -1);
-        (Speed 0., -1);
+        (Speed (-6.), 3);
         (Accuracy 0., -1);
         (MagicPower 0., -1);
         (Luck 0., -1);
       |];
-    chance_to_affect = 0.2;
+    chance_to_affect = 1.;
     dmg_scaling = 0.4;
     mp_cost = 15.;
     hp_cost = 0.;
   }
+
+let demo_spell = icicle
 
 let start_character nme =
   {
@@ -228,10 +234,78 @@ let adjust amt ch = function
   | "luck" -> { ch with luk = ch.luk +* amt }
   | _ -> raise UnknownAttribute
 
+let adjust_set amt ch = function
+  | "hp" -> { ch with hp = HP amt }
+  | "mana" -> { ch with mana = Mana amt }
+  | "strength" -> { ch with str = Strength amt }
+  | "defense" -> { ch with def = Defense amt }
+  | "magic resist" -> { ch with mr = MagicResist amt }
+  | "speed" -> { ch with spd = Speed amt }
+  | "accuracy" -> { ch with acc = Accuracy amt }
+  | "magic power" -> { ch with mag = MagicPower amt }
+  | "luck" -> { ch with luk = Luck amt }
+  | _ -> raise UnknownAttribute
+
 let level_up ch = { ch with exp = 0.; lvl = ch.lvl + 1 }
 let cost_calc sk user = adjust sk.hp_cost (adjust sk.mp_cost user "mp") "hp"
 let get_curr_attr attr chr = get_attribute attr chr +. get_temp_value attr chr
 let get_from_tuple (a, b) = b
+
+let get_attribute_val (at, _) =
+  match at with
+  | HP hp -> hp
+  | Mana mp -> mp
+  | Strength str -> str
+  | Defense def -> def
+  | MagicResist mdef -> mdef
+  | Speed spd -> spd
+  | Accuracy acc -> acc
+  | MagicPower mag -> mag
+  | Luck luk -> luk
+
+let string_arr =
+  [|
+    "Max HP";
+    "Max Mana";
+    "Strength";
+    "Defense";
+    "Magic Resist";
+    "Speed";
+    "Accuracy";
+    "Magic Power";
+    "Luck";
+  |]
+
+let change_temps sk target =
+  let arr = sk.attribute_affected in
+  for i = 0 to Array.length arr - 1 do
+    if get_from_tuple arr.(i) > 0 then (
+      let amt = get_attribute_val arr.(i) in
+      let word = if amt > 0. then "increased" else "decreased" in
+      print_endline (string_arr.(i) ^ " " ^ word ^ " by " ^ string_of_float amt);
+      target.temp_stats.(i) <- arr.(i))
+  done;
+  if
+    get_attribute_val (target.hp, -1)
+    > get_attribute_val (target.maxhp, -1) +. get_attribute_val arr.(0)
+  then (
+    let att =
+      get_attribute_val (target.maxhp, -1) +. get_attribute_val arr.(0)
+    in
+    print_endline ("Current HP truncated to " ^ string_of_float att);
+    adjust_set att target "hp")
+  else if
+    get_attribute_val (target.mana, -1)
+    > get_attribute_val (target.maxmana, -1) +. get_attribute_val arr.(1)
+  then (
+    let att =
+      get_attribute_val (target.maxmana, -1) +. get_attribute_val arr.(1)
+    in
+    print_endline
+      ("Current Mana truncated to "
+      ^ string_of_float (get_attribute_val arr.(1)));
+    adjust_set att target "mana")
+  else target
 
 let use_skill sk user target =
   match sk.skill_type with
@@ -240,9 +314,15 @@ let use_skill sk user target =
         (get_curr_attr "magic power" user +. (unwrap user.mag *. sk.dmg_scaling))
         /. (1. +. (get_curr_attr "magic resist" user /. 50.))
       in
-      let new_targ = adjust (-.dmg) target "hp" in
-      let new_usr = adjust (-.sk.mp_cost) target "mp" in
-      (new_usr, new_targ)
+      let new_targ_stp1 = adjust (-.dmg) target "hp" in
+      let new_usr = adjust (-.sk.mp_cost) user "mana" in
+      let rand = Random.float 1. in
+      let new_targ =
+        if rand <= sk.chance_to_affect then change_temps sk new_targ_stp1
+        else new_targ_stp1
+      in
+      if List.length user.enem_hit_chances != 0 then (new_targ, new_usr)
+      else (new_usr, new_targ)
   | Physical ->
       let dmg =
         (unwrap user.str +. (unwrap user.mag *. sk.dmg_scaling))
@@ -251,12 +331,7 @@ let use_skill sk user target =
       let new_targ = adjust (-.dmg) target "hp" in
       let new_usr = adjust (-.sk.mp_cost) target "mp" in
       (new_usr, new_targ)
-  | Status ->
-      let arr = sk.attribute_affected in
-      for i = 0 to Array.length arr do
-        if get_from_tuple arr.(i) > 0 then target.temp_stats.(i) <- arr.(i)
-      done;
-      (user, target)
+  | Status -> (user, change_temps sk target)
 
 [@@@warning "-8"]
 

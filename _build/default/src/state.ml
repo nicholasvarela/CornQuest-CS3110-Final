@@ -6,10 +6,10 @@ type t = {
 }
 
 let init_state adv =
-  let start = Adventure.start_room adv in
+  let start = Adventure.spawn adv in
   {
-    current_room = start;
-    visited_rooms = [ start ];
+    current_room = start.name;
+    visited_rooms = [ start.name ];
     in_battle = false;
     party = [];
   }

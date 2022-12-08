@@ -3,5 +3,8 @@
 (** @canonical Dune__exe.Battle_main *)
 module Battle_main = Dune__exe__Battle_main
 
+(** @canonical Dune__exe.Gui_main *)
+module Gui_main = Dune__exe__Gui_main
+
 (** @canonical Dune__exe.Main *)
 module Main = Dune__exe__Main

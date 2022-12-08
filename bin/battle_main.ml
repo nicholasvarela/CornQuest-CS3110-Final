@@ -20,7 +20,7 @@ let enem : Character.character =
     mag = MagicPower 10.;
     luk = Luck 10.;
     enem_hit_chances = [ 0.5; 0.25; 0.25 ];
-    skillset = [||];
+    skillset = [| Some Character.demo_spell |];
     temp_stats =
       [|
         (HP 0., -1);
@@ -51,9 +51,11 @@ let rec turn_handler (actor, enem) counter =
     turn_handler (actor, enem) 0
   else
     print_endline
-      ("Player HP: " ^ string_of_float (Character.get_attribute "hp" actor));
+      (actor.name ^ " HP: "
+      ^ string_of_float (Character.get_attribute "hp" actor));
   print_endline
-    ("Enemy HP: " ^ string_of_float (Character.get_attribute "hp" enem));
+    (Character.get_name enem ^ " HP: "
+    ^ string_of_float (Character.get_attribute "hp" enem));
   read_logo_files "data/menu.txt";
   match read_line () with
   | "attack" ->

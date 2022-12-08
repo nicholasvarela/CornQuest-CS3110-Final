@@ -1,1 +1,1 @@
-src/adventure.ml: List String Yojson
+src/adventure.ml: List Yojson

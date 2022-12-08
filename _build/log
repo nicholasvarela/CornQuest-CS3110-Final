@@ -1,9 +1,9 @@
-# dune build
+# dune exec bin/battle_main.exe
 # OCAMLPARAM: unset
 # Shared cache: disabled
 # Workspace root: /home/dragonflamehotness/3110/trial2
 # Auto-detected concurrency: 8
-$ /home/dragonflamehotness/.opam/cs3110-2022fa/bin/ocamlc.opt -config > /tmp/dune_eccea0_output
+$ /home/dragonflamehotness/.opam/cs3110-2022fa/bin/ocamlc.opt -config > /tmp/dune_d452b1_output
 # Dune context:
 #  { name = "default"
 #  ; kind = "default"
@@ -129,15 +129,3 @@ $ /home/dragonflamehotness/.opam/cs3110-2022fa/bin/ocamlc.opt -config > /tmp/dun
 #      ; windows_unicode = false
 #      }
 #  }
-$ (cd _build/default && /home/dragonflamehotness/.opam/cs3110-2022fa/bin/ocamlc.opt -w +a-4-6-7-9-27-29-30-32..42-44-45-48-50-60-66..70 -warn-error -a+31 -g -bin-annot -I src/.game.objs/byte -I /home/dragonflamehotness/.opam/cs3110-2022fa/lib/ANSITerminal -I /home/dragonflamehotness/.opam/cs3110-2022fa/lib/bigarray-compat -I /home/dragonflamehotness/.opam/cs3110-2022fa/lib/ctypes -I /home/dragonflamehotness/.opam/cs3110-2022fa/lib/integers -I /home/dragonflamehotness/.opam/cs3110-2022fa/lib/ocaml/threads -I /home/dragonflamehotness/.opam/cs3110-2022fa/lib/seq -I /home/dragonflamehotness/.opam/cs3110-2022fa/lib/stdlib-shims -I /home/dragonflamehotness/.opam/cs3110-2022fa/lib/tsdl -I /home/dragonflamehotness/.opam/cs3110-2022fa/lib/yojson -I lib/.lib.objs/byte -intf-suffix .ml -no-alias-deps -opaque -open Game -o src/.game.objs/byte/game__Battle.cmo -c -impl src/battle.ml)
-> File "src/battle.ml", line 64, characters 41-49:
-> 64 |         Character.use_skill (unwrap enem.skillset.(index)) enem actor
->                                               ^^^^^^^^
-> Error: Unbound record field skillset
-[2]
-$ (cd _build/default && /home/dragonflamehotness/.opam/cs3110-2022fa/bin/ocamlopt.opt -w +a-4-6-7-9-27-29-30-32..42-44-45-48-50-60-66..70 -warn-error -a+31 -g -I src/.game.objs/byte -I src/.game.objs/native -I /home/dragonflamehotness/.opam/cs3110-2022fa/lib/ANSITerminal -I /home/dragonflamehotness/.opam/cs3110-2022fa/lib/bigarray-compat -I /home/dragonflamehotness/.opam/cs3110-2022fa/lib/ctypes -I /home/dragonflamehotness/.opam/cs3110-2022fa/lib/integers -I /home/dragonflamehotness/.opam/cs3110-2022fa/lib/ocaml/threads -I /home/dragonflamehotness/.opam/cs3110-2022fa/lib/seq -I /home/dragonflamehotness/.opam/cs3110-2022fa/lib/stdlib-shims -I /home/dragonflamehotness/.opam/cs3110-2022fa/lib/tsdl -I /home/dragonflamehotness/.opam/cs3110-2022fa/lib/yojson -I lib/.lib.objs/byte -I lib/.lib.objs/native -intf-suffix .ml -no-alias-deps -opaque -open Game -o src/.game.objs/native/game__Battle.cmx -c -impl src/battle.ml)
-> File "src/battle.ml", line 64, characters 41-49:
-> 64 |         Character.use_skill (unwrap enem.skillset.(index)) enem actor
->                                               ^^^^^^^^
-> Error: Unbound record field skillset
-[2]
