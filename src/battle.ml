@@ -22,34 +22,32 @@ let check_health (enem : Character.character) (actor : Character.character) =
     print_endline "Hero Dead"
 
 let attack (enem : Character.character) (actor : Character.character) =
-  check_health enem actor;
   let avoid = Character.get_attribute "speed" enem in
   let player_hit_chance =
     ((Character.get_attribute "accuracy" actor +. 60.) /. 100.0)
     -. (0.001 *. (avoid *. avoid))
   in
   let rand = Random.float 1. in
-  if rand <= player_hit_chance then
+  if rand <= player_hit_chance then (
     let damage =
       (Character.get_attribute "defense" enem /. 2.)
-      +. Character.get_temps enem
+      +. (0.3 *. Character.get_temp_value "defense" enem)
       -. Character.get_attribute "strength" actor
     in
-    let _ =
-      print_endline
-        (Character.get_name actor ^ " dealt "
-        ^ string_of_float (damage *. -1.)
-        ^ " damage!")
-    in
-    if damage < 0. then Character.adjust damage enem "hp" else enem
+    print_endline
+      (Character.get_name actor ^ " dealt "
+      ^ string_of_float (damage *. -1.)
+      ^ " damage!");
+
+    Character.adjust damage enem "hp")
   else
     let _ = print_endline (Character.get_name actor ^ " missed!") in
     enem
 
-let enem_guard enem = Character.adjust_temps (Defense 10., 2) enem
+let enem_guard enem = Character.adjust_temps (Defense 10., 1) enem
 
 let guard (actor : Character.character) =
-  Character.adjust_temps (Defense 2., 2) actor
+  Character.adjust_temps (Defense 10., 1) actor
 
 let unwrap skop =
   match skop with
@@ -76,7 +74,10 @@ let enemy_move_helper (actor, enem) (lst : float list) (rand : float) =
       else
         match t with
         | [] -> failwith "invalid enemy"
-        | h :: t -> failwith "adsa")
+        | h :: t ->
+            let sk = Character.unwrap_skill enem.skillset.(0) in
+            print_endline (Character.get_name enem ^ " used " ^ sk.name ^ "!");
+            Character.use_skill sk enem actor)
 
 let pick_enemy_move (actor, enem) =
   enemy_move_helper (actor, enem)

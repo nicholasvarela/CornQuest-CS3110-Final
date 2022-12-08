@@ -16,11 +16,11 @@ let enem : Character.character =
     def = Defense 10.;
     mr = MagicResist 10.;
     spd = Speed 10.;
-    acc = Accuracy 10.;
+    acc = Accuracy 10000.;
     mag = MagicPower 10.;
     luk = Luck 10.;
-    enem_hit_chances = [ 0.5; 0.25; 0.25 ];
-    skillset = [||];
+    enem_hit_chances = [ 1.; 0.25; 0.25 ];
+    skillset = [| Some Character.demo_spell |];
     temp_stats =
       [|
         (HP 0., -1);
@@ -45,36 +45,36 @@ let read_logo_files filename =
 
 let data_dir_prefix = "data" ^ Filename.dir_sep
 
-let rec turn_handler (actor, enem) counter =
-  if counter = 1 then
-    let actor = Character.clear_temps actor in
-    turn_handler (actor, enem) 0
-  else
-    print_endline
-      ("Player HP: " ^ string_of_float (Character.get_attribute "hp" actor));
+let rec turn_handler (actor, enem) made_action =
+  let actor, enem =
+    if made_action then (Character.clear_temps actor, Character.clear_temps enem)
+    else (actor, enem)
+  in
   print_endline
-    ("Enemy HP: " ^ string_of_float (Character.get_attribute "hp" enem));
+    (actor.name ^ " HP: " ^ string_of_float (Character.get_attribute "hp" actor));
+  print_endline
+    (Character.get_name enem ^ " HP: "
+    ^ string_of_float (Character.get_attribute "hp" enem));
   read_logo_files "data/menu.txt";
   match read_line () with
   | "attack" ->
       let first_turn_chars = (actor, Battle.attack enem actor) in
       let second_turn_chars = pick_enemy_move first_turn_chars in
-      let newC = counter + 1 in
-      turn_handler second_turn_chars newC
+      turn_handler second_turn_chars true
   | "guard" ->
       print_endline "You put your hands up and brace for an incoming attack.";
       let new_chars = pick_enemy_move (Battle.guard actor, enem) in
-      turn_handler new_chars 1
+      turn_handler new_chars true
   | "escape" ->
       print_endline "You flee!";
       exit 0
-  | _ -> turn_handler (actor, enem) counter
+  | _ -> turn_handler (actor, enem) false
 
 (** [main ()] prompts for the game to play, then starts it. *)
 let main () =
   read_logo_files "data/title.txt";
   ANSITerminal.print_string [ ANSITerminal.red ] "\n\nWhat will you do?\n";
-  turn_handler (actor, enem) 0
+  turn_handler (actor, enem) false
 
 (* print_endline "Please enter the name of the game file you want to load.\n";
    print_string "> "; match read_line () with | exception End_of_file -> () |
