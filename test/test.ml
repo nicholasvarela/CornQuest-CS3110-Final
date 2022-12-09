@@ -10,7 +10,10 @@ open Yojson
   that subsection before using the character.ml representation, in our battle
   simulation, whose functionality is mostly under battle.ml/battle.mli*)
 
-(*Manually Tested Componenets *)
+(*Manually Tested Componenets battle.ml functions attack had a random call, so
+  they could not be tested with OUnit battle.ml functions. We focused on testing
+  functions that were exposed in the respective .mli file, internal functions
+  were solved indirectly *)
 
 (*OUnit Tested Componenets : character.ml/character.mi -We utilized OUnit and
   glass box testing in order to throughly test that our implementation of
@@ -21,6 +24,11 @@ open Yojson
 (*Arugment for correctness of program given testing strategy: *)
 
 let demon1 : Character.character = Character.start_character "Demoman"
+let chris : Character.character = Character.start_character "Chris"
+let chris2 = Character.adjust_temps (Defense 2.0, 0) chris
+let chris3 = Character.adjust_temps (MagicResist 2.0, 0) chris
+let chris4 = Character.adjust_temps (Luck 2.0, 0) chris
+let chris5 = Character.adjust_temps (Speed 2.0, 0) chris
 let demon1_adjust = Character.adjust 10. demon1 "hp"
 let demon2_adjust = Character.adjust 10. demon1 "mana"
 let demon3_adjust = Character.adjust 10. demon1 "strength"
@@ -36,6 +44,16 @@ let get_attribute_test (name : string) (character : Character.character)
     (att : string) (expected_output : float) : test =
   name >:: fun _ ->
   assert_equal expected_output (Character.get_attribute att character)
+
+let get_name_test (name : string) (character : Character.character)
+    (expected_output : string) : test =
+  name >:: fun _ -> assert_equal expected_output (Character.get_name character)
+
+let get_temp_value_test (name : string) (character : Character.character)
+    (attr : string) (expected_output : float) : test =
+  name >:: fun _ ->
+  assert_equal expected_output (Character.get_temp_value attr character)
+    ~printer:(fun x -> string_of_float x)
 
 let basic_charcter_tests =
   [
@@ -67,7 +85,26 @@ let basic_charcter_tests =
     get_attribute_test "adjusted by 10  magic_power of default chracter"
       demon8_adjust "magic" 20.;
     get_attribute_test "adjusted by 10  luck of default chracter" demon9_adjust
-      "luck" 20.;
+      "luck" 20.
+    (* get_curr_attr_test "get_curr_attr hp default character" demon1 "maxmana"
+       100.; *);
+    get_name_test "name of chris is chris" chris "Chris";
+    get_name_test "name of chris is chris" demon1 "Demoman";
+    get_temp_value_test "initial tmp of maxhp of daemon " demon1 "maxhp" 0.;
+    get_temp_value_test "initial tmp of maxmana of daemon " demon1 "maxmana" 0.;
+    get_temp_value_test "initial tmp of strength of daemon " demon1 "strength"
+      0.;
+    get_temp_value_test "initial tmp of defense of daemon " demon1 "defense" 0.;
+    get_temp_value_test "initial tmp of magic reiss of daemon " demon1
+      "magic resist" 0.;
+    get_temp_value_test "initial tmp of speed of daemon " demon1 "speed" 0.;
+    get_temp_value_test "initial tmp of magic power of daemon " demon1
+      "magic power" 0.;
+    get_temp_value_test "change temp luck" chris "luck" 2.;
+    get_temp_value_test "change temp defense" chris2 "defense" 2.;
+    (* get_temp_value_test "change temp magic" chris3 "magic power" 2.; *)
+    get_temp_value_test "change temp luck" chris4 "luck" 2.;
+    get_temp_value_test "change temp speed" chris5 "speed" 2.;
   ]
 
 let test_suite =

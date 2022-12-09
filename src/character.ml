@@ -107,7 +107,7 @@ let unwrap_skill sk =
   | None -> raise No_skill
   | Some s -> s
 
-let unwrap = function
+let unwrap_attr = function
   | HP h -> h
   | Mana h -> h
   | Strength h -> h
