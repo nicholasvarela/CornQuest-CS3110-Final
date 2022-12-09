@@ -1,3 +1,5 @@
+exception No_skill
+
 type attribute =
   | HP of float
   | Mana of float
@@ -19,6 +21,7 @@ type skill = {
   skill_type : dmg_type;
   attribute_affected : (attribute * int) array;
   chance_to_affect : float;
+  base_dmg : float;
   dmg_scaling : float;
   mp_cost : float;
   hp_cost : float;
@@ -47,12 +50,61 @@ type character = {
 exception UnknownAttribute
 exception WrongAttribute
 
+(*skill repo start*)
+
+let icicle : skill =
+  {
+    name = "icicle";
+    skill_type = Magic;
+    attribute_affected =
+      [|
+        (HP 0., -1);
+        (Mana 0., -1);
+        (Strength 0., -1);
+        (Defense 0., -1);
+        (MagicResist 0., -1);
+        (Speed (-6.), 3);
+        (Accuracy (-5.), 3);
+        (MagicPower 0., -1);
+        (Luck 0., -1);
+      |];
+    chance_to_affect = 0.3;
+    base_dmg = 5.;
+    dmg_scaling = 0.4;
+    mp_cost = 15.;
+    hp_cost = 0.;
+  }
+
+let piercing_light =
+  {
+    name = "piercing light";
+    skill_type = Magic;
+    attribute_affected =
+      [|
+        (HP 0., -1);
+        (Mana 0., -1);
+        (Strength 0., -1);
+        (Defense 0., -1);
+        (MagicResist (-2.), 3);
+        (Speed 0., -1);
+        (Accuracy 0., -1);
+        (MagicPower 0., -1);
+        (Luck 0., -1);
+      |];
+    chance_to_affect = 0.9;
+    base_dmg = 2.;
+    dmg_scaling = 0.16;
+    mp_cost = 30.;
+    hp_cost = 0.;
+  }
+
+(*skill repo end*)
 let get_enem_move_chance enem = enem.enem_hit_chances
 let get_skills actor = actor.skillset
 
 let unwrap_skill sk =
   match sk with
-  | None -> raise (Failure "Skill not at that index in array")
+  | None -> raise No_skill
   | Some s -> s
 
 let unwrap = function
@@ -79,6 +131,8 @@ let change_temp_attr_overwrite amt = function
 
 let get_attribute attr character =
   match attr with
+  | "maxhp" -> unwrap character.hp
+  | "maxmana" -> unwrap character.mana
   | "hp" -> unwrap character.hp
   | "mana" -> unwrap character.mana
   | "strength" -> unwrap character.str
@@ -160,30 +214,6 @@ let get_temp_value attr chr =
 
 let get_name character = character.name
 
-let icicle =
-  {
-    name = "icicle";
-    skill_type = Magic;
-    attribute_affected =
-      [|
-        (HP 0., -1);
-        (Mana 0., -1);
-        (Strength 0., -1);
-        (Defense 0., -1);
-        (MagicResist 0., -1);
-        (Speed (-6.), 3);
-        (Accuracy 0., -1);
-        (MagicPower 0., -1);
-        (Luck 0., -1);
-      |];
-    chance_to_affect = 1.;
-    dmg_scaling = 0.4;
-    mp_cost = 15.;
-    hp_cost = 0.;
-  }
-
-let demo_spell = icicle
-
 let start_character nme =
   {
     name = nme;
@@ -201,7 +231,7 @@ let start_character nme =
     mag = MagicPower 10.;
     luk = Luck 10.;
     enem_hit_chances = [];
-    skillset = [| Some icicle; None; None; None |];
+    skillset = [| Some icicle; Some piercing_light; None; None |];
     temp_stats =
       [|
         (HP 0., -1);
@@ -271,15 +301,15 @@ let get_attribute_val (at, _) =
 
 let string_arr =
   [|
-    "Max HP";
-    "Max Mana";
-    "Strength";
-    "Defense";
-    "Magic Resist";
-    "Speed";
-    "Accuracy";
-    "Magic Power";
-    "Luck";
+    "max HP";
+    "max mana";
+    "strength";
+    "defense";
+    "magic resist";
+    "speed";
+    "accuracy";
+    "magic power";
+    "luck";
   |]
 
 let change_temps sk target =
@@ -288,7 +318,9 @@ let change_temps sk target =
     if get_from_tuple arr.(i) > 0 then (
       let amt = get_attribute_val arr.(i) in
       let word = if amt > 0. then "increased" else "decreased" in
-      print_endline (string_arr.(i) ^ " " ^ word ^ " by " ^ string_of_float amt);
+      print_endline
+        (target.name ^ "'s " ^ string_arr.(i) ^ " " ^ word ^ " by "
+       ^ string_of_float amt);
       target.temp_stats.(i) <- arr.(i))
   done;
   if
@@ -313,31 +345,82 @@ let change_temps sk target =
     adjust_set att target "mana")
   else target
 
+let wait un =
+  let i = ref 0 in
+  while !i < 100 do
+    match read_line () with
+    | _ -> i := 100
+  done
+
 let use_skill sk user target =
   match sk.skill_type with
   | Magic ->
-      let dmg =
-        (get_curr_attr "magic power" user +. (unwrap user.mag *. sk.dmg_scaling))
-        /. (1. +. (get_curr_attr "magic resist" user /. 50.))
-      in
-      let new_targ_stp1 = adjust (-.dmg) target "hp" in
-      let new_usr = adjust (-.sk.mp_cost) user "mana" in
-      let rand = Random.float 1. in
-      let new_targ =
-        if rand <= sk.chance_to_affect then change_temps sk new_targ_stp1
-        else new_targ_stp1
-      in
-      if List.length user.enem_hit_chances != 0 then (new_targ, new_usr)
-      else (new_usr, new_targ)
+      if get_attribute "mana" user >= sk.mp_cost then
+        let _ =
+          if List.length user.enem_hit_chances = 0 then
+            print_endline ("You used " ^ sk.name ^ " !")
+        in
+        let avoid = get_attribute "speed" target in
+        let player_hit_chance =
+          ((get_attribute "accuracy" user +. 60.) /. 100.0)
+          -. (0.001 *. (avoid *. avoid))
+        in
+        let rand0 = Random.float 1. in
+        let _ = wait 0 in
+        if rand0 > player_hit_chance then
+          if List.length user.enem_hit_chances = 0 then
+            let _ = print_endline "You missed!" in
+            (user, target, true)
+          else
+            let _ = print_endline (user.name ^ " missed!") in
+            (target, user, true)
+        else
+          let dmg =
+            (sk.base_dmg +. (unwrap user.mag *. sk.dmg_scaling))
+            /. (1. +. (get_curr_attr "magic resist" user /. 50.))
+          in
+          let _ =
+            print_endline
+              (user.name ^ " dealt " ^ string_of_float dmg ^ " damage!")
+          in
+          let new_targ_stp1 = adjust (-.dmg) target "hp" in
+          let new_usr = adjust (-.sk.mp_cost) user "mana" in
+          let rand = Random.float 1. in
+          let new_targ =
+            if rand <= sk.chance_to_affect then change_temps sk new_targ_stp1
+            else new_targ_stp1
+          in
+          let _ = wait () in
+          if List.length user.enem_hit_chances != 0 then
+            (new_targ, new_usr, true)
+          else (new_usr, new_targ, true)
+      else
+        let _ =
+          let nm =
+            if List.length user.enem_hit_chances = 0 then "You don't"
+            else user.name ^ " doesn't"
+          in
+          print_endline (nm ^ " have enough mana to use " ^ sk.name)
+        in
+        if List.length user.enem_hit_chances = 0 then (user, target, false)
+        else (target, user, false)
   | Physical ->
-      let dmg =
-        (unwrap user.str +. (unwrap user.mag *. sk.dmg_scaling))
-        /. (1. +. (unwrap target.mag /. 50.))
-      in
-      let new_targ = adjust (-.dmg) target "hp" in
-      let new_usr = adjust (-.sk.mp_cost) target "mp" in
-      (new_usr, new_targ)
-  | Status -> (user, change_temps sk target)
+      if get_attribute "hp" user > sk.hp_cost then
+        let _ = print_endline ("You used " ^ sk.name ^ " !") in
+        let dmg =
+          (unwrap user.str +. (unwrap user.mag *. sk.dmg_scaling))
+          /. (1. +. (unwrap target.mag /. 50.))
+        in
+        let new_targ = adjust (-.dmg) target "hp" in
+        let new_usr = adjust (-.sk.mp_cost) target "mp" in
+        (new_usr, new_targ, true)
+      else
+        let _ = print_endline ("You don't have enough hp to use " ^ sk.name) in
+        if List.length user.enem_hit_chances = 0 then (user, target, false)
+        else (target, user, false)
+  | Status ->
+      let _ = print_endline ("You used " ^ sk.name ^ " !") in
+      (user, change_temps sk target, true)
 
 [@@@warning "-8"]
 
@@ -390,3 +473,24 @@ let adjust_temps (attr, t) character =
       | Luck x, c ->
           let () = character.temp_stats.(8) <- (Luck (x +. luk), c + t) in
           character)
+
+let dots = "......................................."
+
+let print_skills actor =
+  let arr = actor.skillset in
+  for i = 0 to Array.length arr - 1 do
+    match arr.(i) with
+    | Some sk ->
+        let s = String.capitalize_ascii sk.name in
+        let minus =
+          if sk.mp_cost > 99. then String.length s + 1 else String.length s
+        in
+        print_endline
+          ("● " ^ s
+          ^ String.sub dots 0 (37 - minus)
+          ^
+          if sk.skill_type = Physical then
+            string_of_int (int_of_float sk.hp_cost) ^ "HP..."
+          else string_of_int (int_of_float sk.mp_cost) ^ " Mana")
+    | None -> print_endline ("● " ^ dots ^ ".....")
+  done
