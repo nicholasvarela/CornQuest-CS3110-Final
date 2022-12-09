@@ -55,7 +55,7 @@ let unwrap_skill sk =
   | None -> raise (Failure "Skill not at that index in array")
   | Some s -> s
 
-let unwrap = function
+let unwrap_attr = function
   | HP h -> h
   | Mana h -> h
   | Strength h -> h
@@ -79,16 +79,16 @@ let change_temp_attr_overwrite amt = function
 
 let get_attribute attr character =
   match attr with
-  | "hp" -> unwrap character.hp
-  | "mana" -> unwrap character.mana
-  | "strength" -> unwrap character.str
-  | "defense" -> unwrap character.def
-  | "magic resist" -> unwrap character.mr
-  | "magic power" -> unwrap character.mag
-  | "speed" -> unwrap character.spd
-  | "accuracy" -> unwrap character.acc
-  | "magic" -> unwrap character.mag
-  | "luck" -> unwrap character.luk
+  | "hp" -> unwrap_attr character.hp
+  | "mana" -> unwrap_attr character.mana
+  | "strength" -> unwrap_attr character.str
+  | "defense" -> unwrap_attr character.def
+  | "magic resist" -> unwrap_attr character.mr
+  | "magic power" -> unwrap_attr character.mag
+  | "speed" -> unwrap_attr character.spd
+  | "accuracy" -> unwrap_attr character.acc
+  | "magic" -> unwrap_attr character.mag
+  | "luck" -> unwrap_attr character.luk
   | _ -> failwith "not valid attr"
 
 let clear_temps character =
@@ -317,7 +317,8 @@ let use_skill sk user target =
   match sk.skill_type with
   | Magic ->
       let dmg =
-        (get_curr_attr "magic power" user +. (unwrap user.mag *. sk.dmg_scaling))
+        (get_curr_attr "magic power" user
+        +. (unwrap_attr user.mag *. sk.dmg_scaling))
         /. (1. +. (get_curr_attr "magic resist" user /. 50.))
       in
       let new_targ_stp1 = adjust (-.dmg) target "hp" in
@@ -331,8 +332,8 @@ let use_skill sk user target =
       else (new_usr, new_targ)
   | Physical ->
       let dmg =
-        (unwrap user.str +. (unwrap user.mag *. sk.dmg_scaling))
-        /. (1. +. (unwrap target.mag /. 50.))
+        (unwrap_attr user.str +. (unwrap_attr user.mag *. sk.dmg_scaling))
+        /. (1. +. (unwrap_attr target.mag /. 50.))
       in
       let new_targ = adjust (-.dmg) target "hp" in
       let new_usr = adjust (-.sk.mp_cost) target "mp" in

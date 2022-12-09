@@ -1,0 +1,223 @@
+{
+       "columns": 9,
+       "image": "data/ff3img.png",
+       "imageheight": 64,
+       "imagewidth": 144,
+       "margin": 0,
+       "name": "cave",
+       "spacing": 0,
+       "tilecount": 36,
+       "tiledversion": "1.9.2",
+       "tileheight": 16,
+       "tiles": [
+              {
+                     "animation": [
+                            {
+                                   "duration": 200,
+                                   "tileid": 0
+                            },
+                            {
+                                   "duration": 150,
+                                   "tileid": 1
+                            },
+                            {
+                                   "duration": 150,
+                                   "tileid": 2
+                            }
+                     ],
+                     "id": 0,
+                     "objectgroup": {
+                            "draworder": "index",
+                            "id": 2,
+                            "name": "",
+                            "objects": [
+                                   {
+                                          "class": "",
+                                          "height": 16,
+                                          "id": 1,
+                                          "name": "",
+                                          "rotation": 0,
+                                          "visible": true,
+                                          "width": 16,
+                                          "x": 0,
+                                          "y": 0
+                                   }
+                            ],
+                            "opacity": 1,
+                            "type": "objectgroup",
+                            "visible": true,
+                            "x": 0,
+                            "y": 0
+                     }
+              },
+              {
+                     "id": 1,
+                     "objectgroup": {
+                            "draworder": "index",
+                            "id": 2,
+                            "name": "",
+                            "objects": [
+                                   {
+                                          "class": "",
+                                          "height": 16,
+                                          "id": 1,
+                                          "name": "",
+                                          "rotation": 0,
+                                          "visible": true,
+                                          "width": 16,
+                                          "x": 0,
+                                          "y": 0
+                                   }
+                            ],
+                            "opacity": 1,
+                            "type": "objectgroup",
+                            "visible": true,
+                            "x": 0,
+                            "y": 0
+                     }
+              },
+              {
+                     "id": 6,
+                     "objectgroup": {
+                            "draworder": "index",
+                            "id": 2,
+                            "name": "",
+                            "objects": [
+                                   {
+                                          "class": "",
+                                          "height": 16,
+                                          "id": 1,
+                                          "name": "",
+                                          "rotation": 0,
+                                          "visible": true,
+                                          "width": 16,
+                                          "x": 0,
+                                          "y": 0
+                                   }
+                            ],
+                            "opacity": 1,
+                            "type": "objectgroup",
+                            "visible": true,
+                            "x": 0,
+                            "y": 0
+                     }
+              },
+              {
+                     "id": 14,
+                     "objectgroup": {
+                            "draworder": "index",
+                            "id": 2,
+                            "name": "",
+                            "objects": [
+                                   {
+                                          "class": "",
+                                          "height": 16,
+                                          "id": 1,
+                                          "name": "",
+                                          "rotation": 0,
+                                          "visible": true,
+                                          "width": 16,
+                                          "x": 0,
+                                          "y": 0
+                                   }
+                            ],
+                            "opacity": 1,
+                            "type": "objectgroup",
+                            "visible": true,
+                            "x": 0,
+                            "y": 0
+                     }
+              },
+              {
+                     "animation": [
+                            {
+                                   "duration": 200,
+                                   "tileid": 15
+                            },
+                            {
+                                   "duration": 200,
+                                   "tileid": 6
+                            }
+                     ],
+                     "id": 15,
+                     "objectgroup": {
+                            "draworder": "index",
+                            "id": 2,
+                            "name": "",
+                            "objects": [
+                                   {
+                                          "class": "",
+                                          "height": 16,
+                                          "id": 1,
+                                          "name": "",
+                                          "rotation": 0,
+                                          "visible": true,
+                                          "width": 16,
+                                          "x": 0,
+                                          "y": 0
+                                   }
+                            ],
+                            "opacity": 1,
+                            "type": "objectgroup",
+                            "visible": true,
+                            "x": 0,
+                            "y": 0
+                     }
+              },
+              {
+                     "id": 23,
+                     "objectgroup": {
+                            "draworder": "index",
+                            "id": 2,
+                            "name": "",
+                            "objects": [
+                                   {
+                                          "class": "",
+                                          "height": 16,
+                                          "id": 1,
+                                          "name": "",
+                                          "rotation": 0,
+                                          "visible": true,
+                                          "width": 16,
+                                          "x": 0,
+                                          "y": 0
+                                   }
+                            ],
+                            "opacity": 1,
+                            "type": "objectgroup",
+                            "visible": true,
+                            "x": 0,
+                            "y": 0
+                     }
+              },
+              {
+                     "id": 32,
+                     "objectgroup": {
+                            "draworder": "index",
+                            "id": 2,
+                            "name": "",
+                            "objects": [
+                                   {
+                                          "class": "",
+                                          "height": 16,
+                                          "id": 1,
+                                          "name": "",
+                                          "rotation": 0,
+                                          "visible": true,
+                                          "width": 16,
+                                          "x": 0,
+                                          "y": 0
+                                   }
+                            ],
+                            "opacity": 1,
+                            "type": "objectgroup",
+                            "visible": true,
+                            "x": 0,
+                            "y": 0
+                     }
+              }
+       ],
+       "tilewidth": 16,
+       "type": "tileset",
+       "version": "1.9"
+}

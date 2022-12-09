@@ -1,3 +1,3 @@
-(executable
- (name battle_main)
+(executables
+ (names battle_main gui_main)
  (libraries game lib ANSITerminal tsdl))
