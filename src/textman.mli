@@ -1,8 +1,8 @@
 (**Loading and management of game textures.*)
 
 val load_texture : string -> Tsdl.Sdl.renderer -> Tsdl.Sdl.texture
-(**[load_texture file_name] loads the texture from the file [file_name] using
-   the renderer [ren].*)
+(**[load_texture file_name ren] loads the texture from the file [file_name]
+   using the renderer [ren].*)
 
 val draw :
   Tsdl.Sdl.texture ->

@@ -1,7 +1,8 @@
 open Tsdl
 open Tsdl_image
+open Components
 
-type game = {
+type t = {
   title : string;
   xpos : int;
   ypos : int;
@@ -12,10 +13,14 @@ type game = {
   win : Sdl.window;
   ren : Sdl.renderer;
   player : Gameobj.t;
+  player_ecs : CornECS.entity;
   enemy : Gameobj.t;
   map : Tilemap.t;
 }
 (**The type of a value representing an instance of a game.*)
+
+let create_player tex ren =
+  CornECS.next_id () |> Sprite.b |> Renderable.s (tex, ren)
 
 (**[init t x y w h fs] creates a fresh game instance, in which the window has
    title [t], x-position [x], y-position [y], width [w], and height [h]. The
@@ -33,6 +38,10 @@ let init t x y w h fs =
       print_endline "Renderer created.";
       let enemy = Gameobj.create "data/xande.png" renderer 0 0 in
       let player = Gameobj.create "data/cloud.png" renderer 900 900 in
+
+      let player_ecs =
+        create_player (Textman.load_texture "data/kefka.png" renderer) renderer
+      in
       let map = Tilemap.load_map "data/ff3img.png" "data/cave.json" renderer in
       {
         title = t;
@@ -45,6 +54,7 @@ let init t x y w h fs =
         win = window;
         ren = renderer;
         player;
+        player_ecs;
         enemy;
         map;
       }
@@ -62,6 +72,7 @@ let handle_events game =
    updating.*)
 let update game =
   Gameobj.update game.player (-1) (-1);
+  Sprite.update game.player_ecs 1 1;
   Gameobj.update game.enemy 1 1;
   ()
 
@@ -70,10 +81,10 @@ let update game =
 let render game =
   Sdl.render_clear game.ren |> Util.unwrap;
   Tilemap.draw_map game.map game.ren;
-  Gameobj.render game.player |> Util.unwrap;
-  Gameobj.render game.enemy |> Util.unwrap;
-  Sdl.render_present game.ren;
-  ()
+  Gameobj.render game.player game.ren |> Util.unwrap;
+  Gameobj.render game.enemy game.ren |> Util.unwrap;
+  Sprite.draw game.player_ecs;
+  Sdl.render_present game.ren
 
 (**[clean game] "cleans" the game instance [game] by destroying the game window,
    the game renderer, and finally quitting.*)
