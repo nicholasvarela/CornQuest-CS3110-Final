@@ -194,10 +194,12 @@ and turn_handler (actor, enem) made_action =
   in
   print_endline
     (actor.name ^ " HP: "
-    ^ string_of_float (Character.get_attribute_val "hp" actor));
+    ^ string_of_int (int_of_float (Character.get_attribute_val "hp" actor))
+    ^ " Mana: "
+    ^ string_of_int (int_of_float (Character.get_attribute_val "mana" actor)));
   print_endline
     (Character.get_name enem ^ " HP: "
-    ^ string_of_float (Character.get_attribute_val "hp" enem));
+    ^ string_of_int (int_of_float (Character.get_attribute_val "hp" enem)));
   read_logo_files "data/menu.txt";
   match read_line () with
   | "attack" ->

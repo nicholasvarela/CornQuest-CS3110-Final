@@ -219,8 +219,8 @@ let change_temp_attr_overwrite amt = function
 
 let get_attribute_val attr ch =
   match attr with
-  | "maxhp" -> unwrap_attr ch.hp
-  | "maxmana" -> unwrap_attr ch.mana
+  | "maxhp" -> unwrap_attr ch.maxhp
+  | "maxmana" -> unwrap_attr ch.maxmana
   | "hp" -> unwrap_attr ch.hp
   | "mana" -> unwrap_attr ch.mana
   | "strength" -> unwrap_attr ch.str
@@ -574,6 +574,8 @@ let use_skill sk user target =
           if List.length user.enem_hit_chances = 0 then
             print_endline ("You used " ^ sk.name ^ " !")
         in
+        let new_usr = adjust (-.sk.mp_cost) user "mana" in
+
         let avoid = get_attribute_val "speed" target in
         let player_hit_chance =
           ((get_attribute_val "accuracy" user +. 60.) /. 100.0)
@@ -584,10 +586,10 @@ let use_skill sk user target =
         if rand0 > player_hit_chance then
           if List.length user.enem_hit_chances = 0 then
             let _ = print_endline "You missed!" in
-            (user, target, true)
+            (new_usr, target, true)
           else
             let _ = print_endline (user.name ^ " missed!") in
-            (target, user, true)
+            (target, new_usr, true)
         else
           let dmg =
             let raw =
@@ -601,7 +603,6 @@ let use_skill sk user target =
               (user.name ^ " dealt " ^ string_of_float dmg ^ " damage!")
           in
           let new_targ_stp1 = adjust (-.dmg) target "hp" in
-          let new_usr = adjust (-.sk.mp_cost) user "mana" in
           let rand = Random.float 1. in
           let new_targ =
             if rand <= sk.chance_to_affect then
@@ -645,9 +646,14 @@ let use_skill sk user target =
 
 let use_consumable csbl ch idx =
   let new_ch, _, _ = use_skill csbl ch ch in
-  let x = new_ch.inv.(idx) in
-  new_ch.inv.(idx) <- { x with amt = x.amt - 1 };
-  new_ch
+  let new_ch' =
+    if get_attribute_val "hp" new_ch > get_attribute_val "maxhp" new_ch then
+      { new_ch with hp = new_ch.maxhp }
+    else new_ch
+  in
+  let x = new_ch'.inv.(idx) in
+  new_ch'.inv.(idx) <- { x with amt = x.amt - 1 };
+  new_ch'
 
 [@@@warning "-8"]
 
