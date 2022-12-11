@@ -1,6 +1,6 @@
 exception UnknownAttribute
 (**Raised when an unknown attribute name is encountered.*)
-
+exception No_skill 
 (**The type representing an attribute of a character.*)
 type attribute =
   | HP of float
@@ -23,6 +23,7 @@ type attribute =
     skill_type : dmg_type;
     attribute_affected : (attribute * int) array;
     chance_to_affect : float;
+    base_dmg : float;
     dmg_scaling : float;
     mp_cost : float;
     hp_cost : float;
@@ -48,12 +49,10 @@ type character = {
   temp_stats : (attribute * int) array;
 }
 
-(*testing stuff*)
-val demo_spell : skill
 (**The abstract type representing a character.*)
 
 val unwrap_skill : skill option -> skill
-val use_skill : skill -> character -> character -> character * character
+val use_skill : skill -> character -> character -> character * character * bool
 val get_enem_move_chance : character -> float list
 val get_curr_attr: string -> character -> float
 val get_attribute : string -> character -> float
@@ -76,3 +75,10 @@ val level_up : character -> character
 (**[level_up ch] is [ch] leveled up by 1.*)
 
 val get_temp_value : string -> character -> float
+
+val print_skills : character -> unit
+
+
+(*Spells*)
+val icicle : skill
+val piercing_light : skill

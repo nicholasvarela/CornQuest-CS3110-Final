@@ -19,8 +19,8 @@ let enem : Character.character =
     acc = Accuracy 10000.;
     mag = MagicPower 10.;
     luk = Luck 10.;
-    enem_hit_chances = [ 1.; 0.25; 0.25 ];
-    skillset = [| Some Character.demo_spell |];
+    enem_hit_chances = [ 0.5; 0.25; 0.25 ];
+    skillset = [| Some Character.icicle |];
     temp_stats =
       [|
         (HP 0., -1);
@@ -41,11 +41,61 @@ let read_logo_files filename =
     while true do
       print_endline (input_line listener)
     done
-  with End_of_file -> print_endline ""
+  with End_of_file -> ()
 
 let data_dir_prefix = "data" ^ Filename.dir_sep
 
-let rec turn_handler (actor, enem) made_action =
+let rec skill_menu (actor, enem) =
+  let arr = Character.get_skills actor in
+  let sk1 =
+    try (Character.unwrap_skill arr.(0)).name with Character.No_skill -> ""
+  in
+  let sk2 =
+    try (Character.unwrap_skill arr.(1)).name with Character.No_skill -> ""
+  in
+  let sk3 =
+    try (Character.unwrap_skill arr.(2)).name with Character.No_skill -> ""
+  in
+  let sk4 =
+    try (Character.unwrap_skill arr.(3)).name with Character.No_skill -> ""
+  in
+
+  let inp = read_line () in
+  match inp with
+  | s when String.length s = 0 -> skill_menu (actor, enem)
+  | s when inp = sk1 ->
+      let a, e, b =
+        Character.use_skill (Character.unwrap_skill arr.(0)) actor enem
+      in
+      if b then
+        let a2, e2 = Battle.pick_enemy_move (a, e) in
+        turn_handler (a2, e2) true
+      else skill_menu (a, e)
+  | s when inp = sk2 ->
+      let a, e, b =
+        Character.use_skill (Character.unwrap_skill arr.(1)) actor enem
+      in
+      if b then
+        let a2, e2 = Battle.pick_enemy_move (a, e) in
+        turn_handler (a2, e2) true
+  | s when inp = sk3 ->
+      let a, e, b =
+        Character.use_skill (Character.unwrap_skill arr.(2)) actor enem
+      in
+      if b then
+        let a2, e2 = Battle.pick_enemy_move (a, e) in
+        turn_handler (a2, e2) true
+  | s when inp = sk4 ->
+      let a, e, b =
+        Character.use_skill (Character.unwrap_skill arr.(3)) actor enem
+      in
+      if b then
+        let a2, e2 = Battle.pick_enemy_move (a, e) in
+        turn_handler (a2, e2) true
+  | "back" -> turn_handler (actor, enem) false
+  | _ -> skill_menu (actor, enem)
+
+and turn_handler (actor, enem) made_action =
   let actor, enem =
     if made_action then (Character.clear_temps actor, Character.clear_temps enem)
     else (actor, enem)
@@ -58,6 +108,7 @@ let rec turn_handler (actor, enem) made_action =
   read_logo_files "data/menu.txt";
   match read_line () with
   | "attack" ->
+      print_string (actor.name ^ " attacks!");
       let first_turn_chars = (actor, Battle.attack enem actor) in
       let second_turn_chars = pick_enemy_move first_turn_chars in
       turn_handler second_turn_chars true
@@ -65,6 +116,9 @@ let rec turn_handler (actor, enem) made_action =
       print_endline "You put your hands up and brace for an incoming attack.";
       let new_chars = pick_enemy_move (Battle.guard actor, enem) in
       turn_handler new_chars true
+  | "skill" ->
+      Character.print_skills actor;
+      skill_menu (actor, enem)
   | "escape" ->
       print_endline "You flee!";
       exit 0

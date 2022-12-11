@@ -1,6 +1,5 @@
 type party_state = { party : Character.character list }
 (*TODO: implement*)
-
 (** The type [action] represents the action that can be part of a player's fight
     command. The player can choose to physically attack, guard, cast a spell, or
     attempt to flee. The [Attack] action carries a [string] that represents the
@@ -20,8 +19,8 @@ let check_health (enem : Character.character) (actor : Character.character) =
   else if Character.get_attribute "hp" actor < 0. then
     let _ = exit 0 in
     print_endline "Hero Dead"
-
-let attack (enem : Character.character) (actor : Character.character) =
+let wait un = let i = ref 0 in while !i < 100 do match read_line () with _-> i := 100 done
+let attack (enem : Character.character) (actor : Character.character) = 
   let avoid = Character.get_attribute "speed" enem in
   let player_hit_chance =
     ((Character.get_attribute "accuracy" actor +. 60.) /. 100.0)
@@ -33,15 +32,15 @@ let attack (enem : Character.character) (actor : Character.character) =
       (Character.get_attribute "defense" enem /. 2.)
       +. (0.3 *. Character.get_temp_value "defense" enem)
       -. Character.get_attribute "strength" actor
-    in
-    print_endline
+    in let _ = wait () in
+    print_string
       (Character.get_name actor ^ " dealt "
       ^ string_of_float (damage *. -1.)
-      ^ " damage!");
+      ^ " damage!\n"); let _ = wait () in 
 
     Character.adjust damage enem "hp")
-  else
-    let _ = print_endline (Character.get_name actor ^ " missed!") in
+  else let _ = wait () in
+    let _ = print_string (Character.get_name actor ^ " missed!\n") in let _ = wait () in
     enem
 
 let enem_guard enem = Character.adjust_temps (Defense 10., 1) enem
@@ -77,7 +76,7 @@ let enemy_move_helper (actor, enem) (lst : float list) (rand : float) =
         | h :: t ->
             let sk = Character.unwrap_skill enem.skillset.(0) in
             print_endline (Character.get_name enem ^ " used " ^ sk.name ^ "!");
-            Character.use_skill sk enem actor)
+            let a,b,_ = Character.use_skill sk enem actor in a,b)
 
 let pick_enemy_move (actor, enem) =
   enemy_move_helper (actor, enem)
