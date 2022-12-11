@@ -131,18 +131,18 @@ let change_temp_attr_overwrite amt = function
 
 let get_attribute attr character =
   match attr with
-  | "maxhp" -> unwrap character.hp
-  | "maxmana" -> unwrap character.mana
-  | "hp" -> unwrap character.hp
-  | "mana" -> unwrap character.mana
-  | "strength" -> unwrap character.str
-  | "defense" -> unwrap character.def
-  | "magic resist" -> unwrap character.mr
-  | "magic power" -> unwrap character.mag
-  | "speed" -> unwrap character.spd
-  | "accuracy" -> unwrap character.acc
-  | "magic" -> unwrap character.mag
-  | "luck" -> unwrap character.luk
+  | "maxhp" -> unwrap_attr character.hp
+  | "maxmana" -> unwrap_attr character.mana
+  | "hp" -> unwrap_attr character.hp
+  | "mana" -> unwrap_attr character.mana
+  | "strength" -> unwrap_attr character.str
+  | "defense" -> unwrap_attr character.def
+  | "magic resist" -> unwrap_attr character.mr
+  | "magic power" -> unwrap_attr character.mag
+  | "speed" -> unwrap_attr character.spd
+  | "accuracy" -> unwrap_attr character.acc
+  | "magic" -> unwrap_attr character.mag
+  | "luck" -> unwrap_attr character.luk
   | _ -> failwith "not valid attr"
 
 let clear_temps character =
@@ -376,7 +376,7 @@ let use_skill sk user target =
             (target, user, true)
         else
           let dmg =
-            (sk.base_dmg +. (unwrap user.mag *. sk.dmg_scaling))
+            (sk.base_dmg +. (unwrap_attr user.mag *. sk.dmg_scaling))
             /. (1. +. (get_curr_attr "magic resist" user /. 50.))
           in
           let _ =
@@ -408,8 +408,8 @@ let use_skill sk user target =
       if get_attribute "hp" user > sk.hp_cost then
         let _ = print_endline ("You used " ^ sk.name ^ " !") in
         let dmg =
-          (unwrap user.str +. (unwrap user.mag *. sk.dmg_scaling))
-          /. (1. +. (unwrap target.mag /. 50.))
+          (unwrap_attr user.str +. (unwrap_attr user.mag *. sk.dmg_scaling))
+          /. (1. +. (unwrap_attr target.mag /. 50.))
         in
         let new_targ = adjust (-.dmg) target "hp" in
         let new_usr = adjust (-.sk.mp_cost) target "mp" in
