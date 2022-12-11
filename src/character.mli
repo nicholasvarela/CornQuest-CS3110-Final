@@ -47,7 +47,7 @@ type character = {
   maxhp : attribute;
   mana : attribute;
   maxmana : attribute;
-  exp : float;
+  exp : int;
   lvl : int;
   mr : attribute;
   str : attribute;

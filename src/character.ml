@@ -41,7 +41,7 @@ type character = {
   maxhp : attribute;
   mana : attribute;
   maxmana : attribute;
-  exp : float;
+  exp : int;
   lvl : int;
   mr : attribute;
   str : attribute;
@@ -86,6 +86,32 @@ let health_potion_bk =
   in
   { name = "health potion"; item = itm; amt = -1 }
 
+let mana_potion_bk =
+  let itm =
+    {
+      name = "mana potion";
+      skill_type = Magic;
+      attribute_affected =
+        [|
+          (HP 0., -1);
+          (Mana 0., -1);
+          (Strength 0., -1);
+          (Defense 0., -1);
+          (MagicResist 0., -1);
+          (Speed 0., -1);
+          (Accuracy 0., -1);
+          (MagicPower 0., -1);
+          (Luck 0., -1);
+        |];
+      chance_to_affect = 0.;
+      base_dmg = 0.;
+      dmg_scaling = 0.;
+      mp_cost = -50.;
+      hp_cost = 0.;
+    }
+  in
+  { name = "mana potion"; item = itm; amt = -1 }
+
 (*skill repo start*)
 let icicle : skill =
   {
@@ -119,8 +145,8 @@ let acid_spray =
         (HP 0., -1);
         (Mana 0., -1);
         (Strength 0., -1);
-        (Defense 0., -1);
-        (MagicResist (-5.), 3);
+        (Defense (-10.), 3);
+        (MagicResist (-10.), 3);
         (Speed 0., -1);
         (Accuracy 0., -1);
         (MagicPower 0., -1);
@@ -291,7 +317,7 @@ let start_character nme =
     maxhp = HP 100.;
     mana = Mana 100.;
     maxmana = Mana 100.;
-    exp = 0.;
+    exp = 0;
     lvl = 1;
     str = Strength 10.;
     def = Defense 10.;
@@ -305,7 +331,7 @@ let start_character nme =
     inv =
       [|
         { health_potion_bk with amt = 3 };
-        { health_potion_bk with amt = 1 };
+        { mana_potion_bk with amt = 1 };
         { health_potion_bk with amt = 1 };
         { health_potion_bk with amt = 1 };
         { health_potion_bk with amt = 1 };
@@ -362,16 +388,19 @@ let adjust_set amt ch = function
   | _ -> raise UnknownAttribute
 
 let stat_randomizer attr_str ch =
-  let x =
-    Float.round
-      (get_attribute_val attr_str ch +. (5. *. Float.pow (Random.float 1.) 2.))
-  in
+  let og = get_attribute_val attr_str ch in
+  let x = Float.round (og +. (10. *. Float.pow (Random.float 1.) 2.)) in
   let _ =
-    if x > 0. then
-      print_endline
+    if x > og then
+      ANSITerminal.print_string [ ANSITerminal.green ]
         (String.capitalize_ascii attr_str
         ^ " increased to "
-        ^ string_of_int (int_of_float x))
+        ^ string_of_int (int_of_float x)
+        ^ "\n")
+    else
+      ANSITerminal.print_string [ ANSITerminal.red ]
+        (String.capitalize_ascii "Bad luck. Your "
+        ^ attr_str ^ " didn't increase.\n")
   in
   x
 
@@ -395,7 +424,7 @@ let print_attrs () =
   let _ = wait () in
   let _ = print_endline "● magic power" in
   let _ = wait () in
-  print_endline "● luck"
+  print_endline "● luck\n"
 
 let level_attr actor attr_str =
   match attr_str with
@@ -414,42 +443,57 @@ let level_attr actor attr_str =
 
 let rec upgrade_menu actor counter ran =
   let _ =
-    if ran then
-      let _ = print_endline "You can level up 3 attributes:" in
+    if not ran then
+      let _ =
+        ANSITerminal.print_string [ ANSITerminal.blue ]
+          "You can level up 3 attributes:\n"
+      in
       print_attrs ()
   in
   let a1, counter =
     if counter = 0 then
-      let _ = print_endline "Choose your first attribute to improve." in
+      let _ =
+        ANSITerminal.print_string [ ANSITerminal.blue ]
+          "\nChoose your first attribute to improve.\n"
+      in
       let s = read_line () in
       try (level_attr actor s, counter + 1)
       with UnknownAttribute ->
         let _ =
-          print_endline "That's not a valid attribute. Please try again."
+          ANSITerminal.print_string [ ANSITerminal.red ]
+            "That's not a valid attribute. Please try again.\n"
         in
         upgrade_menu actor 0 true
     else (actor, counter)
   in
   let a2, counter =
     if counter = 1 then
-      let _ = print_endline "Choose your second attribute to improve." in
+      let _ =
+        ANSITerminal.print_string [ ANSITerminal.blue ]
+          "\nChoose your second attribute to improve.\n"
+      in
       let s = read_line () in
       try (level_attr actor s, counter + 1)
       with UnknownAttribute ->
         let _ =
-          print_endline "That's not a valid attribute. Please try again."
+          ANSITerminal.print_string [ ANSITerminal.red ]
+            "That's not a valid attribute. Please try again.\n"
         in
         upgrade_menu a1 1 true
     else (a1, counter)
   in
   let a3, counter =
     if counter = 2 then
-      let _ = print_endline "Choose your third attribute to improve." in
+      let _ =
+        ANSITerminal.print_string [ ANSITerminal.blue ]
+          "\nChoose your third attribute to improve.\n"
+      in
       let s = read_line () in
       try (level_attr actor s, counter + 1)
       with UnknownAttribute ->
         let _ =
-          print_endline "That's not a valid attribute. Please try again."
+          ANSITerminal.print_string [ ANSITerminal.red ]
+            "That's not a valid attribute. Please try again.\n"
         in
         upgrade_menu a2 2 true
     else (a2, counter)
@@ -457,14 +501,16 @@ let rec upgrade_menu actor counter ran =
   (a3, -1)
 
 let level_up actor =
+  ANSITerminal.print_string [ ANSITerminal.green ] "You have leveled up!\n";
+  let _ = wait () in
   let hpmax =
     let x =
       Float.round (get_attribute_val "maxhp" actor +. (20. *. Random.float 1.))
     in
     let _ =
       if x > 0. then
-        print_string
-          ("Max HP increased to " ^ string_of_int (int_of_float x) ^ "\n")
+        ANSITerminal.print_string []
+          ("● Max HP increased to " ^ string_of_int (int_of_float x) ^ "\n")
     in
     HP x
   in
@@ -474,8 +520,8 @@ let level_up actor =
     in
     let _ =
       if x > 0. then
-        print_string
-          ("Max Mana increased to " ^ string_of_int (int_of_float x) ^ "\n")
+        ANSITerminal.print_string []
+          ("● Max Mana increased to " ^ string_of_int (int_of_float x) ^ "\n\n")
     in
     Mana x
   in
@@ -528,9 +574,9 @@ let change_temps_from_skill sk target =
     if get_from_tuple arr.(i) > 0 then (
       let amt = get_temp_attribute_val arr.(i) in
       let word = if amt > 0. then "increased" else "decreased" in
-      print_endline
+      ANSITerminal.print_string [ ANSITerminal.yellow ]
         (target.name ^ "'s " ^ string_arr.(i) ^ " " ^ word ^ " by "
-       ^ string_of_float amt);
+       ^ string_of_float amt ^ "\n");
       target.temp_stats.(i) <- arr.(i))
   done;
   if
@@ -542,7 +588,8 @@ let change_temps_from_skill sk target =
       get_temp_attribute_val (target.maxhp, -1)
       +. get_temp_attribute_val arr.(0)
     in
-    print_endline ("Current HP truncated to " ^ string_of_float att);
+    ANSITerminal.print_string [ ANSITerminal.red ]
+      ("Current HP truncated to " ^ string_of_float att ^ "\n");
     adjust_set att target "hp")
   else if
     get_temp_attribute_val (target.mana, -1)
@@ -553,9 +600,10 @@ let change_temps_from_skill sk target =
       get_temp_attribute_val (target.maxmana, -1)
       +. get_temp_attribute_val arr.(1)
     in
-    print_endline
+    ANSITerminal.print_string [ ANSITerminal.red ]
       ("Current Mana truncated to "
-      ^ string_of_float (get_temp_attribute_val arr.(1)));
+      ^ string_of_float (get_temp_attribute_val arr.(1))
+      ^ "\n");
     adjust_set att target "mana")
   else target
 
@@ -572,14 +620,17 @@ let use_skill sk user target =
       if get_attribute_val "mana" user >= sk.mp_cost then
         let _ =
           if List.length user.enem_hit_chances = 0 then
-            print_endline ("You used " ^ sk.name ^ " !")
+            ANSITerminal.print_string [ ANSITerminal.blue ]
+              ("You used " ^ sk.name ^ " !\n")
         in
         let new_usr = adjust (-.sk.mp_cost) user "mana" in
 
         let avoid = get_attribute_val "speed" target in
         let player_hit_chance =
-          ((get_attribute_val "accuracy" user +. 60.) /. 100.0)
-          -. (0.001 *. (avoid *. avoid))
+          if sk.mp_cost < 0. then 1.
+          else
+            ((get_attribute_val "accuracy" user +. 70.) /. 100.0)
+            -. (0.001 *. (avoid *. avoid))
         in
         let rand0 = Random.float 1. in
         let _ = wait 0 in
@@ -588,7 +639,7 @@ let use_skill sk user target =
             let _ = print_endline "You missed!" in
             (new_usr, target, true)
           else
-            let _ = print_endline (user.name ^ " missed!") in
+            let _ = ANSITerminal.print_string [] (user.name ^ " missed!") in
             (target, new_usr, true)
         else
           let dmg =
@@ -599,8 +650,13 @@ let use_skill sk user target =
             if raw > 0. then raw else 0.
           in
           let _ =
-            print_endline
-              (user.name ^ " dealt " ^ string_of_float dmg ^ " damage!")
+            if sk.mp_cost >= 0. then
+              if List.length user.enem_hit_chances = 0 then
+                ANSITerminal.print_string [ ANSITerminal.blue ]
+                  (user.name ^ " dealt " ^ string_of_float dmg ^ " damage!\n")
+              else
+                ANSITerminal.print_string [ ANSITerminal.red ]
+                  (user.name ^ " dealt " ^ string_of_float dmg ^ " damage!\n")
           in
           let new_targ_stp1 = adjust (-.dmg) target "hp" in
           let rand = Random.float 1. in
@@ -609,23 +665,28 @@ let use_skill sk user target =
               change_temps_from_skill sk new_targ_stp1
             else new_targ_stp1
           in
-          let _ = wait () in
+          let _ = if sk.mp_cost >= 0. then wait () in
           if List.length user.enem_hit_chances != 0 then
             (new_targ, new_usr, true)
           else (new_usr, new_targ, true)
       else
         let _ =
-          let nm =
-            if List.length user.enem_hit_chances = 0 then "You don't"
-            else user.name ^ " doesn't"
+          let nm, lst =
+            if List.length user.enem_hit_chances = 0 then
+              ("You don't", [ ANSITerminal.yellow ])
+            else (user.name ^ " doesn't", [ ANSITerminal.red ])
           in
-          print_endline (nm ^ " have enough mana to use " ^ sk.name)
+          ANSITerminal.print_string lst
+            (nm ^ " have enough mana to use " ^ sk.name ^ "\n")
         in
         if List.length user.enem_hit_chances = 0 then (user, target, false)
         else (target, user, false)
   | Physical ->
-      if get_attribute_val "hp" user > sk.hp_cost then
-        let _ = print_endline ("You used " ^ sk.name ^ " !") in
+      if get_attribute_val "hp" user > sk.hp_cost then (
+        let _ =
+          ANSITerminal.print_string [ ANSITerminal.blue ]
+            ("You used " ^ sk.name ^ " !\n")
+        in
         let dmg =
           let raw =
             (unwrap_attr user.str +. (unwrap_attr user.mag *. sk.dmg_scaling))
@@ -635,13 +696,20 @@ let use_skill sk user target =
         in
         let new_targ = adjust (-.dmg) target "hp" in
         let new_usr = adjust (-.sk.hp_cost) target "hp" in
-        (new_usr, new_targ, true)
+        print_endline "";
+        (new_usr, new_targ, true))
       else
-        let _ = print_endline ("You don't have enough hp to use " ^ sk.name) in
+        let _ =
+          ANSITerminal.print_string [ ANSITerminal.yellow ]
+            ("You don't have enough hp to use " ^ sk.name ^ "\n")
+        in
         if List.length user.enem_hit_chances = 0 then (user, target, false)
         else (target, user, false)
   | Status ->
-      let _ = print_endline ("You used " ^ sk.name ^ " !") in
+      let _ =
+        ANSITerminal.print_string [ ANSITerminal.blue ]
+          ("You used " ^ sk.name ^ " !\n")
+      in
       (user, change_temps_from_skill sk target, true)
 
 let use_consumable csbl ch idx =
@@ -649,6 +717,8 @@ let use_consumable csbl ch idx =
   let new_ch' =
     if get_attribute_val "hp" new_ch > get_attribute_val "maxhp" new_ch then
       { new_ch with hp = new_ch.maxhp }
+    else if get_attribute_val "mana" new_ch > get_attribute_val "maxmana" new_ch
+    then { new_ch with mana = new_ch.maxmana }
     else new_ch
   in
   let x = new_ch'.inv.(idx) in

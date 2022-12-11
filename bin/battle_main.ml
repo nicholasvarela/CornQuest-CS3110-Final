@@ -1,5 +1,6 @@
 open Game
 open Battle
+open Character
 
 exception Battle_Over of Character.character option
 
@@ -8,20 +9,20 @@ let actor : Character.character = Character.start_character "Demoman"
 let enem : Character.character =
   {
     name = "Marthia Pollocus";
-    hp = HP 100.;
+    hp = HP 10.;
     maxhp = HP 100.;
     mana = Mana 100.;
     maxmana = Mana 100.;
-    exp = 0.;
+    exp = 25;
     lvl = 1;
     str = Strength 10.;
     def = Defense 10.;
     mr = MagicResist 10.;
-    spd = Speed 10.;
+    spd = Speed 2.;
     acc = Accuracy 10.;
     mag = MagicPower 10.;
     luk = Luck 10.;
-    enem_hit_chances = [ 1.; 0.25; 0.25 ];
+    enem_hit_chances = [ 0.5; 0.25; 0.25 ];
     skillset = [| Some Character.icicle |];
     inv = [||];
     temp_stats =
@@ -87,10 +88,15 @@ let print_items actor =
   done
 
 let rec check_health (actor, enem) =
-  if Character.get_attribute_val "hp" enem < 0. then
+  if Character.get_attribute_val "hp" enem <= 0. then
     let _ = print_endline (enem.name ^ " was defeated!") in
-    raise (Battle_Over (Some actor))
-  else if Character.get_attribute_val "hp" actor < 0. then
+    let experienced_char = { actor with exp = actor.exp + enem.exp } in
+    let out =
+      if experienced_char.exp mod 25 = 0 then level_up experienced_char
+      else experienced_char
+    in
+    raise (Battle_Over (Some out))
+  else if Character.get_attribute_val "hp" actor <= 0. then
     let _ = print_endline (actor.name ^ " was defeated!") in
     raise (Battle_Over None)
   else (actor, enem)
@@ -108,24 +114,36 @@ and item_menu (actor, enem) =
   | s when String.length s = 0 -> item_menu (actor, enem)
   | s when inp = bk1 ->
       let a = Character.use_consumable arr.(0).item actor 0 in
-      turn_handler (a, enem) true
+      let a2, e2 = Battle.pick_enemy_move (a, enem) in
+      let a2', e2' = check_health (a2, e2) in
+      turn_handler (a2', e2') true
   | s when inp = bk2 ->
       let a = Character.use_consumable arr.(1).item actor 1 in
-      turn_handler (a, enem) true
+      let a2, e2 = Battle.pick_enemy_move (a, enem) in
+      let a2', e2' = check_health (a2, e2) in
+      turn_handler (a2', e2') true
   | s when inp = bk3 ->
       let a = Character.use_consumable arr.(2).item actor 2 in
-      turn_handler (a, enem) true
+      let a2, e2 = Battle.pick_enemy_move (a, enem) in
+      let a2', e2' = check_health (a2, e2) in
+      turn_handler (a2', e2') true
   | s when inp = bk4 ->
       let a = Character.use_consumable arr.(3).item actor 3 in
-      turn_handler (a, enem) true
+      let a2, e2 = Battle.pick_enemy_move (a, enem) in
+      let a2', e2' = check_health (a2, e2) in
+      turn_handler (a2', e2') true
   | s when inp = bk5 ->
       let a = Character.use_consumable arr.(4).item actor 4 in
-      turn_handler (a, enem) true
+      let a2, e2 = Battle.pick_enemy_move (a, enem) in
+      let a2', e2' = check_health (a2, e2) in
+      turn_handler (a2', e2') true
   | s when inp = bk6 ->
       let a = Character.use_consumable arr.(5).item actor 5 in
-      turn_handler (a, enem) true
+      let a2, e2 = Battle.pick_enemy_move (a, enem) in
+      let a2', e2' = check_health (a2, e2) in
+      turn_handler (a2', e2') true
   | "back" -> turn_handler (actor, enem) false
-  | _ -> skill_menu (actor, enem)
+  | _ -> item_menu (actor, enem)
 
 and skill_menu (actor, enem) =
   let arr = Character.get_skills actor in
