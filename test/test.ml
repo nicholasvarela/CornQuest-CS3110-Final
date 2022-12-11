@@ -13,7 +13,8 @@ open Yojson
 (*Manually Tested Componenets battle.ml functions attack had a random call, so
   they could not be tested with OUnit battle.ml functions. We focused on testing
   functions that were exposed in the respective .mli file, internal functions
-  were solved indirectly *)
+  were solved indirectly. GUI Components like gameobj.ml, tilemap.ml and
+  tileset.ml textman.mli*)
 
 (*OUnit Tested Componenets : character.ml/character.mi -We utilized OUnit and
   glass box testing in order to throughly test that our implementation of
@@ -54,6 +55,10 @@ let get_temp_value_test (name : string) (character : Character.character)
   name >:: fun _ ->
   assert_equal expected_output (Character.get_temp_value attr character)
     ~printer:(fun x -> string_of_float x)
+
+let parse_test (name : string) (input_string : string)
+    (expected_output : Command.command) : test =
+  name >:: fun _ -> assert_equal expected_output (Command.parse input_string)
 
 let basic_charcter_tests =
   [
@@ -102,9 +107,12 @@ let basic_charcter_tests =
       "magic power" 0.;
     get_temp_value_test "change temp luck" chris "luck" 2.;
     get_temp_value_test "change temp defense" chris2 "defense" 2.;
-    (* get_temp_value_test "change temp magic" chris3 "magic power" 2.; *)
     get_temp_value_test "change temp luck" chris4 "luck" 2.;
     get_temp_value_test "change temp speed" chris5 "speed" 2.;
+    parse_test "Parse [Go North]" "Go North" (Go North);
+    parse_test "Parse [Go South]" "Go South" (Go South);
+    parse_test "Parse [Go East]" "Go East" (Go East);
+    parse_test "Parse [Go West]" "Go West" (Go West);
   ]
 
 let test_suite =
