@@ -14,6 +14,5 @@ val update : t -> int -> int -> unit
 (**[update obj] updates [obj], moving its x position by [x_inc] and its y
    position by [y_inc].*)
 
-val render : t -> unit Tsdl.Sdl.result
-(**[render obj] renders the object [obj] onscreen. Whatever that may entail
-   depends on the object.*)
+val render : t -> Tsdl.Sdl.renderer -> unit Tsdl.Sdl.result
+(**[render obj ren] renders the object [obj] onscreen with renderer [ren].*)

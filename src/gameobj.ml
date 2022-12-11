@@ -4,7 +4,6 @@ open Tsdl
 type t = {
   mutable xpos : int;
   mutable ypos : int;
-  ren : Sdl.renderer;
   tex : Sdl.texture;
   mutable src : Sdl.rect;
   mutable dst : Sdl.rect;
@@ -16,7 +15,6 @@ let create tx ren xpos ypos =
   {
     xpos;
     ypos;
-    ren;
     tex;
     src = Sdl.Rect.create 0 0 w h;
     dst = Sdl.Rect.create xpos ypos w h;
@@ -35,4 +33,4 @@ let update obj x_inc y_inc =
   Sdl.Rect.set_h obj.dst h;
   ()
 
-let render obj = Sdl.render_copy ~src:obj.src ~dst:obj.dst obj.ren obj.tex
+let render obj ren = Sdl.render_copy ~src:obj.src ~dst:obj.dst ren obj.tex
