@@ -43,7 +43,7 @@ let start_test (name : string) : test = name >:: fun _ -> assert_equal true true
 let get_attribute_test (name : string) (character : Character.character)
     (att : string) (expected_output : float) : test =
   name >:: fun _ ->
-  assert_equal expected_output (Character.get_attribute att character)
+  assert_equal expected_output (Character.get_attribute_val att character)
 
 let get_name_test (name : string) (character : Character.character)
     (expected_output : string) : test =
