@@ -20,7 +20,7 @@ let attack (enem : Character.character) (actor : Character.character) =
   Random.self_init ();
   let avoid = Character.get_attribute_val "speed" enem in
   let player_hit_chance =
-    ((Character.get_attribute_val "accuracy" actor +. 70.) /. 100.0)
+    ((Character.get_attribute_val "accuracy" actor +. 60.) /. 100.0)
     -. (0.001 *. (avoid *. avoid))
   in
   let rand = Random.float 1. in

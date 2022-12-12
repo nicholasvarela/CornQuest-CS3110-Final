@@ -100,7 +100,7 @@ val get_skills : character -> skill option array
 (**[get_skills actor] returns an array containing the skills of [actor]*)
 
 val get_inv : character -> consumable_bucket array
-(**[get_skills actor] returns the inv property of [actor]*)
+(**[get_skills actor] returns the consumable inventory of [actor]*)
 
 val clear_temps : character -> character
 (**[clear_temps ch] decrements the amount of turns left for any applied
@@ -108,14 +108,22 @@ val clear_temps : character -> character
    reaches 0, the buff/debuff is removed from [ch].*)
 
 val adjust_temps : attribute * int -> character -> character
+(**[adjust temps (att, val) -> character -> character] returns character witth
+   [attribute] adjusted by [val]*)
+
 val get_name : character -> string
+(**[get_name] returns the name property [character]*)
+
 val get_temp_value : string -> character -> float
+(**[get_temp_value] returns the temp value*)
 
 val start_character : string -> character
 (**[start_character name] is a level 1 default starting character named [name]
    with initialized attributes.*)
 
 val change_temps_from_skill : skill -> character -> character
+(**[change_temps_from_skill] returns a character with temporary modified by
+   skill*)
 
 val adjust : float -> character -> string -> character
 (**[adjust amt ch att] is the character [ch] with the attribute named [att]
@@ -131,6 +139,8 @@ val get_temp_value : string -> character -> float
 
 (**[print_skills actor] prints a list of [actor]'s skills into the console.*)
 
-(*Spells*)
 val icicle : skill
+(**[icile] is a skill*)
+
 val acid_spray : skill
+(**[acid spray] is a skill*)

@@ -1,3 +1,5 @@
+(** Represents the central game loop*)
+
 open Tsdl
 open Tsdl_image
 open Components

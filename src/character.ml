@@ -631,7 +631,7 @@ let use_skill sk user target =
         let player_hit_chance =
           if sk.mp_cost < 0. then 1.
           else
-            ((get_attribute_val "accuracy" user +. 70.) /. 100.0)
+            ((get_attribute_val "accuracy" user +. 60.) /. 100.0)
             -. (0.001 *. (avoid *. avoid))
         in
         let rand0 = Random.float 1. in

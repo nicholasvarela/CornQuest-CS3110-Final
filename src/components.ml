@@ -1,7 +1,7 @@
-open Tsdl
-
-module CornECS = ECS.Make (ECS.IntEnt)
 (**Module representing the ECS system used in-game.*)
+
+open Tsdl
+module CornECS = ECS.Make (ECS.IntEnt)
 
 (**Module representing the "position" property.*)
 module Position = struct
