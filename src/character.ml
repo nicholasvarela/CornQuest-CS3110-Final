@@ -61,59 +61,6 @@ type character = {
 exception UnknownAttribute
 exception WrongAttribute
 
-(*consumables repo*)
-let health_potion_bk =
-  let itm =
-    {
-      name = "health potion";
-      skill_type = Physical;
-      attribute_affected =
-        [|
-          (HP 0., -1);
-          (Mana 0., -1);
-          (Strength 0., -1);
-          (Defense 0., -1);
-          (MagicResist 0., -1);
-          (Speed 0., -1);
-          (Accuracy 0., -1);
-          (MagicPower 0., -1);
-          (Luck 0., -1);
-        |];
-      chance_to_affect = 0.;
-      base_dmg = 0.;
-      dmg_scaling = 0.;
-      mp_cost = 0.;
-      hp_cost = -30.;
-    }
-  in
-  { name = "health potion"; item = itm; amt = -1 }
-
-let mana_potion_bk =
-  let itm =
-    {
-      name = "mana potion";
-      skill_type = Magic;
-      attribute_affected =
-        [|
-          (HP 0., -1);
-          (Mana 0., -1);
-          (Strength 0., -1);
-          (Defense 0., -1);
-          (MagicResist 0., -1);
-          (Speed 0., -1);
-          (Accuracy 0., -1);
-          (MagicPower 0., -1);
-          (Luck 0., -1);
-        |];
-      chance_to_affect = 0.;
-      base_dmg = 0.;
-      dmg_scaling = 0.;
-      mp_cost = -50.;
-      hp_cost = 0.;
-    }
-  in
-  { name = "mana potion"; item = itm; amt = -1 }
-
 (*skill repo start*)
 
 let return_type raw_type =
@@ -185,6 +132,15 @@ let acid_spray = get_skill_from_json "acid spray"
 
 let fireball = get_skill_from_json "fireball"
 let minimize = get_skill_from_json "minimize"
+
+(*consumables repo*)
+
+let make_consumable name =
+  let itm = get_skill_from_json name in
+  { name; item = itm; amt = -1 }
+
+let health_potion_bk = make_consumable "health potion"
+let mana_potion_bk = make_consumable "mana potion"
 let lvl_3_spells = [| acid_spray; fireball |]
 let lvl_6_spells = [||]
 let lvl_10_spells = [||]
