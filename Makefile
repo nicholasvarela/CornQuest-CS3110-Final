@@ -23,4 +23,6 @@ test:
 zip:
 	rm -f cornquest.zip
 	zip -r cornquest.zip . -x@exclude.lst
-
+	
+doc:
+	dune build @doc

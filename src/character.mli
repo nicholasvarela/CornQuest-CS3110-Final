@@ -1,6 +1,12 @@
+(** Representation of character in CornQuest with skills, consumables and temp
+    powers. *)
+
 exception UnknownAttribute
 (**Raised when an unknown attribute name is encountered.*)
-exception No_skill 
+
+exception No_skill
+(**Raised when trying to access the skill fields of None*)
+
 (**The type representing an attribute of a character.*)
 type attribute =
   | HP of float
@@ -13,29 +19,38 @@ type attribute =
   | MagicPower of float
   | Luck of float
 
-  type dmg_type =
+type dmg_type =
   | Magic
   | Physical
   | Status
-  
-  type skill = {
-    name : string;
-    skill_type : dmg_type;
-    attribute_affected : (attribute * int) array;
-    chance_to_affect : float;
-    base_dmg : float;
-    dmg_scaling : float;
-    mp_cost : float;
-    hp_cost : float;
-  }
-(**The abstract type representing a skill.*)
+
+type skill = {
+  name : string;
+  skill_type : dmg_type;
+  attribute_affected : (attribute * int) array;
+  chance_to_affect : float;
+  base_dmg : float;
+  dmg_scaling : float;
+  mp_cost : float;
+  hp_cost : float;
+}
+(** The abstract type representing a skill.*)
+
+type consumable
+
+type consumable_bucket = {
+  name : string;
+  item : consumable;
+  amt : int;
+}
+
 type character = {
   name : string;
   hp : attribute;
   maxhp : attribute;
   mana : attribute;
   maxmana : attribute;
-  exp : float;
+  exp : int;
   lvl : int;
   mr : attribute;
   str : attribute;
@@ -46,25 +61,61 @@ type character = {
   luk : attribute;
   enem_hit_chances : float list;
   skillset : skill option array;
+  inv : consumable_bucket array;
   temp_stats : (attribute * int) array;
 }
 
 (**The abstract type representing a character.*)
 
 val unwrap_skill : skill option -> skill
+(**[unwrap_skill op] is the [sk] such that [op = Some sk]. Raises No_skill if
+   [op = None] *)
+
 val use_skill : skill -> character -> character -> character * character * bool
+(**[use_skill sk user target] return the [user] and [target] characters after
+   [user] uses [sk] on [target]. [Magic] and [Status] skills cost [Mana],
+   [Physical] skills cost [hp]. Damage is calculated based on [target]'s
+   [Defense] or [MagicResist] and [user]'s [Strength] or [MagicPower]. [sk] has
+   a chance to hit calculated on [target]'s [Speed] and [user]'s [Accuracy], and
+   a chance to apply status effects based on [sk.chance_to_affect]*)
+
+val use_consumable : consumable -> character -> int -> character
+(**[use_consumable consumable char int] returns a character with [int] number of
+   [consumeable] used *)
+
 val get_enem_move_chance : character -> float list
-val get_curr_attr: string -> character -> float
-val get_attribute : string -> character -> float
+(**[get_enem_move_chance enem] returns a list with [enem]'s percentage chances
+   to use moves*)
+
+val get_attribute_val : string -> character -> float
+(**[get_attribute attr character] returns the value of the attribute
+   corresponding to [attr]*)
+
+val get_total_attr_val : string -> character -> float
+(**[get_attribute attr character] returns the total value of the attribute
+   corresponding to [attr], which is calculated by the temporary value +. base
+   value*)
+
 val get_skills : character -> skill option array
+(**[get_skills actor] returns an array containing the skills of [actor]*)
+
+val get_inv : character -> consumable_bucket array
+(**[get_skills actor] returns the inv property of [actor]*)
+
 val clear_temps : character -> character
+(**[clear_temps ch] decrements the amount of turns left for any applied
+   temporary stat buffs or debuffs on [ch]. If a buff/debuff's turn counter
+   reaches 0, the buff/debuff is removed from [ch].*)
+
 val adjust_temps : attribute * int -> character -> character
 val get_name : character -> string
-val get_temp_value: string-> character -> float
+val get_temp_value : string -> character -> float
+
 val start_character : string -> character
-val change_temps: skill -> character -> character
 (**[start_character name] is a level 1 default starting character named [name]
    with initialized attributes.*)
+
+val change_temps_from_skill : skill -> character -> character
 
 val adjust : float -> character -> string -> character
 (**[adjust amt ch att] is the character [ch] with the attribute named [att]
@@ -75,10 +126,11 @@ val level_up : character -> character
 (**[level_up ch] is [ch] leveled up by 1.*)
 
 val get_temp_value : string -> character -> float
+(**[get_temp_value attr_st chr] is the float value of the temporary attribute of
+   [chr] assosciated with [attr_str]*)
 
-val print_skills : character -> unit
-
+(**[print_skills actor] prints a list of [actor]'s skills into the console.*)
 
 (*Spells*)
 val icicle : skill
-val piercing_light : skill
+val acid_spray : skill

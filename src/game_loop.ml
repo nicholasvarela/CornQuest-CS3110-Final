@@ -27,6 +27,7 @@ let create_player tex ren =
    title [t], x-position [x], y-position [y], width [w], and height [h]. The
    game window will be fullscreen if [fs] is [true]. *)
 let init t x y w h fs =
+  (* let x = Sys.command "make battle" in *)
   let flags = if fs then Sdl.Window.fullscreen else Sdl.Window.windowed in
   match Sdl.init Sdl.Init.everything with
   | Ok _ ->

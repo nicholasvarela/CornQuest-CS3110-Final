@@ -1,5 +1,4 @@
-type party_state
-(**The abstract type representing the state of the party during a battle.*)
+(** Representation of text based battle simulator. *)
 
 type action =
   | Attack of string
