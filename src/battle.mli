@@ -9,7 +9,7 @@ type action =
 val attack : Character.character -> Character.character -> Character.character
 (**[attack actor -> enem ] returns [actor] and [enem] after [actor] attacks [enem]*)
 val enem_guard : Character.character -> Character.character
-(**[enem_guard actor -> enem ] returns [actor] and [enem] after [actor] attacks [enem]*)
+(**[enem_guard actor ] returns [actor] and [enem] after [actor] attacks [enem]*)
 
 val guard : Character.character -> Character.character
 (**[guard actor -> enem ] returns [actor] and [enem] after [actor] returns [enem]*)

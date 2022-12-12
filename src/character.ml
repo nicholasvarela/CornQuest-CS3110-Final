@@ -1,5 +1,7 @@
 exception No_skill
 
+open Yojson.Basic.Util
+
 type attribute =
   | HP of float
   | Mana of float
@@ -113,98 +115,76 @@ let mana_potion_bk =
   { name = "mana potion"; item = itm; amt = -1 }
 
 (*skill repo start*)
-let icicle : skill =
+
+let return_type raw_type =
+  match raw_type with
+  | "Magic" -> Magic
+  | "Physical" -> Physical
+  | "Status" -> Status
+  | _ -> Magic
+
+let return_attr json attr_name =
+  let effect = json |> member (attr_name ^ "-effect") |> to_float in
+  let turns = json |> member (attr_name ^ "-turns") |> to_int in
+  match attr_name with
+  | "hp" -> (HP effect, turns)
+  | "mana" -> (Mana effect, turns)
+  | "defense" -> (Defense effect, turns)
+  | "strength" -> (Strength effect, turns)
+  | "magicresist" -> (MagicResist effect, turns)
+  | "speed" -> (Speed effect, turns)
+  | "accuracy" -> (Accuracy effect, turns)
+  | "magicpower" -> (MagicPower effect, turns)
+  | "luck" -> (Luck effect, turns)
+  | _ -> (HP effect, turns)
+
+let parse_skill name json =
   {
-    name = "icicle";
-    skill_type = Magic;
+    name;
+    skill_type = return_type (json |> member "skill_type" |> to_string);
     attribute_affected =
       [|
-        (HP 0., -1);
-        (Mana 0., -1);
-        (Strength 0., -1);
-        (Defense 0., -1);
-        (MagicResist 0., -1);
-        (Speed (-6.), 3);
-        (Accuracy (-5.), 3);
-        (MagicPower 0., -1);
-        (Luck 0., -1);
+        return_attr json "mana";
+        return_attr json "defense";
+        return_attr json "strength";
+        return_attr json "magicresist";
+        return_attr json "speed";
+        return_attr json "accuracy";
+        return_attr json "magicpower";
+        return_attr json "luck";
       |];
-    chance_to_affect = 0.3;
-    base_dmg = 5.;
-    dmg_scaling = 0.4;
-    mp_cost = 15.;
-    hp_cost = 0.;
+    chance_to_affect = json |> member "change_to_affect" |> to_float;
+    base_dmg = json |> member "base_dmg" |> to_float;
+    dmg_scaling = json |> member "dmg_scailing" |> to_float;
+    mp_cost = json |> member "mp_cost" |> to_float;
+    hp_cost = json |> member "hp_cost" |> to_float;
   }
 
-let acid_spray =
-  {
-    name = "acid spray";
-    skill_type = Magic;
-    attribute_affected =
-      [|
-        (HP 0., -1);
-        (Mana 0., -1);
-        (Strength 0., -1);
-        (Defense (-10.), 3);
-        (MagicResist (-10.), 3);
-        (Speed 0., -1);
-        (Accuracy 0., -1);
-        (MagicPower 0., -1);
-        (Luck 0., -1);
-      |];
-    chance_to_affect = 0.9;
-    base_dmg = 2.;
-    dmg_scaling = 0.16;
-    mp_cost = 30.;
-    hp_cost = 0.;
-  }
+let get_skill_from_json skill_name =
+  (* { rooms = json |> member "rooms" |> to_list |> List.map room_of_json;
+     start_room = json |> member "start room" |> to_string; mob_chance = json |>
+     member "mob chance" |> to_float; } *)
+  let data_prefix = "data" ^ Filename.dir_sep in
 
-let fireball =
-  {
-    name = "fireball";
-    skill_type = Magic;
-    attribute_affected =
-      [|
-        (HP 0., -1);
-        (Mana 0., -1);
-        (Strength 0., -1);
-        (Defense 0., -1);
-        (MagicResist (-2.), 3);
-        (Speed 0., -1);
-        (Accuracy 0., -1);
-        (MagicPower 0., -1);
-        (Luck 0., -1);
-      |];
-    chance_to_affect = 0.3;
-    base_dmg = 7.;
-    dmg_scaling = 0.6;
-    mp_cost = 20.;
-    hp_cost = 0.;
-  }
+  let skills_raw = Yojson.Basic.from_file (data_prefix ^ "skills.json") in
+  skills_raw |> member skill_name |> parse_skill skill_name
 
-let minimize =
-  {
-    name = "minimize";
-    skill_type = Status;
-    attribute_affected =
-      [|
-        (HP 0., -1);
-        (Mana 0., -1);
-        (Strength (-8.), -4);
-        (Defense 0., -1);
-        (MagicResist 0., -1);
-        (Speed 0., -1);
-        (Accuracy 0., -1);
-        (MagicPower (-8.), -1);
-        (Luck 0., -1);
-      |];
-    chance_to_affect = 1.;
-    base_dmg = 0.;
-    dmg_scaling = 0.;
-    mp_cost = 20.;
-    hp_cost = 0.;
-  }
+(* let icicle : skill = { name = "icicle"; skill_type = Magic;
+   attribute_affected = [| (HP 0., -1); (Mana 0., -1); (Strength 0., -1);
+   (Defense 0., -1); (MagicResist 0., -1); (Speed (-6.), 3); (Accuracy (-5.),
+   3); (MagicPower 0., -1); (Luck 0., -1); |]; chance_to_affect = 0.3; base_dmg
+   = 5.; dmg_scaling = 0.4; mp_cost = 15.; hp_cost = 0.; } *)
 
+let icicle = get_skill_from_json "icicle"
+let acid_spray = get_skill_from_json "acid spray"
+(* { name = "acid spray"; skill_type = Magic; attribute_affected = [| (HP 0.,
+   -1); (Mana 0., -1); (Strength 0., -1); (Defense (-10.), 3); (MagicResist
+   (-10.), 3); (Speed 0., -1); (Accuracy 0., -1); (MagicPower 0., -1); (Luck 0.,
+   -1); |]; chance_to_affect = 0.9; base_dmg = 2.; dmg_scaling = 0.16; mp_cost =
+   30.; hp_cost = 0.; } *)
+
+let fireball = get_skill_from_json "fireball"
+let minimize = get_skill_from_json "minimize"
 let lvl_3_spells = [| acid_spray; fireball |]
 let lvl_6_spells = [||]
 let lvl_10_spells = [||]
