@@ -17,6 +17,7 @@ let wait un =
   done
 
 let attack (enem : Character.character) (actor : Character.character) =
+  Random.self_init ();
   let avoid = Character.get_attribute_val "speed" enem in
   let player_hit_chance =
     ((Character.get_attribute_val "accuracy" actor +. 70.) /. 100.0)

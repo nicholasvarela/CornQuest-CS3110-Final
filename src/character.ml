@@ -501,6 +501,7 @@ let rec upgrade_menu actor counter ran =
   (a3, -1)
 
 let level_up actor =
+  Random.self_init ();
   ANSITerminal.print_string [ ANSITerminal.green ] "You have leveled up!\n";
   let _ = wait () in
   let hpmax =
@@ -615,6 +616,7 @@ let wait un =
   done
 
 let use_skill sk user target =
+  Random.self_init ();
   match sk.skill_type with
   | Magic ->
       if get_attribute_val "mana" user >= sk.mp_cost then
