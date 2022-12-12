@@ -1,4 +1,4 @@
-(** Representation of static map data.
+(** Representation of game play map.
 
     This module represents the data stored in map files. It handles loading of
     that data from JSON as well as querying the data. *)
@@ -31,14 +31,13 @@ val from_json : Yojson.Basic.t -> t
 
 val spawn : t -> obj
 (** [spawn t] is the identifier of the starting room in adventure [a]. Example:
-    the [start_room] of Ho Plaza is ["ho plaza"]. *)
+    the [start_room] of Cornell Campus Battle is ["Feeney Way"]. *)
 
 val description : t -> string -> string
 (** [description a r] is the description of the room with identifier [r] in
     adventure [a]. Raises [UnknownRoom r] if [r] is not a room identifier in
-    [a]. Example: in Ho Plaza, the [description] of room identifier ["ho plaza"]
-    begins with ["You are on Ho Plaza. "] and continues with a few more
-    sentences, which are omitted here for brevity. *)
+    [a]. Example: in Ho Plaza, the [description] of room identifier
+    ["Feeney Way"] begins with ["You are on Feeney Way. "] *)
 
 val dirs : t -> string -> string list
 (** [dirs a r] is a set-like list of all valid directions from the room with
@@ -56,5 +55,4 @@ val next_rooms : t -> string -> string list
 (** [next_rooms a r] is a set-like list of all the identifiers of rooms in
     adventure [a] that are immediately reachable by taking any exit from the
     room with identifier [r]. Raises [UnknownRoom r] if [r] is not a room
-    identifier in [a]. Example: in Ho Plaza, the [next_rooms] from room
-    identifier ["ho plaza"] are ["health"] and ["tower"]. *)
+    identifier in [a]. *)

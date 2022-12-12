@@ -1,3 +1,6 @@
+(** Representation of character in CornQuest with skills, consumables and temp
+    powers. *)
+
 exception UnknownAttribute
 (**Raised when an unknown attribute name is encountered.*)
 
@@ -77,6 +80,8 @@ val use_skill : skill -> character -> character -> character * character * bool
    a chance to apply status effects based on [sk.chance_to_affect]*)
 
 val use_consumable : consumable -> character -> int -> character
+(**[use_consumable consumable char int] returns a character with [int] number of
+   [consumeable] used *)
 
 val get_enem_move_chance : character -> float list
 (**[get_enem_move_chance enem] returns a list with [enem]'s percentage chances
@@ -95,6 +100,7 @@ val get_skills : character -> skill option array
 (**[get_skills actor] returns an array containing the skills of [actor]*)
 
 val get_inv : character -> consumable_bucket array
+(**[get_skills actor] returns the inv property of [actor]*)
 
 val clear_temps : character -> character
 (**[clear_temps ch] decrements the amount of turns left for any applied

@@ -1,3 +1,5 @@
+(** Representation of text based battle simulator. *)
+
 type action =
   | Attack of string
   | Guard

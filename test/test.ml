@@ -10,7 +10,7 @@ open Yojson
   that subsection before using the character.ml representation, in our battle
   simulation, whose functionality is mostly under battle.ml/battle.mli*)
 
-(*Manually Tested Componenets battle.ml functions attack had a random call, so
+(*Manually Tested Components battle.ml functions attack had a random call, so
   they could not be tested with OUnit battle.ml functions. We focused on testing
   functions that were exposed in the respective .mli file, internal functions
   were solved indirectly. GUI Components like gameobj.ml, tilemap.ml and
@@ -20,7 +20,14 @@ open Yojson
   glass box testing in order to throughly test that our implementation of
   character worked as expected. Since, we predicted that sprites would be used
   throughout our game, we made sure to be especially careful in testing the
-  getters/setter of the character's attributes *)
+  getters/setter of the character's attributes Command.ml was another OUnit
+  tested module since it did not have to do with the GUI. We throughly tested
+  the Command.parse in order with Glassbox testing in order to insure that it
+  processed user input correctly. This was critical in ensuring that the user
+  had a seamlyess gameplay that was not interupted by typeos in their input
+  strings. We were advised by our PM that we watch out for the game crashing
+  with unsualy input so we created [parse_test_fail] to ensure that these string
+  raised failures which could be caught by our battle and adventure modules. *)
 
 (*Arugment for correctness of program given testing strategy: *)
 
@@ -30,6 +37,11 @@ let chris2 = Character.adjust_temps (Defense 2.0, 0) chris
 let chris3 = Character.adjust_temps (MagicResist 2.0, 0) chris
 let chris4 = Character.adjust_temps (Luck 2.0, 0) chris
 let chris5 = Character.adjust_temps (Speed 2.0, 0) chris
+let daniel : Character.character = Character.start_character "Daniel"
+let daniel1 = Character.adjust_temps (Defense (-3.0), 0) daniel
+let daniel2 = Character.adjust_temps (MagicResist (-3.0), 0) daniel
+let daniel3 = Character.adjust_temps (Luck (-3.0), 0) daniel
+let daniel4 = Character.adjust_temps (Speed (-3.0), 0) daniel
 let demon1_adjust = Character.adjust 10. demon1 "hp"
 let demon2_adjust = Character.adjust 10. demon1 "mana"
 let demon3_adjust = Character.adjust 10. demon1 "strength"
@@ -59,6 +71,13 @@ let get_temp_value_test (name : string) (character : Character.character)
 let parse_test (name : string) (input_string : string)
     (expected_output : Command.command) : test =
   name >:: fun _ -> assert_equal expected_output (Command.parse input_string)
+
+let parse_test_fail (name : string) (input_string : string)
+    (expected_output : Command.command) : test =
+  name >:: fun _ ->
+  try assert_equal expected_output (Command.parse input_string) with
+  | Command.Malformed -> assert_equal true true
+  | Command.Empty -> assert_equal true true
 
 let basic_charcter_tests =
   [
@@ -94,6 +113,7 @@ let basic_charcter_tests =
     (* get_curr_attr_test "get_curr_attr hp default character" demon1 "maxmana"
        100.; *);
     get_name_test "name of chris is chris" chris "Chris";
+    get_name_test "name of daniel is Daniel" daniel "Daniel";
     get_name_test "name of chris is chris" demon1 "Demoman";
     get_temp_value_test "initial tmp of maxhp of daemon " demon1 "maxhp" 0.;
     get_temp_value_test "initial tmp of maxmana of daemon " demon1 "maxmana" 0.;
@@ -109,10 +129,31 @@ let basic_charcter_tests =
     get_temp_value_test "change temp defense" chris2 "defense" 2.;
     get_temp_value_test "change temp luck" chris4 "luck" 2.;
     get_temp_value_test "change temp speed" chris5 "speed" 2.;
+    get_temp_value_test "change temp luck" daniel "luck" (-3.0);
+    get_temp_value_test "change temp defense" daniel2 "defense" (-3.);
+    get_temp_value_test "change temp luck" daniel4 "luck" (-3.0);
     parse_test "Parse [Go North]" "Go North" (Go North);
     parse_test "Parse [Go South]" "Go South" (Go South);
     parse_test "Parse [Go East]" "Go East" (Go East);
-    parse_test "Parse [Go West]" "Go West" (Go West);
+    parse_test "Parse [Quit]" "Quit" Quit;
+    parse_test "Parse [Fight Guard]" "battle guard" (Fight Guard);
+    parse_test "Parse [Fight flee ]" "battle flee " (Fight Flee);
+    parse_test_fail "Parse [Fight ]" "battle " Quit;
+    parse_test_fail "Malformed  [Fight ]" "battle " Quit;
+    parse_test_fail "Malformed  string  [Fight ] should throw" "battle " Quit;
+    parse_test_fail "Invalid Spell should throw malfored  [Fight ]" "battle "
+      Quit;
+    parse_test_fail "Invalid command should throw malformed  [Goo home]"
+      "battle " Quit;
+    parse_test_fail "Invalid location should throw malformed  [Go olin ]"
+      "battle " Quit;
+    parse_test_fail "New line invalid input should throw malformed [\n] " "\n "
+      Quit;
+    parse_test_fail "Escape sequence throws malformed test 1 " "\n " Quit;
+    parse_test_fail "Escape sequence throws malformed test 2 \\' " "\\' " Quit;
+    parse_test_fail "Escape sequence throws malformed test 3 \\ " "\\ " Quit;
+    parse_test_fail "blank input throws malformed " "" Quit;
+    parse_test_fail "blank input throws malformed " " " Quit;
   ]
 
 let test_suite =
