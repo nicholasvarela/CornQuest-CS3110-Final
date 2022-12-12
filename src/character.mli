@@ -26,6 +26,8 @@ type dmg_type =
 
 type skill = {
   name : string;
+  description : string;
+
   skill_type : dmg_type;
   attribute_affected : (attribute * int) array;
   chance_to_affect : float;

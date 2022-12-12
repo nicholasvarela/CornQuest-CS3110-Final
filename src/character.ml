@@ -28,6 +28,7 @@ type armor = weapon
 
 type skill = {
   name : string;
+  description : string;
   skill_type : dmg_type;
   attribute_affected : (attribute * int) array;
   chance_to_affect : float;
@@ -108,6 +109,7 @@ let parse_skill name json =
         return_attr json "magicpower";
         return_attr json "luck";
       |];
+    description = json |> member "description" |> to_string;
     chance_to_affect = json |> member "change_to_affect" |> to_float;
     base_dmg = json |> member "base_dmg" |> to_float;
     dmg_scaling = json |> member "dmg_scailing" |> to_float;
