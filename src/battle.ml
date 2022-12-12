@@ -69,14 +69,18 @@ let enemy_move_helper (actor, enem) (lst : float list) (rand : float) =
   | [] -> failwith "invalid enemy"
   | h :: t -> (
       if rand <= h then
-        let _ = print_string (Character.get_name enem ^ " attacked!") in
+        let _ =
+          ANSITerminal.print_string [ ANSITerminal.red ]
+            (Character.get_name enem ^ " attacked!")
+        in
         (attack actor enem, enem)
       else
         match t with
         | [] -> failwith "invalid enemy"
         | h :: t ->
             let sk = Character.unwrap_skill enem.skillset.(0) in
-            print_endline (Character.get_name enem ^ " used " ^ sk.name ^ "!");
+            ANSITerminal.print_string [ ANSITerminal.red ]
+              ("\n" ^ Character.get_name enem ^ " used " ^ sk.name ^ "!");
             let a, b, _ = Character.use_skill sk enem actor in
             (a, b))
 
