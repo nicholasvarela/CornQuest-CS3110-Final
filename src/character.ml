@@ -16,6 +16,14 @@ type dmg_type =
   | Physical
   | Status
 
+type weapon = {
+  name : string;
+  statbuffs : (attribute * int) array;
+  description : string;
+}
+
+type armor = weapon
+
 type skill = {
   name : string;
   skill_type : dmg_type;
