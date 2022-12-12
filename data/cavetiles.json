@@ -26,107 +26,19 @@
                             }
                      ],
                      "id": 0,
-                     "objectgroup": {
-                            "draworder": "index",
-                            "id": 2,
-                            "name": "",
-                            "objects": [
-                                   {
-                                          "class": "",
-                                          "height": 16,
-                                          "id": 1,
-                                          "name": "",
-                                          "rotation": 0,
-                                          "visible": true,
-                                          "width": 16,
-                                          "x": 0,
-                                          "y": 0
-                                   }
-                            ],
-                            "opacity": 1,
-                            "type": "objectgroup",
-                            "visible": true,
-                            "x": 0,
-                            "y": 0
-                     }
+                     "solid": true
               },
               {
                      "id": 1,
-                     "objectgroup": {
-                            "draworder": "index",
-                            "id": 2,
-                            "name": "",
-                            "objects": [
-                                   {
-                                          "class": "",
-                                          "height": 16,
-                                          "id": 1,
-                                          "name": "",
-                                          "rotation": 0,
-                                          "visible": true,
-                                          "width": 16,
-                                          "x": 0,
-                                          "y": 0
-                                   }
-                            ],
-                            "opacity": 1,
-                            "type": "objectgroup",
-                            "visible": true,
-                            "x": 0,
-                            "y": 0
-                     }
+                     "solid": true
               },
               {
                      "id": 6,
-                     "objectgroup": {
-                            "draworder": "index",
-                            "id": 2,
-                            "name": "",
-                            "objects": [
-                                   {
-                                          "class": "",
-                                          "height": 16,
-                                          "id": 1,
-                                          "name": "",
-                                          "rotation": 0,
-                                          "visible": true,
-                                          "width": 16,
-                                          "x": 0,
-                                          "y": 0
-                                   }
-                            ],
-                            "opacity": 1,
-                            "type": "objectgroup",
-                            "visible": true,
-                            "x": 0,
-                            "y": 0
-                     }
+                     "solid": true
               },
               {
                      "id": 14,
-                     "objectgroup": {
-                            "draworder": "index",
-                            "id": 2,
-                            "name": "",
-                            "objects": [
-                                   {
-                                          "class": "",
-                                          "height": 16,
-                                          "id": 1,
-                                          "name": "",
-                                          "rotation": 0,
-                                          "visible": true,
-                                          "width": 16,
-                                          "x": 0,
-                                          "y": 0
-                                   }
-                            ],
-                            "opacity": 1,
-                            "type": "objectgroup",
-                            "visible": true,
-                            "x": 0,
-                            "y": 0
-                     }
+                     "solid": true
               },
               {
                      "animation": [
@@ -140,81 +52,15 @@
                             }
                      ],
                      "id": 15,
-                     "objectgroup": {
-                            "draworder": "index",
-                            "id": 2,
-                            "name": "",
-                            "objects": [
-                                   {
-                                          "class": "",
-                                          "height": 16,
-                                          "id": 1,
-                                          "name": "",
-                                          "rotation": 0,
-                                          "visible": true,
-                                          "width": 16,
-                                          "x": 0,
-                                          "y": 0
-                                   }
-                            ],
-                            "opacity": 1,
-                            "type": "objectgroup",
-                            "visible": true,
-                            "x": 0,
-                            "y": 0
-                     }
+                     "solid": true
               },
               {
                      "id": 23,
-                     "objectgroup": {
-                            "draworder": "index",
-                            "id": 2,
-                            "name": "",
-                            "objects": [
-                                   {
-                                          "class": "",
-                                          "height": 16,
-                                          "id": 1,
-                                          "name": "",
-                                          "rotation": 0,
-                                          "visible": true,
-                                          "width": 16,
-                                          "x": 0,
-                                          "y": 0
-                                   }
-                            ],
-                            "opacity": 1,
-                            "type": "objectgroup",
-                            "visible": true,
-                            "x": 0,
-                            "y": 0
-                     }
+                     "solid": true
               },
               {
-                     "id": 32,
-                     "objectgroup": {
-                            "draworder": "index",
-                            "id": 2,
-                            "name": "",
-                            "objects": [
-                                   {
-                                          "class": "",
-                                          "height": 16,
-                                          "id": 1,
-                                          "name": "",
-                                          "rotation": 0,
-                                          "visible": true,
-                                          "width": 16,
-                                          "x": 0,
-                                          "y": 0
-                                   }
-                            ],
-                            "opacity": 1,
-                            "type": "objectgroup",
-                            "visible": true,
-                            "x": 0,
-                            "y": 0
-                     }
+                     "id": 16,
+                     "solid": true
               }
        ],
        "tilewidth": 16,

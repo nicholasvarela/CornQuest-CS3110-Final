@@ -1,4 +1,3 @@
 (library
  (name lib)
- (public_name Lib)
- (libraries tsdl))
+ (public_name Lib))

@@ -1,6 +1,5 @@
 open OUnit2
 open Game
-open Adventure
 open Yojson
 
 (*Testing Plan: Our plan for testing is to test as many parts of the codebase
