@@ -11,12 +11,7 @@ val attack : Character.character -> Character.character -> Character.character
    [enem]*)
 
 val enem_guard : Character.character -> Character.character
-<<<<<<< HEAD
 (**[enem_guard actor ] returns [actor] and [enem] after [actor] attacks [enem]*)
-=======
-(**[enem_guard actor -> enem ] returns [actor] and [enem] after [actor] attacks
-   [enem]*)
->>>>>>> 1c5c84ee7929dc9189fc904decb2b026f468f68d
 
 val guard : Character.character -> Character.character
 (**[guard actor -> enem ] returns [actor] and [enem] after [actor] returns
