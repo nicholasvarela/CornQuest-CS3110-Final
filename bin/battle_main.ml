@@ -9,7 +9,7 @@ let actor : Character.character = Character.start_character "Demoman"
 let enem : Character.character =
   {
     name = "Marthia Pollocus";
-    hp = HP 10.;
+    hp = HP 1.;
     maxhp = HP 100.;
     mana = Mana 100.;
     maxmana = Mana 100.;
@@ -210,18 +210,22 @@ and turn_handler (actor, enem) made_action =
     if made_action then (Character.clear_temps actor, Character.clear_temps enem)
     else (actor, enem)
   in
-  print_endline
+  ANSITerminal.print_string [ ANSITerminal.white ]
     (actor.name ^ " HP: "
     ^ string_of_int (int_of_float (Character.get_attribute_val "hp" actor))
     ^ " Mana: "
-    ^ string_of_int (int_of_float (Character.get_attribute_val "mana" actor)));
-  print_endline
+    ^ string_of_int (int_of_float (Character.get_attribute_val "mana" actor))
+    ^ "\n");
+
+  ANSITerminal.print_string [ ANSITerminal.red ]
     (Character.get_name enem ^ " HP: "
-    ^ string_of_int (int_of_float (Character.get_attribute_val "hp" enem)));
+    ^ string_of_int (int_of_float (Character.get_attribute_val "hp" enem))
+    ^ "\n");
   read_logo_files "data/menu.txt";
   match read_line () with
   | "attack" ->
-      print_string (actor.name ^ " attacked!");
+      ANSITerminal.print_string [ ANSITerminal.blue ]
+        ("\n" ^ actor.name ^ " attacked!");
       let first_turn_chars = (actor, Battle.attack enem actor) in
       let _ = check_health first_turn_chars in
       let second_turn_chars = pick_enemy_move first_turn_chars in
@@ -237,7 +241,7 @@ and turn_handler (actor, enem) made_action =
       skill_menu (actor, enem)
   | "escape" ->
       print_endline "You flee!";
-      exit 0
+      raise (Battle_Over (Some actor))
   | "item" ->
       print_items actor;
       item_menu (actor, enem)
@@ -246,7 +250,9 @@ and turn_handler (actor, enem) made_action =
 (** [main ()] prompts for the game to play, then starts it. *)
 let main () =
   read_logo_files "data/title.txt";
-  ANSITerminal.print_string [ ANSITerminal.red ] "\n\nWhat will you do?\n";
+  ANSITerminal.print_string [ ANSITerminal.yellow ]
+    "\n\n\
+     Choose a move: attack, guard, skill, item, or escape. What will you do? \n\n";
   turn_handler (actor, enem) false
 
 (* print_endline "Please enter the name of the game file you want to load.\n";
