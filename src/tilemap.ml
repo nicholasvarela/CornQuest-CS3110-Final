@@ -27,7 +27,7 @@ let chunk cols arr =
   done;
   acc
 
-let load_map tx fl ren =
+let load_map fl tlfl ren =
   let file = Yojson.Basic.from_file fl in
   let width = file |> member "width" |> to_int in
   let tiledata =
@@ -35,8 +35,8 @@ let load_map tx fl ren =
     |> List.map to_int |> Array.of_list |> chunk width
   in
   {
-    tileset = Tileset.load_tileset "data/cavetiles.json" ren;
-    dst = Sdl.Rect.create 0 0 16 16;
+    tileset = Tileset.load_tileset tlfl ren;
+    dst = Sdl.Rect.create 0 0 Constants.tilesize Constants.tilesize;
     tiles = Array2.of_array Int c_layout tiledata;
     height = file |> member "height" |> to_int;
     width;
@@ -45,8 +45,8 @@ let load_map tx fl ren =
 let draw_map m ren =
   for i = 0 to Array2.dim1 m.tiles - 1 do
     for j = 0 to Array2.dim2 m.tiles - 1 do
-      Sdl.Rect.set_x m.dst (j * 16);
-      Sdl.Rect.set_y m.dst (i * 16);
+      Sdl.Rect.set_x m.dst (j * Constants.tilesize);
+      Sdl.Rect.set_y m.dst (i * Constants.tilesize);
       match Array2.get m.tiles i j with
       | i ->
           Textman.draw

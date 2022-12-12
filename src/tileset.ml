@@ -9,6 +9,7 @@ type t = {
   rows : int;
   columns : int;
   tilesize : int;
+  collidables : int list;
 }
 
 let load_tileset fl ren =
@@ -24,6 +25,8 @@ let load_tileset fl ren =
     rows = (file |> member "tilecount" |> to_int) / columns;
     columns;
     tilesize = file |> member "tileheight" |> to_int;
+    collidables =
+      file |> member "tiles" |> to_list |> filter_member "id" |> filter_int;
   }
 
 let get_tile tset gid =

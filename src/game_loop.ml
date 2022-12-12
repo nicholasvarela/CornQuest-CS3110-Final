@@ -22,7 +22,8 @@ type t = {
 (**The type of a value representing an instance of a game.*)
 
 let create_player tex ren =
-  CornECS.next_id () |> Sprite.b |> Renderable.s (tex, ren)
+  CornECS.next_id () |> Sprite.b |> KeyboardController.b
+  |> Renderable.s (tex, ren)
 
 (**[init t x y w h fs] creates a fresh game instance, in which the window has
    title [t], x-position [x], y-position [y], width [w], and height [h]. The
@@ -43,9 +44,11 @@ let init t x y w h fs =
       let player = Gameobj.create "data/cloud.png" renderer 900 900 in
 
       let player_ecs =
-        create_player (Textman.load_texture "data/kefka.png" renderer) renderer
+        create_player (Textman.load_texture "data/front.png" renderer) renderer
       in
-      let map = Tilemap.load_map "data/ff3img.png" "data/cave.json" renderer in
+      let map =
+        Tilemap.load_map "data/cave.json" "data/cavetiles.json" renderer
+      in
       {
         title = t;
         xpos = x;
@@ -66,18 +69,30 @@ let init t x y w h fs =
 (**[handle_events game] handles events of the game instance [game].*)
 let handle_events game =
   let e = Sdl.Event.create () in
-  let _ = Sdl.poll_event (Some e) in
-  match Sdl.Event.(enum (get e typ)) with
-  | `Quit -> game.running <- false
-  | _ -> ()
+  while Sdl.poll_event (Some e) do
+    match Sdl.Event.(enum (get e typ)) with
+    | `Quit -> game.running <- false
+    | `Key_down when Sdl.Event.get e Sdl.Event.keyboard_repeat = 0 -> (
+        match
+          Sdl.Event.get e Sdl.Event.keyboard_keycode |> Sdl.get_key_name
+        with
+        | "W" -> Action.set game.player_ecs (Move Up)
+        | "A" -> Action.set game.player_ecs (Move Left)
+        | "S" -> Action.set game.player_ecs (Move Down)
+        | "D" -> Action.set game.player_ecs (Move Right)
+        | _ -> Action.set game.player_ecs Idle)
+    | `Key_up when Sdl.Event.get e Sdl.Event.keyboard_repeat = 0 -> (
+        match
+          Sdl.Event.get e Sdl.Event.keyboard_keycode |> Sdl.get_key_name
+        with
+        | "W" | "A" | "S" | "D" -> Action.set game.player_ecs Idle
+        | _ -> ())
+    | _ -> ()
+  done
 
 (**[update game] updates all objects in the game instance [game] that need
    updating.*)
-let update game =
-  Gameobj.update game.player (-1) (-1);
-  Sprite.update game.player_ecs 1 1;
-  Gameobj.update game.enemy 1 1;
-  ()
+let update game = KeyboardController.update game.player_ecs
 
 (**[render game] first clears the renderer in the game instance [game], then
    renders all objects in said instance that need rendering.*)
@@ -94,5 +109,6 @@ let render game =
 let clean game =
   Sdl.destroy_window game.win;
   Sdl.destroy_renderer game.ren;
+  CornECS.delete game.player_ecs;
   Sdl.quit ();
   print_endline "Game cleaned."
