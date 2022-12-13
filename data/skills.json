@@ -56,7 +56,7 @@
     "blood magic": {
         "skill_type": "Magic",
         "description": "Type: Magic, Base damage: 7, Scaling 60%\nInsidious magic that uses the enemies own blood to hurt them. Reduces enemy max health, max mana, and magic resist.",
-        "change_to_affect": 0.3,
+        "change_to_affect": 0.6,
         "base_dmg": 7.0,
         "dmg_scailing": 0.6,
         "mp_cost": 60.0,
@@ -272,7 +272,7 @@
     "piercing light": {
         "skill_type": "Magic",
         "description": "Type: Magic, Base damage 5, Scaling: 60%\nShoots a piercing ray of light that shred's enemy's magic resist.",
-        "change_to_affect": 1.0,
+        "change_to_affect": 0.80,
         "base_dmg": 0.0,
         "dmg_scailing": 0.6,
         "mp_cost": 30.0,
@@ -299,10 +299,10 @@
     "mana potion": {
         "skill_type": "Magic",
         "description": "Restores 50 Mana",
-        "change_to_affect": 0.0,
+        "change_to_affect": 1.0,
         "base_dmg": 0.0,
         "dmg_scailing": 0.0,
-        "mp_cost": -50.0,
+        "mp_cost": -100.0,
         "hp_cost": 0.0,
         "hp-effect": 0.0,
         "hp-turns": -1,
@@ -326,11 +326,11 @@
     "health potion": {
         "skill_type": "Physical",
         "description": "Restores 30 health",
-        "change_to_affect": 0.0,
+        "change_to_affect": 1.0,
         "base_dmg": 0.0,
         "dmg_scailing": 0.0,
-        "mp_cost": -30.0,
-        "hp_cost": 0.0,
+        "mp_cost": 0.0,
+        "hp_cost": -100.0,
         "hp-effect": 0.0,
         "hp-turns": -1,
         "mana-effect": 0.0,
@@ -350,10 +350,10 @@
         "luck-effect": 0.0,
         "luck-turns": -1
     },
-    "wrath_potion": {
+    "potion of wrath": {
         "skill_type": "Physical",
         "description": "Potion of extreme wrath. Greatly increases strength for 4 turns, but lowers defense, magic resist, and speed. Hurts to drink, and costs 10HP to use. ",
-        "change_to_affect": 0.0,
+        "change_to_affect": 1.0,
         "base_dmg": 0.0,
         "dmg_scailing": 0.0,
         "mp_cost": 0.0,
@@ -377,10 +377,10 @@
         "luck-effect": 0.0,
         "luck-turns": -1
     },
-    "magic_potion": {
-        "skill_type": "Physical",
-        "description": "Potion to increase strength and defense effect",
-        "change_to_affect": 0.0,
+    "spellflux elixir": {
+        "skill_type": "Magic",
+        "description": "This potion creatly increases magic power, but lowers strength and defense.",
+        "change_to_affect": 1.0,
         "base_dmg": 0.0,
         "dmg_scailing": 0.0,
         "mp_cost": -10.0,
@@ -404,10 +404,37 @@
         "luck-effect": 0.0,
         "luck-turns": -1
     },
-    "deal_with_devil": {
+    "superspeed serum": {
+        "skill_type": "Magic",
+        "description": "Restores 10 mana and greatly increases speed and accuracy.",
+        "change_to_affect": 1.0,
+        "base_dmg": 0.0,
+        "dmg_scailing": 0.0,
+        "mp_cost": -10.0,
+        "hp_cost": 0.0,
+        "hp-effect": 0.0,
+        "hp-turns": -1,
+        "mana-effect": 0.0,
+        "mana-turns": -1,
+        "strength-effect": -0.0,
+        "strength-turns": -1,
+        "defense-effect": 0.0,
+        "defense-turns": -1,
+        "magicresist-effect": 0.0,
+        "magicresist-turns": -1,
+        "speed-effect": 10.0,
+        "speed-turns": 5,
+        "accuracy-effect": 10.0,
+        "accuracy-turns": 5,
+        "magicpower-effect": 0.0,
+        "magicpower-turns": -1,
+        "luck-effect": 0.0,
+        "luck-turns": -1
+    },
+    "deal with devil": {
         "skill_type": "Physical",
         "description": "Sacrifice 50hp to greatly increase max hp, max mana, strength, defense, magic resist, speed, accuracy, magic power.",
-        "change_to_affect": 0.0,
+        "change_to_affect": 1.0,
         "base_dmg": 0.0,
         "dmg_scailing": 0.0,
         "mp_cost": 0.0,

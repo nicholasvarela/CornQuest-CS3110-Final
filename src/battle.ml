@@ -56,7 +56,9 @@ let attack (enem : Character.character) (actor : Character.character) =
     enem
 
 let guard (actor : Character.character) =
-  Character.adjust_temps (Defense 10., 1) actor
+  let out = Character.adjust_temps (Defense 10., 1) actor in
+  let _ = if List.length actor.enem_hit_chances != 0 then wait () in
+  out
 
 let unwrap skop =
   match skop with
@@ -103,7 +105,7 @@ let enemy_move_helper (actor, enem) (lst : float list) (rand : float) =
         | h :: t ->
             if rand <= h +. acc0 then (
               ANSITerminal.print_string [ ANSITerminal.red ]
-                (Character.get_name enem ^ " guarded!\n\n");
+                (Character.get_name enem ^ " guarded!\n");
               (actor, guard enem))
             else enem_spell_helper (actor, enem) t rand 0 (h +. acc0))
 
@@ -113,5 +115,5 @@ let pick_enemy_move (actor, enem) =
       (Character.get_enem_move_chance enem)
       (Random.float 1.)
   in
-  let a' = Character.clear_temps a in
+  let a' = Character.clear_temps (ref a) in
   (a', e)

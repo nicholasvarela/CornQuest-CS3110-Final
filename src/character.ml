@@ -161,9 +161,10 @@ let lvl_5_spells = [| Some chainlight; Some dark |]
 (*consumables repo*)
 let health_potion_bk = make_consumable "health potion"
 let mana_potion_bk = make_consumable "mana potion"
-let wrath_potion_bk = make_consumable "wrath_potion"
-let magic_potion_bk = make_consumable "magic_potion"
-let deal_with_devil_bk = make_consumable "deal_with_devil"
+let wrath_potion_bk = make_consumable "potion of wrath"
+let magic_potion_bk = make_consumable "spellflux elixir"
+let deal_with_devil_bk = make_consumable "deal with devil"
+let superspeed_bk = make_consumable "superspeed serum"
 let get_enem_move_chance enem = enem.enem_hit_chances
 let get_skills actor = actor.skillset
 let get_inv actor = actor.inv
@@ -221,22 +222,6 @@ let get_attribute_name attr =
   | Accuracy _ -> "Accuracy"
   | MagicPower _ -> "Magic Power"
   | Luck _ -> "Luck"
-
-let clear_temps ch =
-  let arr = ch.temp_stats in
-  for i = 0 to Array.length arr - 1 do
-    let at, n = arr.(i) in
-    if n = 1 then (
-      arr.(i) <- (change_temp_attr_overwrite 0. at, -1);
-      let nm =
-        if List.length ch.enem_hit_chances = 0 then "Player " else ch.name ^ " "
-      in
-      ANSITerminal.print_string [ ANSITerminal.yellow ]
-        (nm ^ get_attribute_name at ^ " reverted.\n");
-      wait ())
-    else if n > 1 then arr.(i) <- (at, n - 1)
-  done;
-  { ch with temp_stats = arr }
 
 let get_temp_value attr_str chr =
   match attr_str with
@@ -333,6 +318,7 @@ let parse_character nme hit_chances =
   let mana_potion_val = json_char |> member "mana_potion" |> to_int in
   let wrath_potion_val = json_char |> member "wrath_potion" |> to_int in
   let magic_potion_val = json_char |> member "magic_potion" |> to_int in
+  let superspeed_val = json_char |> member "super_speed" |> to_int in
   let deal_with_devil_val = json_char |> member "deal_with_devil" |> to_int in
   {
     name = nme;
@@ -357,6 +343,7 @@ let parse_character nme hit_chances =
         { mana_potion_bk with amt = mana_potion_val };
         { wrath_potion_bk with amt = wrath_potion_val };
         { magic_potion_bk with amt = magic_potion_val };
+        { superspeed_bk with amt = superspeed_val };
         { deal_with_devil_bk with amt = deal_with_devil_val };
       |];
     temp_stats =
@@ -373,7 +360,9 @@ let parse_character nme hit_chances =
       |];
   }
 
-let start_character nme = parse_character "start_character" []
+let start_character nme =
+  let raw = parse_character "start_character" [] in
+  { raw with name = nme }
 
 let ( +* ) att amt =
   match att with
@@ -642,6 +631,38 @@ let get_total_attr_val attr chr =
   let b = get_temp_value attr chr in
   a +. b
 
+let clear_temps ch =
+  let arr = !ch.temp_stats in
+  for i = 0 to Array.length arr - 1 do
+    let at, n = arr.(i) in
+    if n = 1 then (
+      arr.(i) <- (change_temp_attr_overwrite 0. at, -1);
+      let nm =
+        if List.length !ch.enem_hit_chances = 0 then "Player "
+        else !ch.name ^ " "
+      in
+      ANSITerminal.print_string [ ANSITerminal.yellow ]
+        (nm ^ get_attribute_name at ^ " reverted.\n");
+      wait ();
+      if i = 0 && get_attribute_val "hp" !ch > get_total_attr_val "maxhp" !ch
+      then (
+        print_endline
+          ("HP truncated to "
+          ^ string_of_float (get_total_attr_val "maxhp" !ch)
+          ^ "\n");
+        ch := { !ch with hp = HP (get_total_attr_val "maxhp" !ch) });
+      if
+        i = 1 && get_attribute_val "mana" !ch > get_total_attr_val "maxmana" !ch
+      then (
+        print_endline
+          ("Mana truncated to "
+          ^ string_of_float (get_total_attr_val "maxmana" !ch)
+          ^ "\n");
+        ch := { !ch with mana = Mana (get_total_attr_val "maxmana" !ch) }))
+    else if n > 1 then arr.(i) <- (at, n - 1)
+  done;
+  { !ch with temp_stats = arr }
+
 let get_from_tuple (a, b) = b
 
 let get_temp_attribute_val (at, _) =
@@ -655,6 +676,90 @@ let get_temp_attribute_val (at, _) =
   | Accuracy acc -> acc
   | MagicPower mag -> mag
   | Luck luk -> luk
+
+let calculate_new_temps x y c t =
+  let amt, ct =
+    if c != -1 then
+      if y < 0. && x > 0. then (x +. y, c)
+      else if y < 0. && x < 0. then (x +. y, c)
+      else if y > 0. && x < 0. then (y, t)
+      else (y +. x, c + t)
+    else (y, t)
+  in
+  (amt, ct)
+
+let adjust_temps (attr, t) ch =
+  match attr with
+  | HP y -> (
+      match ch.temp_stats.(0) with
+      | HP x, c ->
+          let amt, ct = calculate_new_temps x y c t in
+          let () = ch.temp_stats.(0) <- (HP amt, ct) in
+          if y < 0. then adjust (-.y) ch "hp" else ch
+      | _ -> raise UnknownAttribute)
+  | Mana y -> (
+      match ch.temp_stats.(1) with
+      | Mana x, c ->
+          let amt, ct =
+            if c != -1 then
+              if y < 0. && x > 0. then (x +. y, c)
+              else if y < 0. && x < 0. then (x +. y, c)
+              else if y > 0. && x < 0. then (y, t)
+              else (y +. x, c + t)
+            else (y, t)
+          in
+          let () = ch.temp_stats.(1) <- (Mana amt, ct) in
+          if y < 0. then adjust (-.y) ch "mana" else ch
+      | _ -> raise UnknownAttribute)
+  | Strength y -> (
+      match ch.temp_stats.(2) with
+      | Strength x, c ->
+          let amt, ct = calculate_new_temps x y c t in
+          let () = ch.temp_stats.(2) <- (Strength amt, ct) in
+          ch
+      | _ -> raise UnknownAttribute)
+  | Defense y -> (
+      match ch.temp_stats.(3) with
+      | Defense x, c ->
+          let amt, ct = calculate_new_temps x y c t in
+          let () = ch.temp_stats.(3) <- (Defense amt, ct) in
+          ch
+      | _ -> raise UnknownAttribute)
+  | MagicResist y -> (
+      match ch.temp_stats.(4) with
+      | MagicResist x, c ->
+          let amt, ct = calculate_new_temps x y c t in
+          let () = ch.temp_stats.(4) <- (MagicResist amt, ct) in
+          ch
+      | _ -> raise UnknownAttribute)
+  | Speed y -> (
+      match ch.temp_stats.(5) with
+      | Speed x, c ->
+          let amt, ct = calculate_new_temps x y c t in
+          let () = ch.temp_stats.(5) <- (Speed amt, ct) in
+          ch
+      | _ -> raise UnknownAttribute)
+  | Accuracy y -> (
+      match ch.temp_stats.(6) with
+      | Accuracy x, c ->
+          let amt, ct = calculate_new_temps x y c t in
+          let () = ch.temp_stats.(6) <- (Accuracy amt, ct) in
+          ch
+      | _ -> raise UnknownAttribute)
+  | MagicPower y -> (
+      match ch.temp_stats.(7) with
+      | MagicPower x, c ->
+          let amt, ct = calculate_new_temps x y c t in
+          let () = ch.temp_stats.(7) <- (MagicPower amt, ct) in
+          ch
+      | _ -> raise UnknownAttribute)
+  | Luck y -> (
+      match ch.temp_stats.(8) with
+      | Luck x, c ->
+          let amt, ct = calculate_new_temps x y c t in
+          let () = ch.temp_stats.(8) <- (Luck amt, ct) in
+          ch
+      | _ -> raise UnknownAttribute)
 
 let string_arr =
   [|
@@ -678,32 +783,20 @@ let change_temps_from_skill sk target =
       ANSITerminal.print_string [ ANSITerminal.yellow ]
         (target.name ^ "'s " ^ string_arr.(i) ^ " " ^ word ^ " by "
        ^ string_of_float amt ^ "\n");
-      target.temp_stats.(i) <- arr.(i))
+      let _ = adjust_temps arr.(i) target in
+      ())
   done;
-  if
-    get_temp_attribute_val (target.hp, -1)
-    > get_temp_attribute_val (target.maxhp, -1)
-      +. get_temp_attribute_val arr.(0)
-  then (
-    let att =
-      get_temp_attribute_val (target.maxhp, -1)
-      +. get_temp_attribute_val arr.(0)
-    in
+  if get_attribute_val "hp" target > get_total_attr_val "maxhp" target then (
+    let att = get_total_attr_val "maxhp" target in
     ANSITerminal.print_string [ ANSITerminal.red ]
       ("Current HP truncated to " ^ string_of_float att ^ "\n");
     adjust_set att target "hp")
-  else if
-    get_temp_attribute_val (target.mana, -1)
-    > get_temp_attribute_val (target.maxmana, -1)
-      +. get_temp_attribute_val arr.(1)
+  else if get_attribute_val "mana" target > get_total_attr_val "maxmana" target
   then (
-    let att =
-      get_temp_attribute_val (target.maxmana, -1)
-      +. get_temp_attribute_val arr.(1)
-    in
+    let att = get_total_attr_val "maxmana" target in
     ANSITerminal.print_string [ ANSITerminal.red ]
       ("Current Mana truncated to "
-      ^ string_of_float (get_temp_attribute_val arr.(1))
+      ^ string_of_float (get_total_attr_val "maxmana" target)
       ^ "\n");
     adjust_set att target "mana")
   else target
@@ -722,8 +815,9 @@ let use_skill sk user target =
       if get_attribute_val "mana" user >= sk.mp_cost then (
         let _ =
           if List.length user.enem_hit_chances = 0 then
+            let suffix = if sk.mp_cost < 0. then "\n" else "" in
             ANSITerminal.print_string [ ANSITerminal.blue ]
-              ("You used " ^ sk.name ^ " !")
+              ("You used " ^ sk.name ^ "!" ^ suffix)
         in
         let new_usr = adjust (-.sk.mp_cost) user "mana" in
 
@@ -776,7 +870,7 @@ let use_skill sk user target =
               change_temps_from_skill sk new_targ_stp1
             else new_targ_stp1
           in
-          let _ = if sk.mp_cost >= 0. then wait () in
+          let _ = wait () in
           if List.length user.enem_hit_chances != 0 then
             (new_targ, new_usr, true)
           else (new_usr, new_targ, true))
@@ -796,7 +890,7 @@ let use_skill sk user target =
       if get_attribute_val "hp" user > sk.hp_cost then (
         let avoid = get_attribute_val "speed" target in
         let player_hit_chance =
-          if sk.mp_cost < 0. then 1.
+          if sk.hp_cost < 0. || sk.dmg_scaling = 0.0 then 1.
           else
             ((get_total_attr_val "accuracy" user +. 60.) /. 100.0)
             -. (0.001 *. (avoid *. avoid))
@@ -805,9 +899,12 @@ let use_skill sk user target =
         let _ = if sk.hp_cost >= 0. then wait 0 in
         if rand0 <= player_hit_chance then (
           let _ =
-            ANSITerminal.print_string [ ANSITerminal.blue ]
-              ("You used " ^ sk.name ^ "!\n")
+            if List.length user.enem_hit_chances = 0 then
+              let suffix = if sk.mp_cost < 0. then "\n" else "" in
+              ANSITerminal.print_string [ ANSITerminal.blue ]
+                ("You used " ^ sk.name ^ "!" ^ suffix)
           in
+          let _ = wait () in
           let dmg =
             let raw =
               (unwrap_attr user.str +. (unwrap_attr user.mag *. sk.dmg_scaling))
@@ -815,7 +912,13 @@ let use_skill sk user target =
             in
             if raw > 0. then raw else 0.
           in
-          let new_targ = adjust (-.dmg) target "hp" in
+          let new_targ_stp1 = adjust (-.dmg) target "hp" in
+          let rand = Random.float 1. in
+          let new_targ =
+            if rand <= sk.chance_to_affect then
+              change_temps_from_skill sk new_targ_stp1
+            else new_targ_stp1
+          in
           let new_usr = adjust (-.sk.hp_cost) target "hp" in
           print_endline "";
           (new_usr, new_targ, true))
@@ -840,7 +943,7 @@ let use_skill sk user target =
               ("You used " ^ sk.name ^ "!")
           else
             ANSITerminal.print_string [ ANSITerminal.red ]
-              (user.name ^ " used " ^ sk.name ^ " !\n")
+              (user.name ^ " used " ^ sk.name ^ "!\n")
         in
         let new_usr = adjust (-.sk.mp_cost) user "mana" in
         let avoid = get_attribute_val "speed" target in
@@ -882,10 +985,11 @@ let use_skill sk user target =
 let use_consumable csbl ch idx =
   let new_ch, _, _ = use_skill csbl ch ch in
   let new_ch' =
-    if get_attribute_val "hp" new_ch > get_attribute_val "maxhp" new_ch then
-      { new_ch with hp = new_ch.maxhp }
-    else if get_attribute_val "mana" new_ch > get_attribute_val "maxmana" new_ch
-    then { new_ch with mana = new_ch.maxmana }
+    if get_attribute_val "hp" new_ch > get_total_attr_val "maxhp" new_ch then
+      { new_ch with hp = HP (get_total_attr_val "maxhp" new_ch) }
+    else if
+      get_attribute_val "mana" new_ch > get_total_attr_val "maxmana" new_ch
+    then { new_ch with mana = Mana (get_total_attr_val "maxmana" new_ch) }
     else new_ch
   in
   let x = new_ch'.inv.(idx) in
@@ -896,69 +1000,3 @@ let get_description_skill s = s.description
 let get_description_item i = get_description_skill i
 
 [@@@warning "-8"]
-
-let adjust_temps (attr, t) ch =
-  match attr with
-  | HP hp -> (
-      match ch.temp_stats.(0) with
-      | HP x, c ->
-          let ct = if c >= 0 then c else 0 in
-          let () = ch.temp_stats.(0) <- (HP (x +. hp), t + ct) in
-          if hp < 0. then adjust (-.hp) ch "hp" else ch
-      | _ -> raise UnknownAttribute)
-  | Mana mp -> (
-      match ch.temp_stats.(1) with
-      | Mana x, c ->
-          let ct = if c >= 0 then c else 0 in
-          let () = ch.temp_stats.(1) <- (Mana (mp +. x), t + ct) in
-          if mp < 0. then adjust (-.mp) ch "mana" else ch
-      | _ -> raise UnknownAttribute)
-  | Strength str -> (
-      match ch.temp_stats.(2) with
-      | Strength x, c ->
-          let ct = if c >= 0 then c else 0 in
-          let () = ch.temp_stats.(2) <- (Strength (str +. x), t + ct) in
-          ch
-      | _ -> raise UnknownAttribute)
-  | Defense def -> (
-      match ch.temp_stats.(3) with
-      | Defense x, c ->
-          let ct = if c >= 0 then c else 0 in
-          let () = ch.temp_stats.(3) <- (Defense (def +. x), t + ct) in
-          ch
-      | _ -> raise UnknownAttribute)
-  | MagicResist mr -> (
-      match ch.temp_stats.(4) with
-      | MagicResist x, c ->
-          let ct = if c >= 0 then c else 0 in
-          let () = ch.temp_stats.(4) <- (MagicResist (mr +. x), t + ct) in
-          ch
-      | _ -> raise UnknownAttribute)
-  | Speed spd -> (
-      match ch.temp_stats.(5) with
-      | Speed x, c ->
-          let ct = if c >= 0 then c else 0 in
-          let () = ch.temp_stats.(5) <- (Speed (spd +. x), t + ct) in
-          ch
-      | _ -> raise UnknownAttribute)
-  | Accuracy acc -> (
-      match ch.temp_stats.(6) with
-      | Accuracy x, c ->
-          let ct = if c >= 0 then c else 0 in
-          let () = ch.temp_stats.(6) <- (Accuracy (acc +. x), t + ct) in
-          ch
-      | _ -> raise UnknownAttribute)
-  | MagicPower mag -> (
-      match ch.temp_stats.(7) with
-      | MagicPower x, c ->
-          let ct = if c >= 0 then c else 0 in
-          let () = ch.temp_stats.(7) <- (MagicPower (mag +. x), t + ct) in
-          ch
-      | _ -> raise UnknownAttribute)
-  | Luck luk -> (
-      match ch.temp_stats.(8) with
-      | Luck x, c ->
-          let ct = if c >= 0 then c else 0 in
-          let () = ch.temp_stats.(8) <- (Luck (luk +. x), t + ct) in
-          ch
-      | _ -> raise UnknownAttribute)
