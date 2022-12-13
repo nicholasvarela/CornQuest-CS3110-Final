@@ -14,9 +14,9 @@
         "mag": 10.0,
         "luk": 10.0,
         "skillset1": "icicle",
-        "skillset2": "double slash",
-        "skillset3": "nosferatu",
-        "skillset4": "blood magic",
+        "skillset2": "None",
+        "skillset3": "None",
+        "skillset4": "None",
         "health_potion": 3,
         "mana_potion": 1,
         "wrath_potion": 1,
@@ -25,7 +25,7 @@
         "deal_with_devil": 1
     },
     "Martha Pollocus": {
-        "hp": 100.0,
+        "hp": 1.0,
         "maxhp": 100.0,
         "mana": 200.0,
         "maxmana": 200.0,

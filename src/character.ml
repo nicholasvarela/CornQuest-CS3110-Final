@@ -277,7 +277,7 @@ let match_skill skill =
   | "headbutt" -> Some headbutt
   | "tsunami" -> Some tsu
   | "chainlight" -> Some chainlight
-  | "piercing_light" -> Some piercing_light
+  | "piercing light" -> Some piercing_light
   | "nosferatu" -> Some nosferatu
   | _ -> None
 
@@ -522,7 +522,7 @@ let print_skills (arr : skill option array) =
           ^ String.sub dots 0 (37 - minus)
           ^
           if sk.skill_type = Physical then
-            string_of_int (int_of_float sk.hp_cost) ^ "HP..."
+            string_of_int (int_of_float sk.hp_cost) ^ " HP.."
           else string_of_int (int_of_float sk.mp_cost) ^ " Mana")
   done
 

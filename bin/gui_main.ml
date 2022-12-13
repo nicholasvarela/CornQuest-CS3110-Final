@@ -1,6 +1,9 @@
 open Tsdl
 open Game
 
+let in_battle = ref false
+let ch = ref (Character.start_character "Huy")
+
 let main () =
   Random.self_init ();
   let fps = 60 in
@@ -11,7 +14,7 @@ let main () =
     Game_loop.init "bruh" Sdl.Window.pos_centered Sdl.Window.pos_centered 1280
       960 false
   in
-  let encounter = Game_loop.rng () in
+  let encounter = ref (Game_loop.rng ()) in
   while game.running do
     frame_start := Int32.to_int (Sdl.get_ticks ());
     Game_loop.handle_events game;
@@ -20,7 +23,18 @@ let main () =
     frame_time := Int32.to_int (Sdl.get_ticks ()) - !frame_start;
     if frame_delay > !frame_time then
       Sdl.delay (Int32.of_int (frame_delay - !frame_time));
-    if 0 >= encounter then () else ()
+
+    if !in_battle = false then
+      if !Player.steps >= !encounter then (
+        in_battle := true;
+        let i = ref true in
+        while !i do
+          ch := Game_loop.call_encounter !ch;
+          i := false;
+          Player.steps := 0
+        done;
+        encounter := Game_loop.rng ();
+        in_battle := false)
   done;
   Game_loop.clean game
 

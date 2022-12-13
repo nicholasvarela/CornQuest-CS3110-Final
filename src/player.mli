@@ -11,3 +11,4 @@ val handle : Components.CornECS.entity -> unit
 
 val update : Components.CornECS.entity -> unit
 (**[update e] updates the keyboard-controlled entity [e].*)
+val steps : int ref

@@ -38,7 +38,10 @@ let set_spawn player m =
     steps = encounter then make battle 6. battle ends return the new player
     character to the game loop *)
 
-let rng game = Random.int 11 + Int.min (Random.int 11) (Random.int 11)
+let rng () =
+  let a = 300 + (Random.int 5 * 100) in
+  print_endline (string_of_int a);
+  a
 
 (**[init t x y w h fs] creates a fresh game instance, in which the window has
    title [t], x-position [x], y-position [y], width [w], and height [h]. The
@@ -71,6 +74,20 @@ let init t x y w h fs =
         map;
       }
   | Error (`Msg err) -> failwith err
+
+let call_encounter a =
+  let e =
+    Character.parse_character "Martha Pollocus" [ 0.0; 0.0; 1.1; 0.; 0.; 0. ]
+  in
+  try Battle_main.start a e
+  with Battle_main.Battle_Over a -> (
+    if a = None then (
+      ANSITerminal.print_string [ ANSITerminal.red ] "Game Over";
+      exit 0)
+    else
+      match a with
+      | Some ch -> ch
+      | None -> failwith "Not reachable")
 
 (**[handle_events game] handles events of the game instance [game].*)
 let handle_events game =

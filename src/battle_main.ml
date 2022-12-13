@@ -1,51 +1,10 @@
-open Game
 open Battle
 open Character
 
 exception Battle_Over of Character.character option
 
-let actor : Character.character = Character.start_character "Demoman"
 let first_time_skill = ref true
 let first_time_item = ref true
-
-let enem : Character.character =
-  {
-    name = "Marthia Pollocus";
-    hp = HP 100.;
-    maxhp = HP 100.;
-    mana = Mana 200.;
-    maxmana = Mana 200.;
-    exp = 25;
-    lvl = 1;
-    str = Strength 10.;
-    def = Defense 10.;
-    mr = MagicResist 10.;
-    spd = Speed 2.;
-    acc = Accuracy 100000.;
-    mag = MagicPower 10.;
-    luk = Luck 10.;
-    enem_hit_chances = [ 0.0; 0.5; 0.0; 0.5; 0.1; 0.1 ];
-    skillset =
-      [|
-        Some Character.tsu;
-        Some Character.blood;
-        Some Character.piercing_light;
-        Some Character.dark;
-      |];
-    inv = [||];
-    temp_stats =
-      [|
-        (HP 0., -1);
-        (Mana 0., -1);
-        (Strength 0., -1);
-        (Defense 0., -1);
-        (MagicResist 0., -1);
-        (Speed 0., -1);
-        (Accuracy 0., -1);
-        (MagicPower 0., -1);
-        (Luck 0., -1);
-      |];
-  }
 
 let read_logo_files filename =
   let listener = open_in filename in
@@ -195,7 +154,7 @@ and item_menu (actor, enem) =
         "That's not a valid item. Please try again";
       item_menu (actor, enem)
 
-and skill_menu_helper arr i =
+and skill_menu_helper (actor, enem) arr i =
   let a, e, b =
     Character.use_skill (Character.unwrap_skill arr.(i)) actor enem
   in
@@ -207,7 +166,7 @@ and skill_menu_helper arr i =
     turn_handler (a2', e2') true
   else skill_menu (a', e')
 
-and skill_info_helper arr i =
+and skill_info_helper (actor, enem) arr i =
   ANSITerminal.print_string [ ANSITerminal.default ]
     ((Character.unwrap_skill arr.(i)).description ^ "\n");
   skill_menu (actor, enem)
@@ -218,15 +177,15 @@ and skill_menu (actor, enem) =
   let inp = read_line () in
   match inp with
   | s when String.length s = 0 -> skill_menu (actor, enem)
-  | s when inp = sk1 -> skill_menu_helper arr 0
-  | s when inp = sk2 -> skill_menu_helper arr 1
-  | s when inp = sk3 -> skill_menu_helper arr 2
-  | s when inp = sk4 -> skill_menu_helper arr 0
+  | s when inp = sk1 -> skill_menu_helper (actor, enem) arr 0
+  | s when inp = sk2 -> skill_menu_helper (actor, enem) arr 1
+  | s when inp = sk3 -> skill_menu_helper (actor, enem) arr 2
+  | s when inp = sk4 -> skill_menu_helper (actor, enem) arr 3
   | "back" -> turn_handler (actor, enem) false
-  | s when s = "info " ^ sk1 -> skill_info_helper arr 0
-  | s when s = "info " ^ sk2 -> skill_info_helper arr 1
-  | s when s = "info " ^ sk3 -> skill_info_helper arr 2
-  | s when s = "info " ^ sk4 -> skill_info_helper arr 3
+  | s when s = "info " ^ sk1 -> skill_info_helper (actor, enem) arr 0
+  | s when s = "info " ^ sk2 -> skill_info_helper (actor, enem) arr 1
+  | s when s = "info " ^ sk3 -> skill_info_helper (actor, enem) arr 2
+  | s when s = "info " ^ sk4 -> skill_info_helper (actor, enem) arr 3
   | _ -> skill_menu (actor, enem)
 
 and turn_handler (actor, enem) made_action =
@@ -277,21 +236,3 @@ let start a b =
     "\n\n\
      Choose a move: attack, guard, skill, item or escape. What will you do? \n\n";
   turn_handler (a, b) false
-
-(** [main ()] prompts for the game to play, then starts it. *)
-let main () =
-  read_logo_files "data/title.txt";
-  ANSITerminal.print_string [ ANSITerminal.yellow ]
-    "\n\n\
-     Choose a move: attack, guard, skill, item, or escape. What will you do? \n\n";
-  turn_handler (actor, enem) false
-
-(* print_endline "Please enter the name of the game file you want to load.\n";
-   print_string "> "; match read_line () with | exception End_of_file -> () |
-   file_name -> ( let file = data_dir_prefix ^ file_name ^ ".json" in try if
-   Sys.file_exists file then play_game file else raise Not_found with Not_found
-   -> ANSITerminal.prerr_string [ ANSITerminal.cyan ] "File not found,
-   terminating.\n") *)
-
-(* Execute the game engine. *)
-let () = main ()
