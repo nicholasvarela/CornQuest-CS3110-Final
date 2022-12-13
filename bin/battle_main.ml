@@ -10,7 +10,7 @@ let first_time = ref true
 let enem : Character.character =
   {
     name = "Marthia Pollocus";
-    hp = HP 100.;
+    hp = HP 1.;
     maxhp = HP 100.;
     mana = Mana 100.;
     maxmana = Mana 100.;

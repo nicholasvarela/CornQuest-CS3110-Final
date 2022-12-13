@@ -26,9 +26,17 @@ let attack (enem : Character.character) (actor : Character.character) =
   let rand = Random.float 1. in
   if rand <= player_hit_chance then (
     let damage =
-      (Character.get_attribute_val "defense" enem /. 2.)
-      +. (0.3 *. Character.get_temp_value "defense" enem)
-      -. Character.get_attribute_val "strength" actor
+      let norm =
+        (Character.get_attribute_val "defense" enem /. 2.)
+        +. (0.3 *. Character.get_temp_value "defense" enem)
+        -. Character.get_attribute_val "strength" actor
+      in
+      let extra =
+        let r = Random.float 1. in
+        if Character.get_attribute_val "luck" actor /. 100. >= r then norm /. 2.
+        else 0.
+      in
+      norm +. extra
     in
     let _ = wait () in
     print_string

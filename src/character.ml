@@ -125,8 +125,15 @@ let get_skill_from_json skill_name =
 
 let icicle = get_skill_from_json "icicle"
 let acid_spray = get_skill_from_json "acid spray"
-let fireball = get_skill_from_json "fireball"
+let blood = get_skill_from_json "blood magic"
 let minimize = get_skill_from_json "minimize"
+let spin_slash = get_skill_from_json "spin slash"
+let double_slash = get_skill_from_json "spin slash"
+let headbutt = get_skill_from_json "headbutt"
+let tsu = get_skill_from_json "tsunami"
+let chainlight = get_skill_from_json "chain lightning"
+let piercing_light = get_skill_from_json "piercing light"
+let dark = get_skill_from_json "Nosferatu"
 
 (*consumables repo*)
 
@@ -134,11 +141,11 @@ let make_consumable name =
   let itm = get_skill_from_json name in
   { name; item = itm; amt = -1 }
 
-let lvl_2_spells = [| Some acid_spray; Some fireball |]
-let lvl_6_spells = [||]
-let lvl_10_spells = [||]
-let lvl_12_spells = [||]
-let lvl_15_spells = [||]
+let lvl_1_spells = [| Some acid_spray; Some spin_slash |]
+let lvl_2_spells = [| Some minimize; Some piercing_light |]
+let lvl_3_spells = [| Some blood; Some headbutt |]
+let lvl_4_spells = [| Some tsu; Some double_slash |]
+let lvl_5_spells = [| Some chainlight; Some dark |]
 
 (*skill repo end*)
 
@@ -503,6 +510,14 @@ let rec learn_skill (curr_skills : skill option array) ran =
       learn_skill_helper curr_skills (unwrap_skill arr.(0))
   | s when s = (unwrap_skill arr.(1)).name ->
       learn_skill_helper curr_skills (unwrap_skill arr.(1))
+  | s when s = "info " ^ (unwrap_skill arr.(0)).name ->
+      ANSITerminal.print_string [ ANSITerminal.default ]
+        ((unwrap_skill arr.(0)).description ^ "\n");
+      learn_skill curr_skills true
+  | s when s = "info " ^ (unwrap_skill arr.(1)).name ->
+      ANSITerminal.print_string [ ANSITerminal.default ]
+        ("\n" ^ (unwrap_skill arr.(1)).description ^ "\n\n");
+      learn_skill curr_skills true
   | _ ->
       print_endline "That is not a valid skill. Please try again.";
       learn_skill curr_skills ran
