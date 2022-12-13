@@ -28,7 +28,13 @@ open Yojson
   with unsualy input so we created [parse_test_fail] to ensure that these string
   raised failures which could be caught by our battle and adventure modules. *)
 
-(*Arugment for correctness of program given testing strategy: *)
+(*Arugment for correctness of program given testing strategy:
+
+  Our testing method proves correctness of our program because it rigorouly
+  tests each subcomponenet of our project. Through Glass Box and Black Box
+  testing we ensured that functions produced output as prescribed by their
+  respective .mli files. This ensured that functions which utalized there
+  already produced functions only had to be tested for new functionality. *)
 
 let demon1 : Character.character = Character.start_character "Demoman"
 let chris : Character.character = Character.start_character "Chris"
