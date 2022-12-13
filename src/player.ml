@@ -1,6 +1,8 @@
 open Components
 open Tsdl
 
+let steps = ref 0
+
 let create_player fl ren =
   CornECS.next_id () |> Sprite.b |> KeyboardController.b
   |> Renderable.s (Textman.load_texture fl ren, ren)
@@ -56,4 +58,5 @@ let update e =
   if xtar < xpos then update_vel e (-Constants.player_speed) 0;
   if ytar > ypos then update_vel e 0 Constants.player_speed;
   if ytar < ypos then update_vel e 0 (-Constants.player_speed);
-  update_pos e
+  update_pos e;
+  steps := !steps + Int.abs (xtar - xpos) + Int.abs (ytar - ypos)

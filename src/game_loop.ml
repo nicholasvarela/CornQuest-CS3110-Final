@@ -33,6 +33,13 @@ let set_spawn player m =
   TargetPosition.set player
     (spawn_x * Tilemap.scale m, spawn_y * Tilemap.scale m)
 
+(** 1. initialize the random seed for 2. initialize steps as a ref 0 3. randomly
+    generate an encounter number 4. each time the player moves, incr steps 5.
+    steps = encounter then make battle 6. battle ends return the new player
+    character to the game loop *)
+
+let rng game = Random.int 11 + Int.min (Random.int 11) (Random.int 11)
+
 (**[init t x y w h fs] creates a fresh game instance, in which the window has
    title [t], x-position [x], y-position [y], width [w], and height [h]. The
    game window will be fullscreen if [fs] is [true]. *)
@@ -44,7 +51,6 @@ let init t x y w h fs =
       print_endline "Subsystems initialized.";
       let window = Sdl.create_window t ~x ~y ~w ~h flags |> Util.unwrap in
       print_endline "Window created.";
-
       let renderer = Sdl.create_renderer ~index:(-1) window |> Util.unwrap in
       Sdl.set_render_draw_color renderer 255 255 255 255 |> Util.unwrap;
       print_endline "Renderer created.";

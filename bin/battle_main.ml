@@ -271,6 +271,13 @@ and turn_handler (actor, enem) made_action =
       item_menu (actor, enem)
   | _ -> turn_handler (actor, enem) false
 
+let start a b =
+  read_logo_files "data/title.txt";
+  ANSITerminal.print_string [ ANSITerminal.yellow ]
+    "\n\n\
+     Choose a move: attack, guard, skill, item or escape. What will you do? \n\n";
+  turn_handler (a, b) false
+
 (** [main ()] prompts for the game to play, then starts it. *)
 let main () =
   read_logo_files "data/title.txt";
