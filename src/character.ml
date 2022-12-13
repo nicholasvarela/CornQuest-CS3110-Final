@@ -1,5 +1,7 @@
 exception No_skill
 
+open Yojson.Basic.Util
+
 type attribute =
   | HP of float
   | Mana of float
@@ -16,8 +18,17 @@ type dmg_type =
   | Physical
   | Status
 
+type weapon = {
+  name : string;
+  statbuffs : (attribute * int) array;
+  description : string;
+}
+
+type armor = weapon
+
 type skill = {
   name : string;
+  description : string;
   skill_type : dmg_type;
   attribute_affected : (attribute * int) array;
   chance_to_affect : float;
@@ -59,159 +70,100 @@ type character = {
 exception UnknownAttribute
 exception WrongAttribute
 
-(*consumables repo*)
-let health_potion_bk =
-  let itm =
-    {
-      name = "health potion";
-      skill_type = Physical;
-      attribute_affected =
-        [|
-          (HP 0., -1);
-          (Mana 0., -1);
-          (Strength 0., -1);
-          (Defense 0., -1);
-          (MagicResist 0., -1);
-          (Speed 0., -1);
-          (Accuracy 0., -1);
-          (MagicPower 0., -1);
-          (Luck 0., -1);
-        |];
-      chance_to_affect = 0.;
-      base_dmg = 0.;
-      dmg_scaling = 0.;
-      mp_cost = 0.;
-      hp_cost = -30.;
-    }
-  in
-  { name = "health potion"; item = itm; amt = -1 }
-
-let mana_potion_bk =
-  let itm =
-    {
-      name = "mana potion";
-      skill_type = Magic;
-      attribute_affected =
-        [|
-          (HP 0., -1);
-          (Mana 0., -1);
-          (Strength 0., -1);
-          (Defense 0., -1);
-          (MagicResist 0., -1);
-          (Speed 0., -1);
-          (Accuracy 0., -1);
-          (MagicPower 0., -1);
-          (Luck 0., -1);
-        |];
-      chance_to_affect = 0.;
-      base_dmg = 0.;
-      dmg_scaling = 0.;
-      mp_cost = -50.;
-      hp_cost = 0.;
-    }
-  in
-  { name = "mana potion"; item = itm; amt = -1 }
-
 (*skill repo start*)
-let icicle : skill =
+
+let return_type raw_type =
+  match raw_type with
+  | "Magic" -> Magic
+  | "Physical" -> Physical
+  | "Status" -> Status
+  | _ -> Magic
+
+let wait un =
+  let i = ref 0 in
+  while !i < 100 do
+    match read_line () with
+    | _ -> i := 100
+  done
+
+let return_attr json attr_name =
+  let effect = json |> member (attr_name ^ "-effect") |> to_float in
+  let turns = json |> member (attr_name ^ "-turns") |> to_int in
+  match attr_name with
+  | "hp" -> (HP effect, turns)
+  | "mana" -> (Mana effect, turns)
+  | "defense" -> (Defense effect, turns)
+  | "strength" -> (Strength effect, turns)
+  | "magicresist" -> (MagicResist effect, turns)
+  | "speed" -> (Speed effect, turns)
+  | "accuracy" -> (Accuracy effect, turns)
+  | "magicpower" -> (MagicPower effect, turns)
+  | "luck" -> (Luck effect, turns)
+  | _ -> (HP effect, turns)
+
+let parse_skill name json =
   {
-    name = "icicle";
-    skill_type = Magic;
+    name;
+    skill_type = return_type (json |> member "skill_type" |> to_string);
     attribute_affected =
       [|
-        (HP 0., -1);
-        (Mana 0., -1);
-        (Strength 0., -1);
-        (Defense 0., -1);
-        (MagicResist 0., -1);
-        (Speed (-6.), 3);
-        (Accuracy (-5.), 3);
-        (MagicPower 0., -1);
-        (Luck 0., -1);
+        return_attr json "hp";
+        return_attr json "mana";
+        return_attr json "strength";
+        return_attr json "defense";
+        return_attr json "magicresist";
+        return_attr json "speed";
+        return_attr json "accuracy";
+        return_attr json "magicpower";
+        return_attr json "luck";
       |];
-    chance_to_affect = 0.3;
-    base_dmg = 5.;
-    dmg_scaling = 0.4;
-    mp_cost = 15.;
-    hp_cost = 0.;
+    description = json |> member "description" |> to_string;
+    chance_to_affect = json |> member "change_to_affect" |> to_float;
+    base_dmg = json |> member "base_dmg" |> to_float;
+    dmg_scaling = json |> member "dmg_scailing" |> to_float;
+    mp_cost = json |> member "mp_cost" |> to_float;
+    hp_cost = json |> member "hp_cost" |> to_float;
   }
 
-let acid_spray =
-  {
-    name = "acid spray";
-    skill_type = Magic;
-    attribute_affected =
-      [|
-        (HP 0., -1);
-        (Mana 0., -1);
-        (Strength 0., -1);
-        (Defense (-10.), 3);
-        (MagicResist (-10.), 3);
-        (Speed 0., -1);
-        (Accuracy 0., -1);
-        (MagicPower 0., -1);
-        (Luck 0., -1);
-      |];
-    chance_to_affect = 0.9;
-    base_dmg = 2.;
-    dmg_scaling = 0.16;
-    mp_cost = 30.;
-    hp_cost = 0.;
-  }
+let get_skill_from_json skill_name =
+  let data_prefix = "data" ^ Filename.dir_sep in
 
-let fireball =
-  {
-    name = "fireball";
-    skill_type = Magic;
-    attribute_affected =
-      [|
-        (HP 0., -1);
-        (Mana 0., -1);
-        (Strength 0., -1);
-        (Defense 0., -1);
-        (MagicResist (-2.), 3);
-        (Speed 0., -1);
-        (Accuracy 0., -1);
-        (MagicPower 0., -1);
-        (Luck 0., -1);
-      |];
-    chance_to_affect = 0.3;
-    base_dmg = 7.;
-    dmg_scaling = 0.6;
-    mp_cost = 20.;
-    hp_cost = 0.;
-  }
+  let skills_raw = Yojson.Basic.from_file (data_prefix ^ "skills.json") in
+  skills_raw |> member skill_name |> parse_skill skill_name
 
-let minimize =
-  {
-    name = "minimize";
-    skill_type = Status;
-    attribute_affected =
-      [|
-        (HP 0., -1);
-        (Mana 0., -1);
-        (Strength (-8.), -4);
-        (Defense 0., -1);
-        (MagicResist 0., -1);
-        (Speed 0., -1);
-        (Accuracy 0., -1);
-        (MagicPower (-8.), -1);
-        (Luck 0., -1);
-      |];
-    chance_to_affect = 1.;
-    base_dmg = 0.;
-    dmg_scaling = 0.;
-    mp_cost = 20.;
-    hp_cost = 0.;
-  }
+let icicle = get_skill_from_json "icicle"
+let acid_spray = get_skill_from_json "acid spray"
+let blood = get_skill_from_json "blood magic"
+let minimize = get_skill_from_json "minimize"
+let spin_slash = get_skill_from_json "spin slash"
+let double_slash = get_skill_from_json "spin slash"
+let headbutt = get_skill_from_json "headbutt"
+let tsu = get_skill_from_json "tsunami"
+let chainlight = get_skill_from_json "chain lightning"
+let piercing_light = get_skill_from_json "piercing light"
+let dark = get_skill_from_json "Nosferatu"
 
-let lvl_3_spells = [| acid_spray; fireball |]
-let lvl_6_spells = [||]
-let lvl_10_spells = [||]
-let lvl_12_spells = [||]
-let lvl_15_spells = [||]
+(*consumables repo*)
+
+let make_consumable name =
+  let itm = get_skill_from_json name in
+  { name; item = itm; amt = -1 }
+
+let lvl_1_spells = [| Some acid_spray; Some spin_slash |]
+let lvl_2_spells = [| Some minimize; Some piercing_light |]
+let lvl_3_spells = [| Some blood; Some headbutt |]
+let lvl_4_spells = [| Some tsu; Some double_slash |]
+let lvl_5_spells = [| Some chainlight; Some dark |]
 
 (*skill repo end*)
+
+(* consumables *)
+(*consumables repo*)
+let health_potion_bk = make_consumable "health potion"
+let mana_potion_bk = make_consumable "mana potion"
+let wrath_potion_bk = make_consumable "wrath_potion"
+let magic_potion_bk = make_consumable "magic_potion"
+let deal_with_devil_bk = make_consumable "deal_with_devil"
 let get_enem_move_chance enem = enem.enem_hit_chances
 let get_skills actor = actor.skillset
 let get_inv actor = actor.inv
@@ -255,15 +207,33 @@ let get_attribute_val attr ch =
   | "magic power" -> unwrap_attr ch.mag
   | "speed" -> unwrap_attr ch.spd
   | "accuracy" -> unwrap_attr ch.acc
-  | "magic" -> unwrap_attr ch.mag
   | "luck" -> unwrap_attr ch.luk
   | _ -> failwith "not valid attr"
+
+let get_attribute_name attr =
+  match attr with
+  | HP _ -> "HP"
+  | Mana _ -> "Mana"
+  | Strength _ -> "Strength"
+  | Defense _ -> "Defense"
+  | MagicResist _ -> "Magic Resist"
+  | Speed _ -> "Speed"
+  | Accuracy _ -> "Accuracy"
+  | MagicPower _ -> "Magic Power"
+  | Luck _ -> "Luck"
 
 let clear_temps ch =
   let arr = ch.temp_stats in
   for i = 0 to Array.length arr - 1 do
     let at, n = arr.(i) in
-    if n = 1 then arr.(i) <- (change_temp_attr_overwrite 0. at, -1)
+    if n = 1 then (
+      arr.(i) <- (change_temp_attr_overwrite 0. at, -1);
+      let nm =
+        if List.length ch.enem_hit_chances = 0 then "Player " else ch.name ^ " "
+      in
+      ANSITerminal.print_string [ ANSITerminal.yellow ]
+        (nm ^ get_attribute_name at ^ " reverted.\n");
+      wait ())
     else if n > 1 then arr.(i) <- (at, n - 1)
   done;
   { ch with temp_stats = arr }
@@ -310,32 +280,84 @@ let get_temp_value attr_str chr =
 
 let get_name ch = ch.name
 
-let start_character nme =
+let match_skill skill =
+  match skill with
+  | "None" -> None
+  | "icicle" -> Some icicle
+  | "acid_spray" -> Some acid_spray
+  | "blood" -> Some blood
+  | "minimize" -> Some minimize
+  | "spin_slash" -> Some spin_slash
+  | "double_slash" -> Some double_slash
+  | "headbutt" -> Some headbutt
+  | "tsunami" -> Some tsu
+  | "chainlight" -> Some chainlight
+  | "piercing_light" -> Some piercing_light
+  | "dark" -> Some dark
+  | _ -> None
+
+let parse_character nme hit_chances =
+  let data_prefix = "data" ^ Filename.dir_sep in
+
+  let skills_raw = Yojson.Basic.from_file (data_prefix ^ "characters.json") in
+  let json_char = skills_raw |> member nme in
+
+  let hp_val = json_char |> member "hp" |> to_float in
+  let maxhp_val = json_char |> member "maxhp" |> to_float in
+  let mana_val = json_char |> member "mana" |> to_float in
+  let maxmana_val = json_char |> member "maxmana" |> to_float in
+  let exp_val = json_char |> member "exp" |> to_int in
+  let lvl_val = json_char |> member "lvl" |> to_int in
+  let str_val = json_char |> member "str" |> to_float in
+  let mr_val = json_char |> member "mr" |> to_float in
+
+  let def_val = json_char |> member "def" |> to_float in
+  let spd_val = json_char |> member "spd" |> to_float in
+  let acc_val = json_char |> member "acc" |> to_float in
+  let mag_val = json_char |> member "mag" |> to_float in
+  let luk_val = json_char |> member "luk" |> to_float in
+  let enemy_hit_chances_val = hit_chances in
+  let skill1_val =
+    json_char |> member "skillset1" |> to_string |> match_skill
+  in
+  let skill2_val =
+    json_char |> member "skillset2" |> to_string |> match_skill
+  in
+  let skill3_val =
+    json_char |> member "skillset3" |> to_string |> match_skill
+  in
+  let skill4_val =
+    json_char |> member "skillset4" |> to_string |> match_skill
+  in
+  let hpotion_val = json_char |> member "health_potion" |> to_int in
+  let mana_potion_val = json_char |> member "mana_potion" |> to_int in
+  let wrath_potion_val = json_char |> member "wrath_potion" |> to_int in
+  let magic_potion_val = json_char |> member "magic_potion" |> to_int in
+  let deal_with_devil_val = json_char |> member "deal_with_devil" |> to_int in
   {
     name = nme;
-    hp = HP 100.;
-    maxhp = HP 100.;
-    mana = Mana 100.;
-    maxmana = Mana 100.;
-    exp = 0;
-    lvl = 1;
-    str = Strength 10.;
-    def = Defense 10.;
-    mr = MagicResist 10.;
-    spd = Speed 10.;
-    acc = Accuracy 10.;
-    mag = MagicPower 10.;
-    luk = Luck 10.;
-    enem_hit_chances = [];
-    skillset = [| Some icicle; Some acid_spray; None; None |];
+    hp = HP hp_val;
+    maxhp = HP maxhp_val;
+    mana = Mana mana_val;
+    maxmana = Mana maxmana_val;
+    exp = exp_val;
+    lvl = lvl_val;
+    str = Strength str_val;
+    def = Defense def_val;
+    mr = MagicResist mr_val;
+    spd = Speed spd_val;
+    acc = Accuracy acc_val;
+    mag = MagicPower mag_val;
+    luk = Luck luk_val;
+    enem_hit_chances = enemy_hit_chances_val;
+    skillset = [| skill1_val; skill2_val; skill3_val; skill4_val |];
     inv =
       [|
-        { health_potion_bk with amt = 3 };
-        { mana_potion_bk with amt = 1 };
-        { health_potion_bk with amt = 1 };
-        { health_potion_bk with amt = 1 };
-        { health_potion_bk with amt = 1 };
-        { health_potion_bk with amt = 1 };
+        { health_potion_bk with amt = hpotion_val };
+        { mana_potion_bk with amt = mana_potion_val };
+        { wrath_potion_bk with amt = wrath_potion_val };
+        { magic_potion_bk with amt = magic_potion_val };
+        { deal_with_devil_bk with amt = deal_with_devil_val };
       |];
     temp_stats =
       [|
@@ -350,6 +372,8 @@ let start_character nme =
         (Luck 0., -1);
       |];
   }
+
+let start_character nme = parse_character "start_character" []
 
 let ( +* ) att amt =
   match att with
@@ -404,27 +428,20 @@ let stat_randomizer attr_str ch =
   in
   x
 
-let wait un =
-  let i = ref 0 in
-  while !i < 100 do
-    match read_line () with
-    | _ -> i := 100
-  done
-
 let print_attrs () =
-  let _ = print_endline "● strength" in
+  let _ = print_string "● strength" in
   let _ = wait () in
-  let _ = print_endline "● defense" in
+  let _ = print_string "● defense" in
   let _ = wait () in
-  let _ = print_endline "● magic resist" in
+  let _ = print_string "● magic resist" in
   let _ = wait () in
-  let _ = print_endline "● speed" in
+  let _ = print_string "● speed" in
   let _ = wait () in
-  let _ = print_endline "● accuracy" in
+  let _ = print_string "● accuracy" in
   let _ = wait () in
-  let _ = print_endline "● magic power" in
+  let _ = print_string "● magic power" in
   let _ = wait () in
-  print_endline "● luck\n"
+  print_string "● luck\n"
 
 let level_attr actor attr_str =
   match attr_str with
@@ -473,7 +490,7 @@ let rec upgrade_menu actor counter ran =
           "\nChoose your second attribute to improve.\n"
       in
       let s = read_line () in
-      try (level_attr actor s, counter + 1)
+      try (level_attr a1 s, counter + 1)
       with UnknownAttribute ->
         let _ =
           ANSITerminal.print_string [ ANSITerminal.red ]
@@ -489,7 +506,7 @@ let rec upgrade_menu actor counter ran =
           "\nChoose your third attribute to improve.\n"
       in
       let s = read_line () in
-      try (level_attr actor s, counter + 1)
+      try (level_attr a2 s, counter + 1)
       with UnknownAttribute ->
         let _ =
           ANSITerminal.print_string [ ANSITerminal.red ]
@@ -500,7 +517,86 @@ let rec upgrade_menu actor counter ran =
   in
   (a3, -1)
 
+let dots = "......................................."
+
+let print_skills (arr : skill option array) =
+  for i = 0 to Array.length arr - 1 do
+    match arr.(i) with
+    | None -> print_endline ("● " ^ dots ^ ".....")
+    | Some sk ->
+        let s = String.capitalize_ascii sk.name in
+        let minus =
+          if sk.mp_cost > 99. then String.length s + 1 else String.length s
+        in
+        print_endline
+          ("● " ^ s
+          ^ String.sub dots 0 (37 - minus)
+          ^
+          if sk.skill_type = Physical then
+            string_of_int (int_of_float sk.hp_cost) ^ "HP..."
+          else string_of_int (int_of_float sk.mp_cost) ^ " Mana")
+  done
+
+let rec forget_skill (arr : skill option array) sk =
+  match read_line () with
+  | s when s = (unwrap_skill arr.(0)).name ->
+      arr.(0) <- Some sk;
+      print_endline ("Learned " ^ sk.name ^ "!")
+  | s when s = (unwrap_skill arr.(1)).name ->
+      arr.(1) <- Some sk;
+      print_endline ("Learned " ^ sk.name ^ "!")
+  | s when s = (unwrap_skill arr.(2)).name ->
+      arr.(2) <- Some sk;
+      print_endline ("Learned " ^ sk.name ^ "!")
+  | s when s = (unwrap_skill arr.(3)).name ->
+      arr.(3) <- Some sk;
+      print_endline ("Learned " ^ sk.name ^ "!")
+  | s when s = "none" -> print_endline "Didn't learn new skill."
+  | _ ->
+      print_endline "That is not a valid skill. Please try again.";
+      forget_skill arr sk
+
+let learn_skill_helper (arr : skill option array) sk =
+  let i = ref 0 in
+  while !i < 4 do
+    if arr.(!i) = None then (
+      arr.(!i) <- Some sk;
+      i := 100;
+      print_endline ("Learned " ^ sk.name ^ "!"))
+    else if !i = 3 then (
+      print_endline
+        "You cannot learn any more skills. Select a skill to discard, or type \
+         [none] to keep current skills";
+      print_skills arr;
+      forget_skill arr sk);
+    i := !i + 1
+  done
+
+let rec learn_skill (curr_skills : skill option array) ran =
+  if not ran then
+    ANSITerminal.print_string [ ANSITerminal.magenta ]
+      "\nChoose a spell to learn:\n";
+  let arr = lvl_2_spells in
+  let _ = print_skills arr in
+  match read_line () with
+  | s when s = (unwrap_skill arr.(0)).name ->
+      learn_skill_helper curr_skills (unwrap_skill arr.(0))
+  | s when s = (unwrap_skill arr.(1)).name ->
+      learn_skill_helper curr_skills (unwrap_skill arr.(1))
+  | s when s = "info " ^ (unwrap_skill arr.(0)).name ->
+      ANSITerminal.print_string [ ANSITerminal.default ]
+        ((unwrap_skill arr.(0)).description ^ "\n");
+      learn_skill curr_skills true
+  | s when s = "info " ^ (unwrap_skill arr.(1)).name ->
+      ANSITerminal.print_string [ ANSITerminal.default ]
+        ("\n" ^ (unwrap_skill arr.(1)).description ^ "\n\n");
+      learn_skill curr_skills true
+  | _ ->
+      print_endline "That is not a valid skill. Please try again.";
+      learn_skill curr_skills ran
+
 let level_up actor =
+  Random.self_init ();
   ANSITerminal.print_string [ ANSITerminal.green ] "You have leveled up!\n";
   let _ = wait () in
   let hpmax =
@@ -526,20 +622,25 @@ let level_up actor =
     Mana x
   in
   let actor_final, _ = upgrade_menu actor 0 false in
+  let skills =
+    if (actor.lvl + 1) mod 2 = 0 then learn_skill actor.skillset false;
+    actor.skillset
+  in
   {
     actor_final with
     hp = hpmax;
     maxhp = hpmax;
     mana = manamax;
     maxmana = manamax;
+    skillset = skills;
   }
-(* in let skills = if (actor.lvl + 1 ) mod 5 = 0 then learn_spell actor.skillset
-   else actor.skillset in*)
 
 let cost_calc sk user = adjust sk.hp_cost (adjust sk.mp_cost user "mp") "hp"
 
 let get_total_attr_val attr chr =
-  get_attribute_val attr chr +. get_temp_value attr chr
+  let a = get_attribute_val attr chr in
+  let b = get_temp_value attr chr in
+  a +. b
 
 let get_from_tuple (a, b) = b
 
@@ -615,13 +716,14 @@ let wait un =
   done
 
 let use_skill sk user target =
+  Random.self_init ();
   match sk.skill_type with
   | Magic ->
-      if get_attribute_val "mana" user >= sk.mp_cost then
+      if get_attribute_val "mana" user >= sk.mp_cost then (
         let _ =
           if List.length user.enem_hit_chances = 0 then
             ANSITerminal.print_string [ ANSITerminal.blue ]
-              ("You used " ^ sk.name ^ " !\n")
+              ("You used " ^ sk.name ^ " !")
         in
         let new_usr = adjust (-.sk.mp_cost) user "mana" in
 
@@ -629,33 +731,42 @@ let use_skill sk user target =
         let player_hit_chance =
           if sk.mp_cost < 0. then 1.
           else
-            ((get_attribute_val "accuracy" user +. 70.) /. 100.0)
+            ((get_total_attr_val "accuracy" user +. 60.) /. 100.0)
             -. (0.001 *. (avoid *. avoid))
         in
         let rand0 = Random.float 1. in
-        let _ = wait 0 in
+        if sk.mp_cost >= 0. then wait 0;
         if rand0 > player_hit_chance then
           if List.length user.enem_hit_chances = 0 then
-            let _ = print_endline "You missed!" in
+            let _ =
+              ANSITerminal.print_string [ ANSITerminal.default ]
+                "You missed!\n\n"
+            in
             (new_usr, target, true)
           else
-            let _ = ANSITerminal.print_string [] (user.name ^ " missed!") in
+            let _ =
+              ANSITerminal.print_string [ ANSITerminal.white ]
+                (user.name ^ " missed!\n\n")
+            in
             (target, new_usr, true)
         else
           let dmg =
             let raw =
-              (sk.base_dmg +. (unwrap_attr user.mag *. sk.dmg_scaling))
-              /. (1. +. (get_total_attr_val "magic resist" user /. 50.))
+              (sk.base_dmg +. (3. *. unwrap_attr user.mag *. sk.dmg_scaling))
+              /. (1.
+                 +.
+                 if get_total_attr_val "magic resist" target /. 10. < 0. then 0.
+                 else get_total_attr_val "magic resist" target /. 10.)
             in
             if raw > 0. then raw else 0.
           in
           let _ =
             if sk.mp_cost >= 0. then
               if List.length user.enem_hit_chances = 0 then
-                ANSITerminal.print_string [ ANSITerminal.blue ]
+                ANSITerminal.print_string [ ANSITerminal.white ]
                   (user.name ^ " dealt " ^ string_of_float dmg ^ " damage!\n")
               else
-                ANSITerminal.print_string [ ANSITerminal.red ]
+                ANSITerminal.print_string [ ANSITerminal.white ]
                   (user.name ^ " dealt " ^ string_of_float dmg ^ " damage!\n")
           in
           let new_targ_stp1 = adjust (-.dmg) target "hp" in
@@ -668,7 +779,93 @@ let use_skill sk user target =
           let _ = if sk.mp_cost >= 0. then wait () in
           if List.length user.enem_hit_chances != 0 then
             (new_targ, new_usr, true)
-          else (new_usr, new_targ, true)
+          else (new_usr, new_targ, true))
+      else
+        let _ =
+          let nm, lst =
+            if List.length user.enem_hit_chances = 0 then
+              ("You don't", [ ANSITerminal.yellow ])
+            else (user.name ^ " doesn't", [ ANSITerminal.red ])
+          in
+          ANSITerminal.print_string lst
+            ("\n" ^ nm ^ " have enough mana to use " ^ sk.name ^ "\n")
+        in
+        if List.length user.enem_hit_chances = 0 then (user, target, false)
+        else (target, user, false)
+  | Physical ->
+      if get_attribute_val "hp" user > sk.hp_cost then (
+        let avoid = get_attribute_val "speed" target in
+        let player_hit_chance =
+          if sk.mp_cost < 0. then 1.
+          else
+            ((get_total_attr_val "accuracy" user +. 60.) /. 100.0)
+            -. (0.001 *. (avoid *. avoid))
+        in
+        let rand0 = Random.float 1. in
+        let _ = if sk.hp_cost >= 0. then wait 0 in
+        if rand0 <= player_hit_chance then (
+          let _ =
+            ANSITerminal.print_string [ ANSITerminal.blue ]
+              ("You used " ^ sk.name ^ "!\n")
+          in
+          let dmg =
+            let raw =
+              (unwrap_attr user.str +. (unwrap_attr user.mag *. sk.dmg_scaling))
+              /. (1. +. (unwrap_attr target.mag /. 50.))
+            in
+            if raw > 0. then raw else 0.
+          in
+          let new_targ = adjust (-.dmg) target "hp" in
+          let new_usr = adjust (-.sk.hp_cost) target "hp" in
+          print_endline "";
+          (new_usr, new_targ, true))
+        else
+          let new_usr = adjust (-.sk.hp_cost) target "hp" in
+          print_endline (user.name ^ " missed!");
+          if List.length new_usr.enem_hit_chances = 0 then
+            (new_usr, target, true)
+          else (target, new_usr, true))
+      else
+        let _ =
+          ANSITerminal.print_string [ ANSITerminal.yellow ]
+            ("You don't have enough hp to use " ^ sk.name ^ "\n")
+        in
+        if List.length user.enem_hit_chances = 0 then (user, target, false)
+        else (target, user, false)
+  | Status ->
+      if sk.mp_cost <= unwrap_attr user.mana then
+        let _ =
+          if List.length user.enem_hit_chances = 0 then
+            ANSITerminal.print_string [ ANSITerminal.blue ]
+              ("You used " ^ sk.name ^ "!")
+          else
+            ANSITerminal.print_string [ ANSITerminal.red ]
+              (user.name ^ " used " ^ sk.name ^ " !\n")
+        in
+        let new_usr = adjust (-.sk.mp_cost) user "mana" in
+        let avoid = get_attribute_val "speed" target in
+        let player_hit_chance =
+          if sk.mp_cost < 0. then 1.
+          else
+            ((get_total_attr_val "accuracy" user +. 60.) /. 100.0)
+            -. (0.001 *. (avoid *. avoid))
+        in
+        let rand0 = Random.float 1. in
+        let _ = wait 0 in
+        if rand0 <= player_hit_chance then
+          if List.length user.enem_hit_chances = 0 then
+            (new_usr, change_temps_from_skill sk target, true)
+          else (change_temps_from_skill sk target, new_usr, true)
+        else
+          let _ =
+            let name =
+              if List.length user.enem_hit_chances = 0 then "You" else user.name
+            in
+            print_endline (name ^ " missed!\n")
+          in
+          if List.length new_usr.enem_hit_chances = 0 then
+            (new_usr, target, true)
+          else (target, new_usr, true)
       else
         let _ =
           let nm, lst =
@@ -681,36 +878,6 @@ let use_skill sk user target =
         in
         if List.length user.enem_hit_chances = 0 then (user, target, false)
         else (target, user, false)
-  | Physical ->
-      if get_attribute_val "hp" user > sk.hp_cost then (
-        let _ =
-          ANSITerminal.print_string [ ANSITerminal.blue ]
-            ("You used " ^ sk.name ^ " !\n")
-        in
-        let dmg =
-          let raw =
-            (unwrap_attr user.str +. (unwrap_attr user.mag *. sk.dmg_scaling))
-            /. (1. +. (unwrap_attr target.mag /. 50.))
-          in
-          if raw > 0. then raw else 0.
-        in
-        let new_targ = adjust (-.dmg) target "hp" in
-        let new_usr = adjust (-.sk.hp_cost) target "hp" in
-        print_endline "";
-        (new_usr, new_targ, true))
-      else
-        let _ =
-          ANSITerminal.print_string [ ANSITerminal.yellow ]
-            ("You don't have enough hp to use " ^ sk.name ^ "\n")
-        in
-        if List.length user.enem_hit_chances = 0 then (user, target, false)
-        else (target, user, false)
-  | Status ->
-      let _ =
-        ANSITerminal.print_string [ ANSITerminal.blue ]
-          ("You used " ^ sk.name ^ " !\n")
-      in
-      (user, change_temps_from_skill sk target, true)
 
 let use_consumable csbl ch idx =
   let new_ch, _, _ = use_skill csbl ch ch in
@@ -725,6 +892,9 @@ let use_consumable csbl ch idx =
   new_ch'.inv.(idx) <- { x with amt = x.amt - 1 };
   new_ch'
 
+let get_description_skill s = s.description
+let get_description_item i = get_description_skill i
+
 [@@@warning "-8"]
 
 let adjust_temps (attr, t) ch =
@@ -732,45 +902,63 @@ let adjust_temps (attr, t) ch =
   | HP hp -> (
       match ch.temp_stats.(0) with
       | HP x, c ->
-          let () = ch.temp_stats.(0) <- (HP hp, t) in
-          if hp < 0. then adjust (-.hp) ch "hp" else ch)
+          let ct = if c >= 0 then c else 0 in
+          let () = ch.temp_stats.(0) <- (HP (x +. hp), t + ct) in
+          if hp < 0. then adjust (-.hp) ch "hp" else ch
+      | _ -> raise UnknownAttribute)
   | Mana mp -> (
       match ch.temp_stats.(1) with
       | Mana x, c ->
-          let () = ch.temp_stats.(0) <- (HP mp, t) in
-          if mp < 0. then adjust (-.mp) ch "hp" else ch)
+          let ct = if c >= 0 then c else 0 in
+          let () = ch.temp_stats.(1) <- (Mana (mp +. x), t + ct) in
+          if mp < 0. then adjust (-.mp) ch "mana" else ch
+      | _ -> raise UnknownAttribute)
   | Strength str -> (
       match ch.temp_stats.(2) with
       | Strength x, c ->
-          let () = ch.temp_stats.(2) <- (Strength str, t) in
-          ch)
+          let ct = if c >= 0 then c else 0 in
+          let () = ch.temp_stats.(2) <- (Strength (str +. x), t + ct) in
+          ch
+      | _ -> raise UnknownAttribute)
   | Defense def -> (
       match ch.temp_stats.(3) with
       | Defense x, c ->
-          let () = ch.temp_stats.(3) <- (Defense def, t) in
-          ch)
+          let ct = if c >= 0 then c else 0 in
+          let () = ch.temp_stats.(3) <- (Defense (def +. x), t + ct) in
+          ch
+      | _ -> raise UnknownAttribute)
   | MagicResist mr -> (
       match ch.temp_stats.(4) with
       | MagicResist x, c ->
-          let () = ch.temp_stats.(4) <- (MagicResist mr, t) in
-          ch)
+          let ct = if c >= 0 then c else 0 in
+          let () = ch.temp_stats.(4) <- (MagicResist (mr +. x), t + ct) in
+          ch
+      | _ -> raise UnknownAttribute)
   | Speed spd -> (
       match ch.temp_stats.(5) with
       | Speed x, c ->
-          let () = ch.temp_stats.(5) <- (Speed spd, t) in
-          ch)
+          let ct = if c >= 0 then c else 0 in
+          let () = ch.temp_stats.(5) <- (Speed (spd +. x), t + ct) in
+          ch
+      | _ -> raise UnknownAttribute)
   | Accuracy acc -> (
       match ch.temp_stats.(6) with
       | Accuracy x, c ->
-          let () = ch.temp_stats.(6) <- (Accuracy acc, t) in
-          ch)
+          let ct = if c >= 0 then c else 0 in
+          let () = ch.temp_stats.(6) <- (Accuracy (acc +. x), t + ct) in
+          ch
+      | _ -> raise UnknownAttribute)
   | MagicPower mag -> (
       match ch.temp_stats.(7) with
       | MagicPower x, c ->
-          let () = ch.temp_stats.(7) <- (MagicPower mag, t) in
-          ch)
+          let ct = if c >= 0 then c else 0 in
+          let () = ch.temp_stats.(7) <- (MagicPower (mag +. x), t + ct) in
+          ch
+      | _ -> raise UnknownAttribute)
   | Luck luk -> (
       match ch.temp_stats.(8) with
       | Luck x, c ->
-          let () = ch.temp_stats.(8) <- (Luck luk, t) in
-          ch)
+          let ct = if c >= 0 then c else 0 in
+          let () = ch.temp_stats.(8) <- (Luck (luk +. x), t + ct) in
+          ch
+      | _ -> raise UnknownAttribute)

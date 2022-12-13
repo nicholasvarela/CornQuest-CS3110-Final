@@ -1,0 +1,27 @@
+{
+    "start_character": {
+        "hp": 5.0,
+        "maxhp": 100.0,
+        "mana": 100.0,
+        "maxmana": 100.0,
+        "exp": 0,
+        "lvl": 0,
+        "def": 0.0,
+        "spd": 0.0,
+        "mr": 0.0,
+        "str": 0.0,
+        "acc": 0.0,
+        "mag": 0.0,
+        "luk": 0.0,
+        "enm_hit_chances": [],
+        "skillset1": "icile",
+        "skillset2": "None",
+        "skillset3": "None",
+        "skillset4": "None",
+        "health_potion": 3,
+        "mana_potion": 3,
+        "wrath_potion": 3,
+        "magic_potion": 3,
+        "deal_with_devil": 3
+    }
+}
