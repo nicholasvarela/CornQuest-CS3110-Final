@@ -148,3 +148,15 @@ val icicle : skill
 
 val acid_spray : skill
 (**[acid spray] is a skill*)
+
+val icicle : skill
+val acid_spray : skill
+val blood : skill
+val minimize : skill
+val spin_slash : skill
+val double_slash : skill
+val headbutt : skill
+val tsu : skill
+val chainlight : skill
+val piercing_light : skill
+val dark : skill

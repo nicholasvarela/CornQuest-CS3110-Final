@@ -79,6 +79,13 @@ let return_type raw_type =
   | "Status" -> Status
   | _ -> Magic
 
+let wait un =
+  let i = ref 0 in
+  while !i < 100 do
+    match read_line () with
+    | _ -> i := 100
+  done
+
 let return_attr json attr_name =
   let effect = json |> member (attr_name ^ "-effect") |> to_float in
   let turns = json |> member (attr_name ^ "-turns") |> to_int in
@@ -100,9 +107,10 @@ let parse_skill name json =
     skill_type = return_type (json |> member "skill_type" |> to_string);
     attribute_affected =
       [|
+        return_attr json "hp";
         return_attr json "mana";
-        return_attr json "defense";
         return_attr json "strength";
+        return_attr json "defense";
         return_attr json "magicresist";
         return_attr json "speed";
         return_attr json "accuracy";
@@ -199,15 +207,33 @@ let get_attribute_val attr ch =
   | "magic power" -> unwrap_attr ch.mag
   | "speed" -> unwrap_attr ch.spd
   | "accuracy" -> unwrap_attr ch.acc
-  | "magic" -> unwrap_attr ch.mag
   | "luck" -> unwrap_attr ch.luk
   | _ -> failwith "not valid attr"
+
+let get_attribute_name attr =
+  match attr with
+  | HP _ -> "HP"
+  | Mana _ -> "Mana"
+  | Strength _ -> "Strength"
+  | Defense _ -> "Defense"
+  | MagicResist _ -> "Magic Resist"
+  | Speed _ -> "Speed"
+  | Accuracy _ -> "Accuracy"
+  | MagicPower _ -> "Magic Power"
+  | Luck _ -> "Luck"
 
 let clear_temps ch =
   let arr = ch.temp_stats in
   for i = 0 to Array.length arr - 1 do
     let at, n = arr.(i) in
-    if n = 1 then arr.(i) <- (change_temp_attr_overwrite 0. at, -1)
+    if n = 1 then (
+      arr.(i) <- (change_temp_attr_overwrite 0. at, -1);
+      let nm =
+        if List.length ch.enem_hit_chances = 0 then "Player " else ch.name ^ " "
+      in
+      ANSITerminal.print_string [ ANSITerminal.yellow ]
+        (nm ^ get_attribute_name at ^ " reverted.\n");
+      wait ())
     else if n > 1 then arr.(i) <- (at, n - 1)
   done;
   { ch with temp_stats = arr }
@@ -347,13 +373,6 @@ let stat_randomizer attr_str ch =
         ^ attr_str ^ " didn't increase.\n")
   in
   x
-
-let wait un =
-  let i = ref 0 in
-  while !i < 100 do
-    match read_line () with
-    | _ -> i := 100
-  done
 
 let print_attrs () =
   let _ = print_string "● strength" in
@@ -646,7 +665,7 @@ let use_skill sk user target =
   Random.self_init ();
   match sk.skill_type with
   | Magic ->
-      if get_attribute_val "mana" user >= sk.mp_cost then
+      if get_attribute_val "mana" user >= sk.mp_cost then (
         let _ =
           if List.length user.enem_hit_chances = 0 then
             ANSITerminal.print_string [ ANSITerminal.blue ]
@@ -662,8 +681,8 @@ let use_skill sk user target =
             -. (0.001 *. (avoid *. avoid))
         in
         let rand0 = Random.float 1. in
-        let _ = wait 0 in
-        if rand0 <= player_hit_chance then
+        if sk.mp_cost >= 0. then wait 0;
+        if rand0 > player_hit_chance then
           if List.length user.enem_hit_chances = 0 then
             let _ =
               ANSITerminal.print_string [ ANSITerminal.default ]
@@ -680,7 +699,10 @@ let use_skill sk user target =
           let dmg =
             let raw =
               (sk.base_dmg +. (3. *. unwrap_attr user.mag *. sk.dmg_scaling))
-              /. (1. +. (get_total_attr_val "magic resist" target /. 10.))
+              /. (1.
+                 +.
+                 if get_total_attr_val "magic resist" target /. 10. < 0. then 0.
+                 else get_total_attr_val "magic resist" target /. 10.)
             in
             if raw > 0. then raw else 0.
           in
@@ -703,7 +725,7 @@ let use_skill sk user target =
           let _ = if sk.mp_cost >= 0. then wait () in
           if List.length user.enem_hit_chances != 0 then
             (new_targ, new_usr, true)
-          else (new_usr, new_targ, true)
+          else (new_usr, new_targ, true))
       else
         let _ =
           let nm, lst =
@@ -712,7 +734,7 @@ let use_skill sk user target =
             else (user.name ^ " doesn't", [ ANSITerminal.red ])
           in
           ANSITerminal.print_string lst
-            (nm ^ " have enough mana to use " ^ sk.name ^ "\n")
+            ("\n" ^ nm ^ " have enough mana to use " ^ sk.name ^ "\n")
         in
         if List.length user.enem_hit_chances = 0 then (user, target, false)
         else (target, user, false)
@@ -726,11 +748,11 @@ let use_skill sk user target =
             -. (0.001 *. (avoid *. avoid))
         in
         let rand0 = Random.float 1. in
-        let _ = wait 0 in
+        let _ = if sk.hp_cost >= 0. then wait 0 in
         if rand0 <= player_hit_chance then (
           let _ =
             ANSITerminal.print_string [ ANSITerminal.blue ]
-              ("You used " ^ sk.name ^ " !\n")
+              ("You used " ^ sk.name ^ "!\n")
           in
           let dmg =
             let raw =
@@ -826,45 +848,63 @@ let adjust_temps (attr, t) ch =
   | HP hp -> (
       match ch.temp_stats.(0) with
       | HP x, c ->
-          let () = ch.temp_stats.(0) <- (HP hp, t) in
-          if hp < 0. then adjust (-.hp) ch "hp" else ch)
+          let ct = if c >= 0 then c else 0 in
+          let () = ch.temp_stats.(0) <- (HP (x +. hp), t + ct) in
+          if hp < 0. then adjust (-.hp) ch "hp" else ch
+      | _ -> raise UnknownAttribute)
   | Mana mp -> (
       match ch.temp_stats.(1) with
       | Mana x, c ->
-          let () = ch.temp_stats.(0) <- (HP mp, t) in
-          if mp < 0. then adjust (-.mp) ch "hp" else ch)
+          let ct = if c >= 0 then c else 0 in
+          let () = ch.temp_stats.(1) <- (Mana (mp +. x), t + ct) in
+          if mp < 0. then adjust (-.mp) ch "mana" else ch
+      | _ -> raise UnknownAttribute)
   | Strength str -> (
       match ch.temp_stats.(2) with
       | Strength x, c ->
-          let () = ch.temp_stats.(2) <- (Strength str, t) in
-          ch)
+          let ct = if c >= 0 then c else 0 in
+          let () = ch.temp_stats.(2) <- (Strength (str +. x), t + ct) in
+          ch
+      | _ -> raise UnknownAttribute)
   | Defense def -> (
       match ch.temp_stats.(3) with
       | Defense x, c ->
-          let () = ch.temp_stats.(3) <- (Defense def, t) in
-          ch)
+          let ct = if c >= 0 then c else 0 in
+          let () = ch.temp_stats.(3) <- (Defense (def +. x), t + ct) in
+          ch
+      | _ -> raise UnknownAttribute)
   | MagicResist mr -> (
       match ch.temp_stats.(4) with
       | MagicResist x, c ->
-          let () = ch.temp_stats.(4) <- (MagicResist mr, t) in
-          ch)
+          let ct = if c >= 0 then c else 0 in
+          let () = ch.temp_stats.(4) <- (MagicResist (mr +. x), t + ct) in
+          ch
+      | _ -> raise UnknownAttribute)
   | Speed spd -> (
       match ch.temp_stats.(5) with
       | Speed x, c ->
-          let () = ch.temp_stats.(5) <- (Speed spd, t) in
-          ch)
+          let ct = if c >= 0 then c else 0 in
+          let () = ch.temp_stats.(5) <- (Speed (spd +. x), t + ct) in
+          ch
+      | _ -> raise UnknownAttribute)
   | Accuracy acc -> (
       match ch.temp_stats.(6) with
       | Accuracy x, c ->
-          let () = ch.temp_stats.(6) <- (Accuracy acc, t) in
-          ch)
+          let ct = if c >= 0 then c else 0 in
+          let () = ch.temp_stats.(6) <- (Accuracy (acc +. x), t + ct) in
+          ch
+      | _ -> raise UnknownAttribute)
   | MagicPower mag -> (
       match ch.temp_stats.(7) with
       | MagicPower x, c ->
-          let () = ch.temp_stats.(7) <- (MagicPower mag, t) in
-          ch)
+          let ct = if c >= 0 then c else 0 in
+          let () = ch.temp_stats.(7) <- (MagicPower (mag +. x), t + ct) in
+          ch
+      | _ -> raise UnknownAttribute)
   | Luck luk -> (
       match ch.temp_stats.(8) with
       | Luck x, c ->
-          let () = ch.temp_stats.(8) <- (Luck luk, t) in
-          ch)
+          let ct = if c >= 0 then c else 0 in
+          let () = ch.temp_stats.(8) <- (Luck (luk +. x), t + ct) in
+          ch
+      | _ -> raise UnknownAttribute)

@@ -11,21 +11,27 @@ let first_time_item = ref true
 let enem : Character.character =
   {
     name = "Marthia Pollocus";
-    hp = HP 1.;
+    hp = HP 100.;
     maxhp = HP 100.;
-    mana = Mana 100.;
-    maxmana = Mana 100.;
+    mana = Mana 200.;
+    maxmana = Mana 200.;
     exp = 25;
     lvl = 1;
     str = Strength 10.;
     def = Defense 10.;
     mr = MagicResist 10.;
     spd = Speed 2.;
-    acc = Accuracy 10.;
+    acc = Accuracy 100000.;
     mag = MagicPower 10.;
     luk = Luck 10.;
-    enem_hit_chances = [ 0.5; 0.25; 0.25 ];
-    skillset = [| Some Character.icicle |];
+    enem_hit_chances = [ 0.3; 0.1; 0.3; 0.1; 0.1; 0.1 ];
+    skillset =
+      [|
+        Some Character.tsu;
+        Some Character.blood;
+        Some Character.piercing_light;
+        Some Character.dark;
+      |];
     inv = [||];
     temp_stats =
       [|
@@ -142,32 +148,38 @@ and item_menu (actor, enem) =
   | s when String.length s = 0 -> item_menu (actor, enem)
   | s when inp = bk1 ->
       let a = Character.use_consumable arr.(0).item actor 0 in
-      let a2, e2 = Battle.pick_enemy_move (a, enem) in
+      let e' = Character.clear_temps enem in
+      let a2, e2 = Battle.pick_enemy_move (a, e') in
       let a2', e2' = check_health (a2, e2) in
       turn_handler (a2', e2') true
   | s when inp = bk2 ->
       let a = Character.use_consumable arr.(1).item actor 1 in
-      let a2, e2 = Battle.pick_enemy_move (a, enem) in
+      let e' = Character.clear_temps enem in
+      let a2, e2 = Battle.pick_enemy_move (a, e') in
       let a2', e2' = check_health (a2, e2) in
       turn_handler (a2', e2') true
   | s when inp = bk3 ->
       let a = Character.use_consumable arr.(2).item actor 2 in
-      let a2, e2 = Battle.pick_enemy_move (a, enem) in
+      let e' = Character.clear_temps enem in
+      let a2, e2 = Battle.pick_enemy_move (a, e') in
       let a2', e2' = check_health (a2, e2) in
       turn_handler (a2', e2') true
   | s when inp = bk4 ->
       let a = Character.use_consumable arr.(3).item actor 3 in
-      let a2, e2 = Battle.pick_enemy_move (a, enem) in
+      let e' = Character.clear_temps enem in
+      let a2, e2 = Battle.pick_enemy_move (a, e') in
       let a2', e2' = check_health (a2, e2) in
       turn_handler (a2', e2') true
   | s when inp = bk5 ->
       let a = Character.use_consumable arr.(4).item actor 4 in
-      let a2, e2 = Battle.pick_enemy_move (a, enem) in
+      let e' = Character.clear_temps enem in
+      let a2, e2 = Battle.pick_enemy_move (a, e') in
       let a2', e2' = check_health (a2, e2) in
       turn_handler (a2', e2') true
   | s when inp = bk6 ->
       let a = Character.use_consumable arr.(5).item actor 5 in
-      let a2, e2 = Battle.pick_enemy_move (a, enem) in
+      let e' = Character.clear_temps enem in
+      let a2, e2 = Battle.pick_enemy_move (a, e') in
       let a2', e2' = check_health (a2, e2) in
       turn_handler (a2', e2') true
   | s when s = "info " ^ bk1 ->
@@ -220,7 +232,8 @@ and skill_menu (actor, enem) =
       in
       let a', e' = check_health (a, e) in
       if b then
-        let a2, e2 = Battle.pick_enemy_move (a', e') in
+        let e'' = Character.clear_temps e' in
+        let a2, e2 = Battle.pick_enemy_move (a', e'') in
         let a2', e2' = check_health (a2, e2) in
         turn_handler (a2', e2') true
       else skill_menu (a', e')
@@ -230,7 +243,8 @@ and skill_menu (actor, enem) =
       in
       let a', e' = check_health (a, e) in
       if b then
-        let a2, e2 = Battle.pick_enemy_move (a', e') in
+        let e'' = Character.clear_temps e' in
+        let a2, e2 = Battle.pick_enemy_move (a', e'') in
         let a2', e2' = check_health (a2, e2) in
         turn_handler (a2', e2') true
       else skill_menu (a', e')
@@ -240,7 +254,8 @@ and skill_menu (actor, enem) =
       in
       let a', e' = check_health (a, e) in
       if b then
-        let a2, e2 = Battle.pick_enemy_move (a', e') in
+        let e'' = Character.clear_temps e' in
+        let a2, e2 = Battle.pick_enemy_move (a', e'') in
         let a2', e2' = check_health (a2, e2) in
         turn_handler (a2', e2') true
       else skill_menu (a', e')
@@ -250,7 +265,8 @@ and skill_menu (actor, enem) =
       in
       let a', e' = check_health (a, e) in
       if b then
-        let a2, e2 = Battle.pick_enemy_move (a', e') in
+        let e'' = Character.clear_temps e' in
+        let a2, e2 = Battle.pick_enemy_move (a', e'') in
         let a2', e2' = check_health (a2, e2) in
         turn_handler (a2', e2') true
       else skill_menu (a', e')
@@ -274,10 +290,6 @@ and skill_menu (actor, enem) =
   | _ -> skill_menu (actor, enem)
 
 and turn_handler (actor, enem) made_action =
-  let actor, enem =
-    if made_action then (Character.clear_temps actor, Character.clear_temps enem)
-    else (actor, enem)
-  in
   ANSITerminal.print_string [ ANSITerminal.white ]
     (actor.name ^ " HP: "
     ^ string_of_int (int_of_float (Character.get_attribute_val "hp" actor))
@@ -294,14 +306,18 @@ and turn_handler (actor, enem) made_action =
   | "attack" ->
       ANSITerminal.print_string [ ANSITerminal.blue ]
         ("\n" ^ actor.name ^ " attacked!");
-      let first_turn_chars = (actor, Battle.attack enem actor) in
-      let _ = check_health first_turn_chars in
-      let second_turn_chars = pick_enemy_move first_turn_chars in
+      let a, e = (actor, Battle.attack enem actor) in
+      let _ = check_health (a, e) in
+      let e' = Character.clear_temps e in
+      let second_turn_chars = pick_enemy_move (a, e') in
       let _ = check_health second_turn_chars in
       turn_handler second_turn_chars true
   | "guard" ->
-      print_endline "You put your hands up and brace for an incoming attack.\n";
-      let new_chars = pick_enemy_move (Battle.guard actor, enem) in
+      ANSITerminal.print_string [ ANSITerminal.blue ]
+        "\nYou brace for an incoming attack.\n";
+      wait ();
+      let e' = Character.clear_temps enem in
+      let new_chars = pick_enemy_move (Battle.guard actor, e') in
       let _ = check_health new_chars in
       turn_handler new_chars true
   | "skill" ->
