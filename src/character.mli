@@ -27,7 +27,6 @@ type dmg_type =
 type skill = {
   name : string;
   description : string;
-
   skill_type : dmg_type;
   attribute_affected : (attribute * int) array;
   chance_to_affect : float;
@@ -100,6 +99,9 @@ val get_total_attr_val : string -> character -> float
 
 val get_skills : character -> skill option array
 (**[get_skills actor] returns an array containing the skills of [actor]*)
+
+val get_description_skill : skill -> string
+val get_description_item : consumable -> string
 
 val get_inv : character -> consumable_bucket array
 (**[get_skills actor] returns the consumable inventory of [actor]*)

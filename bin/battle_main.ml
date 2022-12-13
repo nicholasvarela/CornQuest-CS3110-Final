@@ -5,7 +5,8 @@ open Character
 exception Battle_Over of Character.character option
 
 let actor : Character.character = Character.start_character "Demoman"
-let first_time = ref true
+let first_time_skill = ref true
+let first_time_item = ref true
 
 let enem : Character.character =
   {
@@ -77,7 +78,26 @@ let print_skills actor first_time =
     | None -> print_endline ("● " ^ dots ^ ".....")
   done
 
-let print_items actor =
+let wait () =
+  let i = ref 0 in
+  while !i < 100 do
+    match read_line () with
+    | _ -> i := 100
+  done
+
+let print_items actor first_time =
+  if !first_time then (
+    ANSITerminal.print_string [ ANSITerminal.yellow ]
+      "\n\
+       [type [item name] to use an item, [info item name] to \n\
+       read what the skill does, or [back] to exit the menu]\n";
+    first_time := false;
+    let a = wait () in
+    a);
+  let _ =
+    ANSITerminal.print_string [ ANSITerminal.cyan ]
+      "\n[..................Skill Menu................]\n"
+  in
   let arr = Character.get_inv actor in
   let cnt = ref 6 in
   for i = 0 to Array.length arr - 1 do
@@ -150,6 +170,30 @@ and item_menu (actor, enem) =
       let a2, e2 = Battle.pick_enemy_move (a, enem) in
       let a2', e2' = check_health (a2, e2) in
       turn_handler (a2', e2') true
+  | s when s = "info " ^ bk1 ->
+      ANSITerminal.print_string [ ANSITerminal.default ]
+        (get_description_item arr.(0).item ^ "\n");
+      item_menu (actor, enem)
+  | s when s = "info " ^ bk2 ->
+      ANSITerminal.print_string [ ANSITerminal.default ]
+        (get_description_item arr.(1).item ^ "\n");
+      item_menu (actor, enem)
+  | s when s = "info " ^ bk3 ->
+      ANSITerminal.print_string [ ANSITerminal.default ]
+        (get_description_item arr.(2).item ^ "\n");
+      item_menu (actor, enem)
+  | s when s = "info " ^ bk4 ->
+      ANSITerminal.print_string [ ANSITerminal.default ]
+        (get_description_item arr.(3).item ^ "\n");
+      item_menu (actor, enem)
+  | s when s = "info " ^ bk5 ->
+      ANSITerminal.print_string [ ANSITerminal.default ]
+        (get_description_item arr.(4).item ^ "\n");
+      item_menu (actor, enem)
+  | s when s = "info " ^ bk6 ->
+      ANSITerminal.print_string [ ANSITerminal.default ]
+        (get_description_item arr.(5).item ^ "\n");
+      item_menu (actor, enem)
   | "back" -> turn_handler (actor, enem) false
   | _ -> item_menu (actor, enem)
 
@@ -261,13 +305,13 @@ and turn_handler (actor, enem) made_action =
       let _ = check_health new_chars in
       turn_handler new_chars true
   | "skill" ->
-      print_skills actor first_time;
+      print_skills actor first_time_skill;
       skill_menu (actor, enem)
   | "escape" ->
       print_endline "You flee!";
       raise (Battle_Over (Some actor))
   | "item" ->
-      print_items actor;
+      print_items actor first_time_item;
       item_menu (actor, enem)
   | _ -> turn_handler (actor, enem) false
 
