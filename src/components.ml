@@ -8,8 +8,24 @@ module Position = struct
   type pos = int * int
   (**Type representing position, in the form of cartesian coordinates.*)
 
-  include (val CornECS.new_property ~default:(0, 0) () : CornECS.PROPERTY
-             with type t = pos)
+  include (val CornECS.new_property () : CornECS.PROPERTY with type t = pos)
+end
+
+module Event = struct
+  type ev = Sdl.event
+
+  include (val CornECS.new_property ~default:(Sdl.Event.create ()) ()
+             : CornECS.PROPERTY
+             with type t = ev)
+end
+
+(**Module representing the "move time" property, possessed by components that
+   move on the map grid, such as [KeyboardController] or [AnimatedSprite].*)
+module MoveTime = struct
+  type time = int
+
+  include (val CornECS.new_property ~default:0 () : CornECS.PROPERTY
+             with type t = time)
 end
 
 (**Module representing the "velocity" property.*)
@@ -29,27 +45,24 @@ module Rectangle = struct
 
   include (val CornECS.new_property
                  ~default:
-                   ( Sdl.Rect.create 0 0 0 0,
+                   ( Sdl.Rect.create 0 0 Constants.spritesize
+                       Constants.spritesize,
                      Sdl.Rect.create 0 0 Constants.tilesize Constants.tilesize
                    )
                  () : CornECS.PROPERTY
              with type t = rects)
 end
 
-module Action = struct
-  type direction =
-    | Up
-    | Down
-    | Left
-    | Right  (**Type representing an direction of movement.*)
+(**Module representing the "direction" property.*)
+module Direction = struct
+  type dir =
+    | North
+    | South
+    | West
+    | East  (**Type representing direction.*)
 
-  type act =
-    | Idle
-    | Move of direction
-    | Bruh  (**Type representing an action.*)
-
-  include (val CornECS.new_property ~default:Idle () : CornECS.PROPERTY
-             with type t = act)
+  include (val CornECS.new_property ~default:North () : CornECS.PROPERTY
+             with type t = dir)
 end
 
 (**Module representing the "renderable" property.*)
@@ -67,10 +80,8 @@ module Transform = struct
     (val CornECS.new_component [ (module Position); (module Velocity) ] [])
 
   let update e =
-    let posx = fst (Position.get e) in
-    let posy = snd (Position.get e) in
-    let velx = fst (Velocity.get e) in
-    let vely = snd (Velocity.get e) in
+    let posx, posy = Position.get e in
+    let velx, vely = Velocity.get e in
     Position.set e (posx + velx, posy + vely)
 end
 
@@ -83,8 +94,8 @@ module Collider = struct
   let check e = failwith "unimp"
 end
 
-(**A [Sprite] is a [Rectangle] that is [Renderable] and can update its own
-   [Position].
+(**A [Sprite] is a [Rectangle] that is [Renderable], has a [Velocity], and can
+   update its own [Position]. It also has a [Collider] component.
 
    When creating an entity with the [Sprite] component, be sure to provide it a
    valid [Sdl.texture] and [Sdl.renderer] via [Textman.load_texture].*)
@@ -95,52 +106,82 @@ module Sprite = struct
                    (module Rectangle);
                    (module Velocity);
                    (module Renderable);
+                   (module Direction);
                  ]
                  [ (module Collider) ] : CornECS.COMPONENT)
 
-  (**[update e x y] updates the [Velocity] of entity [e], making its
-     x-directional speed [x] and its y-directional speed [y].*)
-  let update e x y =
-    let _, _, (w, h) =
-      Sdl.query_texture (fst (Renderable.get e)) |> Util.unwrap
-    in
+  let string_of_tuple (a, b) = string_of_int a ^ ", " ^ string_of_int b
 
-    let xpos = fst (Position.get e) in
-    let ypos = snd (Position.get e) in
-    let src = fst (Rectangle.get e) in
+  (**[update e x y] updates the [Velocity] of entity [e], incrementing its
+     x-directional speed by [x] and its y-directional speed by [y].*)
+  let update e x y =
+    let xpos, ypos = Position.get e in
+    let velx, vely = Velocity.get e in
     let dst = snd (Rectangle.get e) in
-    Velocity.set e (x, y);
-    Sdl.Rect.set_w src w;
-    Sdl.Rect.set_h src h;
-    Sdl.Rect.set_w dst Constants.tilesize;
-    Sdl.Rect.set_h dst Constants.tilesize;
+    Velocity.set e (velx + x, vely + y);
     Sdl.Rect.set_x dst xpos;
-    Sdl.Rect.set_y dst ypos
+    Sdl.Rect.set_y dst ypos;
+    print_endline ("velocity: " ^ string_of_tuple (Velocity.get e))
 
   (**[draw e] draws the entity [e] onscreen.*)
   let draw e =
-    let tex = fst (Renderable.get e) in
-    let ren = snd (Renderable.get e) in
-    let src = fst (Rectangle.get e) in
-    let dst = snd (Rectangle.get e) in
+    let tex, ren = Renderable.get e in
+    let src, dst = Rectangle.get e in
     ignore (Sdl.render_copy ~src ~dst ren tex)
 end
 
 module KeyboardController = struct
   include
     (val CornECS.new_component
-           [ (module Action) ]
+           [ (module Event); (module MoveTime) ]
            [ (module Sprite); (module Transform) ])
 
+  let facing e d =
+    match d with
+    | 0 -> Direction.get e = North
+    | 1 -> Direction.get e = South
+    | 2 -> Direction.get e = West
+    | 3 -> Direction.get e = East
+    | _ -> failwith "invalid direction"
+
+  let move e d =
+    let frames_to_cross_tile = Constants.tilesize / Constants.player_speed in
+    (if MoveTime.get e <= 0 then
+     match d with
+     | 0 -> Direction.set e North
+     | 1 -> Direction.set e South
+     | 2 -> Direction.set e West
+     | 3 -> Direction.set e East
+     | _ -> failwith "invalid direction");
+    MoveTime.set e frames_to_cross_tile;
+    if MoveTime.get e <= 1 && facing e d then
+      MoveTime.set e (MoveTime.get e + frames_to_cross_tile)
+
+  (**[handle ev e] handles the Sdl event [ev] for the keyboard-controlled entity
+     [e].*)
+  let handle ev e = failwith "unimp"
+  (* let player_speed = 4 in let frames_for_one_tile = Constants.tilesize /
+     player_speed in let move_time = MoveTime.get e in match Sdl.Event.(enum
+     (get ev typ)) with | `Key_down when Sdl.Event.get ev
+     Sdl.Event.keyboard_repeat = 0 && match Action.get e with | Stop _ -> true |
+     _ -> false -> ( match Sdl.Event.get ev Sdl.Event.keyboard_keycode |>
+     Sdl.get_key_name with | "W" -> Action.set e (Move Up); Sprite.update e 0
+     player_speed | "A" -> Action.set e (Move Left); Sprite.update e 0
+     (-player_speed) | "S" -> Action.set e (Move Down); Sprite.update e
+     player_speed 0 | "D" -> Action.set e (Move Right); Sprite.update e
+     (-player_speed) 0 | _ -> ()) | `Key_up when Sdl.Event.get ev
+     Sdl.Event.keyboard_repeat = 0 -> ( match Sdl.Event.get ev
+     Sdl.Event.keyboard_keycode |> Sdl.get_key_name with | "W" when Action.get e
+     = Move Up -> Action.set e (Stop Up) | "A" when Action.get e = Move Left ->
+     Action.set e (Stop Left) | "S" when Action.get e = Move Down -> Action.set
+     e (Stop Down) | "D" when Action.get e = Move Right -> Action.set e (Stop
+     Right) | _ -> ()) | _ -> () *)
+
+  (**[update e] updates the keyboard-controlled entity [e] based on what action
+     [e] took after validating that said action is valid.*)
   let update e =
-    (match Action.get e with
-    | Idle -> Sprite.update e 0 0
-    | Move dir -> (
-        match dir with
-        | Up -> Sprite.update e 0 (-10)
-        | Down -> Sprite.update e 0 10
-        | Left -> Sprite.update e (-10) 0
-        | Right -> Sprite.update e 10 0)
-    | Bruh -> ());
-    Transform.update e
+    let move_time = MoveTime.get e in
+    if move_time > 0 then (
+      MoveTime.set e (move_time - 1);
+      Transform.update e)
 end

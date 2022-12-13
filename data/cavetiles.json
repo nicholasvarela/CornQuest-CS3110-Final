@@ -1,69 +1,154 @@
-{
-       "columns": 9,
-       "image": "data/ff3img.png",
-       "imageheight": 64,
-       "imagewidth": 144,
-       "margin": 0,
-       "name": "cave",
-       "spacing": 0,
-       "tilecount": 36,
-       "tiledversion": "1.9.2",
-       "tileheight": 16,
-       "tiles": [
-              {
-                     "animation": [
-                            {
-                                   "duration": 200,
-                                   "tileid": 0
-                            },
-                            {
-                                   "duration": 150,
-                                   "tileid": 1
-                            },
-                            {
-                                   "duration": 150,
-                                   "tileid": 2
-                            }
-                     ],
-                     "id": 0,
-                     "solid": true
-              },
-              {
-                     "id": 1,
-                     "solid": true
-              },
-              {
-                     "id": 6,
-                     "solid": true
-              },
-              {
-                     "id": 14,
-                     "solid": true
-              },
-              {
-                     "animation": [
-                            {
-                                   "duration": 200,
-                                   "tileid": 15
-                            },
-                            {
-                                   "duration": 200,
-                                   "tileid": 6
-                            }
-                     ],
-                     "id": 15,
-                     "solid": true
-              },
-              {
-                     "id": 23,
-                     "solid": true
-              },
-              {
-                     "id": 16,
-                     "solid": true
-              }
-       ],
-       "tilewidth": 16,
-       "type": "tileset",
-       "version": "1.9"
+{ "columns":9,
+ "image":"ff3img.png",
+ "imageheight":64,
+ "imagewidth":144,
+ "margin":0,
+ "name":"cave",
+ "spacing":0,
+ "tilecount":36,
+ "tiledversion":"1.9.2",
+ "tileheight":16,
+ "tiles":[
+        {
+         "animation":[
+                {
+                 "duration":200,
+                 "tileid":0
+                }, 
+                {
+                 "duration":150,
+                 "tileid":1
+                }, 
+                {
+                 "duration":150,
+                 "tileid":2
+                }],
+         "id":0,
+         "properties":[
+                {
+                 "name":"collides",
+                 "type":"bool",
+                 "value":true
+                }]
+        }, 
+        {
+         "id":1,
+         "properties":[
+                {
+                 "name":"collides",
+                 "type":"bool",
+                 "value":true
+                }]
+        }, 
+        {
+         "id":6,
+         "properties":[
+                {
+                 "name":"collides",
+                 "type":"bool",
+                 "value":true
+                }]
+        }, 
+        {
+         "id":14,
+         "properties":[
+                {
+                 "name":"collides",
+                 "type":"bool",
+                 "value":true
+                }]
+        }, 
+        {
+         "animation":[
+                {
+                 "duration":200,
+                 "tileid":15
+                }, 
+                {
+                 "duration":200,
+                 "tileid":6
+                }],
+         "id":15,
+         "properties":[
+                {
+                 "name":"collides",
+                 "type":"bool",
+                 "value":true
+                }]
+        }, 
+        {
+         "id":23,
+         "properties":[
+                {
+                 "name":"collides",
+                 "type":"bool",
+                 "value":true
+                }]
+        }, 
+        {
+         "id":24,
+         "properties":[
+                {
+                 "name":"collides",
+                 "type":"bool",
+                 "value":true
+                }]
+        }, 
+        {
+         "id":25,
+         "properties":[
+                {
+                 "name":"collides",
+                 "type":"bool",
+                 "value":true
+                }]
+        }, 
+        {
+         "id":26,
+         "properties":[
+                {
+                 "name":"collides",
+                 "type":"bool",
+                 "value":true
+                }]
+        }, 
+        {
+         "id":32,
+         "properties":[
+                {
+                 "name":"collides",
+                 "type":"bool",
+                 "value":true
+                }]
+        }, 
+        {
+         "id":33,
+         "properties":[
+                {
+                 "name":"collides",
+                 "type":"bool",
+                 "value":true
+                }]
+        }, 
+        {
+         "id":34,
+         "properties":[
+                {
+                 "name":"collides",
+                 "type":"bool",
+                 "value":true
+                }]
+        }, 
+        {
+         "id":35,
+         "properties":[
+                {
+                 "name":"collides",
+                 "type":"bool",
+                 "value":true
+                }]
+        }],
+ "tilewidth":16,
+ "type":"tileset",
+ "version":"1.9"
 }

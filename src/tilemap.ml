@@ -3,11 +3,13 @@ open Yojson.Basic.Util
 open Bigarray
 
 type t = {
+  tilesize : int;
   height : int;
   width : int;
   dst : Sdl.rect;
   tileset : Tileset.t;
   tiles : (int, int_elt, c_layout) Array2.t;
+  spawn : int * int;
 }
 
 (**[chunk cols arr] takes a one-dimensional int array [arr] and divides it into
@@ -27,19 +29,36 @@ let chunk cols arr =
   done;
   acc
 
-let load_map fl tlfl ren =
+let load_map fl ren =
   let file = Yojson.Basic.from_file fl in
+  let tset = file |> member "tilesets" |> index 0 in
+  let tilefile = tset |> member "source" |> to_string in
+  let fgid = tset |> member "firstgid" |> to_int in
   let width = file |> member "width" |> to_int in
   let tiledata =
     file |> member "layers" |> index 0 |> member "data" |> to_list
     |> List.map to_int |> Array.of_list |> chunk width
   in
+  let tilesize = file |> member "tileheight" |> to_int in
+  let spawn_obj =
+    file |> member "layers" |> to_list
+    |> List.find (fun layer -> layer |> member "name" |> to_string = "Player")
+    |> member "objects" |> to_list
+    |> List.find (fun obj -> obj |> member "name" |> to_string = "Spawn")
+  in
+  let spawn =
+    (spawn_obj |> member "x" |> to_int, spawn_obj |> member "y" |> to_int)
+  in
+
   {
-    tileset = Tileset.load_tileset tlfl ren;
+    tilesize;
+    tileset =
+      Tileset.load_tileset (Constants.data_dir_prefix ^ tilefile) ren fgid;
     dst = Sdl.Rect.create 0 0 Constants.tilesize Constants.tilesize;
     tiles = Array2.of_array Int c_layout tiledata;
     height = file |> member "height" |> to_int;
     width;
+    spawn;
   }
 
 let draw_map m ren =
@@ -56,3 +75,6 @@ let draw_map m ren =
             m.dst
     done
   done
+
+let get_spawn m = m.spawn
+let scale m = Constants.tilesize / m.tilesize
