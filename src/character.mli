@@ -106,7 +106,7 @@ val get_description_item : consumable -> string
 val get_inv : character -> consumable_bucket array
 (**[get_skills actor] returns the consumable inventory of [actor]*)
 
-val clear_temps : character -> character
+val clear_temps : character ref -> character
 (**[clear_temps ch] decrements the amount of turns left for any applied
    temporary stat buffs or debuffs on [ch]. If a buff/debuff's turn counter
    reaches 0, the buff/debuff is removed from [ch].*)
