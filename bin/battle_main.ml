@@ -5,11 +5,12 @@ open Character
 exception Battle_Over of Character.character option
 
 let actor : Character.character = Character.start_character "Demoman"
+let first_time = ref true
 
 let enem : Character.character =
   {
     name = "Marthia Pollocus";
-    hp = HP 1.;
+    hp = HP 100.;
     maxhp = HP 100.;
     mana = Mana 100.;
     maxmana = Mana 100.;
@@ -50,7 +51,14 @@ let read_logo_files filename =
 let data_dir_prefix = "data" ^ Filename.dir_sep
 let dots = "......................................."
 
-let print_skills actor =
+let print_skills actor first_time =
+  if !first_time then (
+    ANSITerminal.print_string [ ANSITerminal.yellow ]
+      "[type [skill name] (no caps) to use it, [info + skill name]\n\
+       to read what the skill does, or [back] to exit the menu]\n";
+    first_time := false);
+  ANSITerminal.print_string [ ANSITerminal.magenta ]
+    "\n[..................Skill Menu................]\n";
   let arr = Character.get_skills actor in
   for i = 0 to Array.length arr - 1 do
     match arr.(i) with
@@ -203,6 +211,22 @@ and skill_menu (actor, enem) =
         turn_handler (a2', e2') true
       else skill_menu (a', e')
   | "back" -> turn_handler (actor, enem) false
+  | s when s = "info " ^ sk1 ->
+      ANSITerminal.print_string [ ANSITerminal.default ]
+        ((Character.unwrap_skill arr.(0)).description ^ "\n");
+      skill_menu (actor, enem)
+  | s when s = "info " ^ sk2 ->
+      ANSITerminal.print_string [ ANSITerminal.default ]
+        ((Character.unwrap_skill arr.(1)).description ^ "\n");
+      skill_menu (actor, enem)
+  | s when s = "info " ^ sk3 ->
+      ANSITerminal.print_string [ ANSITerminal.default ]
+        ((Character.unwrap_skill arr.(2)).description ^ "\n");
+      skill_menu (actor, enem)
+  | s when s = "info " ^ sk4 ->
+      ANSITerminal.print_string [ ANSITerminal.default ]
+        ((Character.unwrap_skill arr.(3)).description ^ "\n");
+      skill_menu (actor, enem)
   | _ -> skill_menu (actor, enem)
 
 and turn_handler (actor, enem) made_action =
@@ -232,12 +256,12 @@ and turn_handler (actor, enem) made_action =
       let _ = check_health second_turn_chars in
       turn_handler second_turn_chars true
   | "guard" ->
-      print_endline "You put your hands up and brace for an incoming attack.";
+      print_endline "You put your hands up and brace for an incoming attack.\n";
       let new_chars = pick_enemy_move (Battle.guard actor, enem) in
       let _ = check_health new_chars in
       turn_handler new_chars true
   | "skill" ->
-      print_skills actor;
+      print_skills actor first_time;
       skill_menu (actor, enem)
   | "escape" ->
       print_endline "You flee!";

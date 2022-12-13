@@ -648,7 +648,7 @@ let use_skill sk user target =
         in
         let rand0 = Random.float 1. in
         let _ = wait 0 in
-        if rand0 > player_hit_chance then
+        if rand0 <= player_hit_chance then
           if List.length user.enem_hit_chances = 0 then
             let _ =
               ANSITerminal.print_string [ ANSITerminal.default ]
@@ -712,7 +712,7 @@ let use_skill sk user target =
         in
         let rand0 = Random.float 1. in
         let _ = wait 0 in
-        if rand0 > player_hit_chance then (
+        if rand0 <= player_hit_chance then (
           let _ =
             ANSITerminal.print_string [ ANSITerminal.blue ]
               ("You used " ^ sk.name ^ " !\n")
