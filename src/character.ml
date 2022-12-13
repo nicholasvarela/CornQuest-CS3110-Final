@@ -727,7 +727,7 @@ let use_skill sk user target =
           else
             let _ =
               ANSITerminal.print_string [ ANSITerminal.white ]
-                (user.name ^ " missed!\n")
+                (user.name ^ " missed!\n\n")
             in
             (target, new_usr, true)
         else
@@ -869,6 +869,9 @@ let use_consumable csbl ch idx =
   let x = new_ch'.inv.(idx) in
   new_ch'.inv.(idx) <- { x with amt = x.amt - 1 };
   new_ch'
+
+let get_description_skill s = s.description
+let get_description_item i = get_description_skill i
 
 [@@@warning "-8"]
 
