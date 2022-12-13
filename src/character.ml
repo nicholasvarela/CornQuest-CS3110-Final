@@ -254,32 +254,84 @@ let get_temp_value attr_str chr =
 
 let get_name ch = ch.name
 
-let start_character nme =
+let match_skill skill =
+  match skill with
+  | "None" -> None
+  | "icicle" -> Some icicle
+  | "acid_spray" -> Some acid_spray
+  | "blood" -> Some blood
+  | "minimize" -> Some minimize
+  | "spin_slash" -> Some spin_slash
+  | "double_slash" -> Some double_slash
+  | "headbutt" -> Some headbutt
+  | "tsunami" -> Some tsu
+  | "chainlight" -> Some chainlight
+  | "piercing_light" -> Some piercing_light
+  | "dark" -> Some dark
+  | _ -> None
+
+let parse_character nme hit_chances =
+  let data_prefix = "data" ^ Filename.dir_sep in
+
+  let skills_raw = Yojson.Basic.from_file (data_prefix ^ "characters.json") in
+  let json_char = skills_raw |> member nme in
+
+  let hp_val = json_char |> member "hp" |> to_float in
+  let maxhp_val = json_char |> member "maxhp" |> to_float in
+  let mana_val = json_char |> member "mana" |> to_float in
+  let maxmana_val = json_char |> member "maxmana" |> to_float in
+  let exp_val = json_char |> member "exp" |> to_int in
+  let lvl_val = json_char |> member "lvl" |> to_int in
+  let str_val = json_char |> member "str" |> to_float in
+  let mr_val = json_char |> member "mr" |> to_float in
+
+  let def_val = json_char |> member "def" |> to_float in
+  let spd_val = json_char |> member "spd" |> to_float in
+  let acc_val = json_char |> member "acc" |> to_float in
+  let mag_val = json_char |> member "mag" |> to_float in
+  let luk_val = json_char |> member "luk" |> to_float in
+  let enemy_hit_chances_val = hit_chances in
+  let skill1_val =
+    json_char |> member "skillset1" |> to_string |> match_skill
+  in
+  let skill2_val =
+    json_char |> member "skillset2" |> to_string |> match_skill
+  in
+  let skill3_val =
+    json_char |> member "skillset3" |> to_string |> match_skill
+  in
+  let skill4_val =
+    json_char |> member "skillset4" |> to_string |> match_skill
+  in
+  let hpotion_val = json_char |> member "health_potion" |> to_int in
+  let mana_potion_val = json_char |> member "mana_potion" |> to_int in
+  let wrath_potion_val = json_char |> member "wrath_potion" |> to_int in
+  let magic_potion_val = json_char |> member "magic_potion" |> to_int in
+  let deal_with_devil_val = json_char |> member "deal_with_devil" |> to_int in
   {
     name = nme;
-    hp = HP 100.;
-    maxhp = HP 100.;
-    mana = Mana 100.;
-    maxmana = Mana 100.;
-    exp = 0;
-    lvl = 1;
-    str = Strength 10.;
-    def = Defense 10.;
-    mr = MagicResist 10.;
-    spd = Speed 10.;
-    acc = Accuracy 10.;
-    mag = MagicPower 10.;
-    luk = Luck 10.;
-    enem_hit_chances = [];
-    skillset = [| Some icicle; None; None; None |];
+    hp = HP hp_val;
+    maxhp = HP maxhp_val;
+    mana = Mana mana_val;
+    maxmana = Mana maxmana_val;
+    exp = exp_val;
+    lvl = lvl_val;
+    str = Strength str_val;
+    def = Defense def_val;
+    mr = MagicResist mr_val;
+    spd = Speed spd_val;
+    acc = Accuracy acc_val;
+    mag = MagicPower mag_val;
+    luk = Luck luk_val;
+    enem_hit_chances = enemy_hit_chances_val;
+    skillset = [| skill1_val; skill2_val; skill3_val; skill4_val |];
     inv =
       [|
-        { health_potion_bk with amt = 3 };
-        { mana_potion_bk with amt = 1 };
-        { wrath_potion_bk with amt = 0 };
-        { magic_potion_bk with amt = 0 };
-        { deal_with_devil_bk with amt = 0 };
-        { health_potion_bk with amt = 0 };
+        { health_potion_bk with amt = hpotion_val };
+        { mana_potion_bk with amt = mana_potion_val };
+        { wrath_potion_bk with amt = wrath_potion_val };
+        { magic_potion_bk with amt = magic_potion_val };
+        { deal_with_devil_bk with amt = deal_with_devil_val };
       |];
     temp_stats =
       [|
@@ -294,6 +346,8 @@ let start_character nme =
         (Luck 0., -1);
       |];
   }
+
+let start_character nme = parse_character "start_character" []
 
 let ( +* ) att amt =
   match att with
