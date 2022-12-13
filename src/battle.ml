@@ -56,7 +56,8 @@ let attack (enem : Character.character) (actor : Character.character) =
     enem
 
 let guard (actor : Character.character) =
-  let out = Character.adjust_temps (Defense 10., 1) actor in
+  let a = Character.adjust_temps (Defense 10., 1) actor in
+  let out = Character.adjust_temps (MagicResist 10., 1) a in
   let _ = if List.length actor.enem_hit_chances != 0 then wait () in
   out
 

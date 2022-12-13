@@ -788,7 +788,7 @@ let change_temps_from_skill sk target =
   done;
   if get_attribute_val "hp" target > get_total_attr_val "maxhp" target then (
     let att = get_total_attr_val "maxhp" target in
-    ANSITerminal.print_string [ ANSITerminal.red ]
+    ANSITerminal.print_string [ ANSITerminal.default ]
       ("Current HP truncated to " ^ string_of_float att ^ "\n");
     adjust_set att target "hp")
   else if get_attribute_val "mana" target > get_total_attr_val "maxmana" target

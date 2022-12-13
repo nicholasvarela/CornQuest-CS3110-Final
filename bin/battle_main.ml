@@ -24,7 +24,7 @@ let enem : Character.character =
     acc = Accuracy 100000.;
     mag = MagicPower 10.;
     luk = Luck 10.;
-    enem_hit_chances = [ 0.0; 0.5; 0.0; 0.5; 0.1; 0.1 ];
+    enem_hit_chances = [ 0.2; 0.1; 0.3; 0.1; 0.2; 0.1 ];
     skillset =
       [|
         Some Character.tsu;
