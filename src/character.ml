@@ -136,12 +136,12 @@ let acid_spray = get_skill_from_json "acid spray"
 let blood = get_skill_from_json "blood magic"
 let minimize = get_skill_from_json "minimize"
 let spin_slash = get_skill_from_json "spin slash"
-let double_slash = get_skill_from_json "spin slash"
+let double_slash = get_skill_from_json "double slash"
 let headbutt = get_skill_from_json "headbutt"
 let tsu = get_skill_from_json "tsunami"
 let chainlight = get_skill_from_json "chain lightning"
 let piercing_light = get_skill_from_json "piercing light"
-let dark = get_skill_from_json "Nosferatu"
+let nosferatu = get_skill_from_json "nosferatu"
 
 (*consumables repo*)
 
@@ -153,7 +153,7 @@ let lvl_1_spells = [| Some acid_spray; Some spin_slash |]
 let lvl_2_spells = [| Some minimize; Some piercing_light |]
 let lvl_3_spells = [| Some blood; Some headbutt |]
 let lvl_4_spells = [| Some tsu; Some double_slash |]
-let lvl_5_spells = [| Some chainlight; Some dark |]
+let lvl_5_spells = [| Some chainlight; Some nosferatu |]
 
 (*skill repo end*)
 
@@ -269,16 +269,16 @@ let match_skill skill =
   match skill with
   | "None" -> None
   | "icicle" -> Some icicle
-  | "acid_spray" -> Some acid_spray
-  | "blood" -> Some blood
+  | "acid spray" -> Some acid_spray
+  | "blood magic" -> Some blood
   | "minimize" -> Some minimize
-  | "spin_slash" -> Some spin_slash
-  | "double_slash" -> Some double_slash
+  | "spin slash" -> Some spin_slash
+  | "double slash" -> Some double_slash
   | "headbutt" -> Some headbutt
   | "tsunami" -> Some tsu
   | "chainlight" -> Some chainlight
   | "piercing_light" -> Some piercing_light
-  | "dark" -> Some dark
+  | "nosferatu" -> Some nosferatu
   | _ -> None
 
 let parse_character nme hit_chances =
@@ -561,11 +561,17 @@ let learn_skill_helper (arr : skill option array) sk =
     i := !i + 1
   done
 
-let rec learn_skill (curr_skills : skill option array) ran =
+let rec learn_skill (curr_skills : skill option array) ran lvl =
   if not ran then
     ANSITerminal.print_string [ ANSITerminal.magenta ]
       "\nChoose a spell to learn:\n";
-  let arr = lvl_2_spells in
+  let arr =
+    if lvl = 2 then lvl_1_spells
+    else if lvl = 3 then lvl_2_spells
+    else if lvl = 4 then lvl_3_spells
+    else if lvl = 5 then lvl_4_spells
+    else lvl_5_spells
+  in
   let _ = print_skills arr in
   match read_line () with
   | s when s = (unwrap_skill arr.(0)).name ->
@@ -575,18 +581,19 @@ let rec learn_skill (curr_skills : skill option array) ran =
   | s when s = "info " ^ (unwrap_skill arr.(0)).name ->
       ANSITerminal.print_string [ ANSITerminal.default ]
         ((unwrap_skill arr.(0)).description ^ "\n");
-      learn_skill curr_skills true
+      learn_skill curr_skills true lvl
   | s when s = "info " ^ (unwrap_skill arr.(1)).name ->
       ANSITerminal.print_string [ ANSITerminal.default ]
         ("\n" ^ (unwrap_skill arr.(1)).description ^ "\n\n");
-      learn_skill curr_skills true
+      learn_skill curr_skills true lvl
   | _ ->
       print_endline "That is not a valid skill. Please try again.";
-      learn_skill curr_skills ran
+      learn_skill curr_skills ran lvl
 
 let level_up actor =
   Random.self_init ();
-  ANSITerminal.print_string [ ANSITerminal.green ] "You have leveled up!\n";
+  ANSITerminal.print_string [ ANSITerminal.green ]
+    ("You have leveled up! Now level " ^ string_of_int (actor.lvl + 1) ^ "\n");
   let _ = wait () in
   let hpmax =
     let x =
@@ -612,11 +619,14 @@ let level_up actor =
   in
   let actor_final, _ = upgrade_menu actor 0 false in
   let skills =
-    if (actor.lvl + 1) mod 2 = 0 then learn_skill actor.skillset false;
+    let _ =
+      if actor.lvl + 1 <= 6 then learn_skill actor.skillset false (actor.lvl + 1)
+    in
     actor.skillset
   in
   {
     actor_final with
+    lvl = actor_final.lvl + 1;
     hp = hpmax;
     maxhp = hpmax;
     mana = manamax;

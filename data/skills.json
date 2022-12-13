@@ -134,7 +134,7 @@
         "luck-effect": 0.0,
         "luck-turns": -1
     },
-    "doubleslash": {
+    "double slash": {
         "skill_type": "Physical",
         "description": "Type: Physical, Base damage: 4, Scaling 70 %\nDouble slashes enemy.  ",
         "change_to_affect": 0.3,
@@ -188,7 +188,7 @@
         "luck-effect": 0.0,
         "luck-turns": -1
     },
-    "Nosferatu": {
+    "nosferatu": {
         "skill_type": "Magic",
         "description": "Base damage: 30, Scaling 40 %\nA powerful dark magic spell, which lowers magic reist, luck and and chance to hit",
         "change_to_affect": 0.6,
@@ -298,7 +298,7 @@
     },
     "mana potion": {
         "skill_type": "Magic",
-        "description": "Restores 50 Mana",
+        "description": "`Restores` 50 Mana",
         "change_to_affect": 1.0,
         "base_dmg": 0.0,
         "dmg_scailing": 0.0,
