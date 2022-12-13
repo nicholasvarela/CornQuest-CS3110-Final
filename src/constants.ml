@@ -1,5 +1,5 @@
 (**Game-wide size of tiles.*)
-let tilesize = 16
+let tilesize = 32
 
 (**Game-wide size of character sprite frames.*)
 let spritesize = 32

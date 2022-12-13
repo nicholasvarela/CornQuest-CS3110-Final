@@ -27,9 +27,8 @@ end
 module IntEnt : ENTITY
 (** Implementation of an entity type using integers as identifiers. *)
 
-(**Functor that builds an entity-component system given a type [K] to use as
-   entity-id that defines its own incrementation.*)
-module Make : functor (K : ENTITY) -> sig
+(**Output signature of the functor [Make].*)
+module type S = sig
   exception Property_error of string
   (**Exception raised by property accessors when the property is not bound or
      has no default value.*)
@@ -147,3 +146,7 @@ module Make : functor (K : ENTITY) -> sig
   (** [filter_all cs] returns the list of all entities bound to all the
       components specified in [cs]. *)
 end
+
+(**Functor that builds an entity-component system given a type [K] to use as
+   entity-id that defines its own incrementation.*)
+module Make (K : ENTITY) : S
