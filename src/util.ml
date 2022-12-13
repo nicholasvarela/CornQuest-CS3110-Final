@@ -1,5 +1,4 @@
-(**Various utility functions used throughout the gamecode, mainly for
-   interacting with Tsdl types.*)
+(**Various utility functions used throughout the gamecode.*)
 
 (**[unwrap sdl_elt] is [sdl_elt] if the process creating it completed without
    errors. Otherwise, it raises an exception carrying the message stored in

@@ -14,16 +14,29 @@ type t = {
   mutable running : bool;
   win : Sdl.window;
   ren : Sdl.renderer;
-  player : Gameobj.t;
-  player_ecs : CornECS.entity;
-  enemy : Gameobj.t;
+  player : CornECS.entity;
   map : Tilemap.t;
 }
 (**The type of a value representing an instance of a game.*)
 
-let create_player tex ren =
+(**[create_player fl ren] creates a player entity with textures loaded from the
+   file [fl] using the renderer [ren].*)
+let create_player fl ren =
   CornECS.next_id () |> Sprite.b |> KeyboardController.b
-  |> Renderable.s (tex, ren)
+  |> Renderable.s (Textman.load_texture fl ren, ren)
+  |> Position.s (0, 0)
+
+(**[set_spawn player m] sets the [player]'s spawn point on map [m].*)
+let set_spawn player m =
+  let spawn_x = Tilemap.get_spawn m |> fst in
+  let spawn_y = (Tilemap.get_spawn m |> snd) - Constants.tilesize in
+  Rectangle.set player
+    ( fst (Rectangle.get player),
+      Sdl.Rect.create
+        (spawn_x * Tilemap.scale m)
+        (spawn_y * Tilemap.scale m)
+        Constants.tilesize Constants.tilesize );
+  Position.set player (spawn_x * Tilemap.scale m, spawn_y * Tilemap.scale m)
 
 (**[init t x y w h fs] creates a fresh game instance, in which the window has
    title [t], x-position [x], y-position [y], width [w], and height [h]. The
@@ -40,15 +53,9 @@ let init t x y w h fs =
       let renderer = Sdl.create_renderer ~index:(-1) window |> Util.unwrap in
       Sdl.set_render_draw_color renderer 255 255 255 255 |> Util.unwrap;
       print_endline "Renderer created.";
-      let enemy = Gameobj.create "data/xande.png" renderer 0 0 in
-      let player = Gameobj.create "data/cloud.png" renderer 900 900 in
-
-      let player_ecs =
-        create_player (Textman.load_texture "data/front.png" renderer) renderer
-      in
-      let map =
-        Tilemap.load_map "data/cave.json" "data/cavetiles.json" renderer
-      in
+      let map = Tilemap.load_map "data/cave.json" renderer in
+      let player = create_player "data/front.png" renderer in
+      set_spawn player map;
       {
         title = t;
         xpos = x;
@@ -60,8 +67,6 @@ let init t x y w h fs =
         win = window;
         ren = renderer;
         player;
-        player_ecs;
-        enemy;
         map;
       }
   | Error (`Msg err) -> failwith err
@@ -70,45 +75,31 @@ let init t x y w h fs =
 let handle_events game =
   let e = Sdl.Event.create () in
   while Sdl.poll_event (Some e) do
+    KeyboardController.handle e game.player;
     match Sdl.Event.(enum (get e typ)) with
     | `Quit -> game.running <- false
-    | `Key_down when Sdl.Event.get e Sdl.Event.keyboard_repeat = 0 -> (
-        match
-          Sdl.Event.get e Sdl.Event.keyboard_keycode |> Sdl.get_key_name
-        with
-        | "W" -> Action.set game.player_ecs (Move Up)
-        | "A" -> Action.set game.player_ecs (Move Left)
-        | "S" -> Action.set game.player_ecs (Move Down)
-        | "D" -> Action.set game.player_ecs (Move Right)
-        | _ -> Action.set game.player_ecs Idle)
-    | `Key_up when Sdl.Event.get e Sdl.Event.keyboard_repeat = 0 -> (
-        match
-          Sdl.Event.get e Sdl.Event.keyboard_keycode |> Sdl.get_key_name
-        with
-        | "W" | "A" | "S" | "D" -> Action.set game.player_ecs Idle
-        | _ -> ())
     | _ -> ()
   done
 
 (**[update game] updates all objects in the game instance [game] that need
    updating.*)
-let update game = KeyboardController.update game.player_ecs
+let update game = KeyboardController.update game.player
 
 (**[render game] first clears the renderer in the game instance [game], then
    renders all objects in said instance that need rendering.*)
 let render game =
   Sdl.render_clear game.ren |> Util.unwrap;
   Tilemap.draw_map game.map game.ren;
-  Gameobj.render game.player game.ren |> Util.unwrap;
-  Gameobj.render game.enemy game.ren |> Util.unwrap;
-  Sprite.draw game.player_ecs;
+  Sprite.draw game.player;
   Sdl.render_present game.ren
 
 (**[clean game] "cleans" the game instance [game] by destroying the game window,
    the game renderer, and finally quitting.*)
 let clean game =
+  Sdl.quit_sub_system Sdl.Init.everything;
   Sdl.destroy_window game.win;
   Sdl.destroy_renderer game.ren;
-  CornECS.delete game.player_ecs;
+  CornECS.delete game.player;
+
   Sdl.quit ();
   print_endline "Game cleaned."
