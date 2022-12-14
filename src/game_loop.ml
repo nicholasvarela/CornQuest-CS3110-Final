@@ -118,9 +118,9 @@ let call_encounter a =
     ANSITerminal.print_string [ ANSITerminal.yellow ]
       ("Encountered " ^ e.name ^ "!")
   in
-  let _ = Battle_main.wait () in
-  try Battle_main.start a e
-  with Battle_main.Battle_Over a -> (
+  let _ = Driver.wait () in
+  try Driver.start a e
+  with Driver.Battle_Over a -> (
     if a = None then (
       ANSITerminal.print_string [ ANSITerminal.red ] "Game Over";
       exit 0)

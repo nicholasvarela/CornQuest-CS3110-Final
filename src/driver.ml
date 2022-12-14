@@ -235,9 +235,17 @@ and turn_handler (actor, enem) made_action =
       item_menu (actor, enem)
   | _ -> turn_handler (actor, enem) false
 
-let start a b =
-  read_logo_files "data/title.txt";
+let start a e =
+  let enem_art =
+    match Character.get_name e with
+    | "Clocktower Fiend" -> "clockfiend.txt"
+    | "Hovian Plaza Serpent" -> "hoserp.txt"
+    | "Gorge Gorgon" -> "gorgegon.txt"
+    | _ -> failwith "unreachable"
+  in
+  read_logo_files
+    ("data" ^ Filename.dir_sep ^ "ascii" ^ Filename.dir_sep ^ enem_art);
   ANSITerminal.print_string [ ANSITerminal.yellow ]
     "\n\n\
      Choose a move: attack, guard, skill, item or escape. What will you do? \n\n";
-  turn_handler (a, b) false
+  turn_handler (a, e) false

@@ -14,6 +14,7 @@ let main () =
     Game_loop.init "bruh" Sdl.Window.pos_centered Sdl.Window.pos_centered
       Constants.screen_width Constants.screen_height false
   in
+  Driver.read_logo_files "data/title.txt";
   let encounter = ref (Game_loop.rng ()) in
   while game.running do
     frame_start := Int32.to_int (Sdl.get_ticks ());
