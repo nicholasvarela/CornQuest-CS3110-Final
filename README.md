@@ -13,6 +13,12 @@ We plan to build a turn-based battle system where players will fight NPC enemies
 # Installation
 See [INSTALL.md](./INSTALL.md) for more instructions.
 
+# Utilities
+- To run the test suite, run `make test`
+- To run a demo battle, run `make battle`
+- To generate documentation for the packages included in this software, run `make doc`. The HTML generation will be stored in `./_build/default/_doc/_html`.
+- To run the program as intended, run `make play`
+
 # Contributors
 Luke Leh, ll594
 Nicholas Varela, njv27
