@@ -14,8 +14,8 @@ utop:
 battle:
 	OCAMLRUNPARAM=b dune exec bin/demo_battle.exe
 
-gui:
-	OCAMLRUNPARAM=b dune exec bin/gui_main.exe
+play:
+	OCAMLRUNPARAM=b dune exec bin/main.exe
 
 test: 
 		OCAMLRUNPARAM=b dune exec test/test.exe
