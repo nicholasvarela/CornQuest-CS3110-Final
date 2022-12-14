@@ -1,7 +1,7 @@
 # cs3110-final-project
 
 #Installation
-See INSTALL.md for more instructions.
+See [INSTALL.md] for more instructions.
 
 # Contributors
 Luke Leh, ll594
