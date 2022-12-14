@@ -1,12 +1,12 @@
 # CS3110 Final Project - CornQuest
 
 Our vision for the project is a 2D role-playing game à la Final Fantasy. Players will explore three different locales while battling enemies. Players will have an inventory and the ability to level up as they explore more of the world. The core functionality of the game will include:
- -A turn-based battle system
- -Carefully curated enemies with unique skills and abilities
- -A GUI offering SNES-style sprite graphics
- -A character leveling system that involves 9 different attributes
- -An inventory system
- -A four-directional, tile-based movement system across the world map as well as locales (towns, dungeons, etc.)
+ - A turn-based battle system
+ - Carefully curated enemies with unique skills and abilities
+ - A GUI offering SNES-style sprite graphics
+ - A character leveling system that involves 9 different attributes
+ - An inventory system
+ - A four-directional, tile-based movement system across the world map as well as locales (towns, dungeons, etc.)
  
 We plan to build a turn-based battle system where players will fight NPC enemies of varying difficulties that possess unique skills and spells of their own.
 
