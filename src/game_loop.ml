@@ -112,9 +112,6 @@ let drop_items actor =
   else if rand <= 0.8 then get_item arr 4
   else get_item arr 5
 
-let marthia =
-  Character.parse_character "Marthia Pollocus" [ 0.2; 0.1; 0.3; 0.3; 0.1; 0.1 ]
-
 let call_encounter a =
   let e = pick_enems () in
   ANSITerminal.print_string [ ANSITerminal.yellow ]
@@ -139,7 +136,9 @@ let boss_battle a =
       [ 0.2; 0.1; 0.3; 0.3; 0.1; 0.1 ]
   in
   ANSITerminal.print_string [ ANSITerminal.red ]
-    "Encountered Martha Pollocus and the Weather Machine! \n";
+    "Encountered Martha Pollocus and the Weather Machine!";
+  ANSITerminal.print_string [ ANSITerminal.cyan ]
+    "You feel like you're going to have a bad 4 years.";
   let _ = Battle_handler.wait () in
   try Battle_handler.start a boss
   with Battle_handler.Battle_Over a -> (

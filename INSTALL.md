@@ -1,4 +1,4 @@
-# Install Cornquest
+# Install CornQuest
 
 First, install OCaml and set it up as the CS3110 [textbook](https://cs3110.github.io/textbook/chapters/preface/install.html) specifies.
 
@@ -27,31 +27,34 @@ For Ubuntu (Linux or WSL with Ubuntu users, Windows 11 users may ignore this ste
 
 Now, install `sdl2` for your operating system.
 
-- On macOS:
+- On macOS (Source: Homebrew install instructions):
   - Homebrew: 
     - `brew install pkgconfig`
     - `brew install sdl2`
     - `brew install sdl2_image`
+    - `brew install sdl2_mixer`
     - `brew install sdl2_ttf`
   - MacPorts:
     - `port install pkgconfig`
     - `port install libsdl2`
 
 - On Ubuntu (or WSL with Ubuntu):
-  - `sudo-apt get update`
-  - `sudo apt install libffi-dev`
-  - `sudo apt install libsdl2-dev`
-  - `sudo apt install libsdl2-image-dev`
-  - You may need to also install `pkgconfig` with `sudo apt install pkgconfig`
+  - `sudo apt-get update`
+  - `sudo apt-get install libffi-dev`
+  - `sudo apt-get install libsdl2-dev`
+  - `sudo apt-get install libsdl2-image-dev`
+  - `sudo apt-get install libsdl2-mixer-dev`
+  - You may need to also install `pkgconfig` with `sudo apt-install pkgconfig`
 
 Next, install the required dependencies using `opam`:
 
 ```
 $ opam install ANSITerminal
 $ opam install tsdl-image
+$ opam install tsdl-mixer
 ```
 
-You have finished installing Cornquest!
+You have finished installing CornQuest!
 
 To run the program, run `make play`. This will launch the game window and load up the battle system in terminal. Open the terminal in fullscreen for the best experience!
 
