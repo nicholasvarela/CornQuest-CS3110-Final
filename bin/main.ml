@@ -19,7 +19,7 @@ let main () =
   Battle_handler.read_logo_files "data/title.txt";
   print_endline "For the best experience, open the terminal in fullscreen!";
   let encounter = ref (Game_loop.rng ()) in
-  Audio.play game.musicplayer 0;
+  (* Audio.play game.musicplayer 0; *)
   while game.running do
     frame_start := Int32.to_int (Sdl.get_ticks ());
     Game_loop.handle_events game;
@@ -33,10 +33,10 @@ let main () =
       if !Player.steps >= !encounter then (
         let f =
           if !do_boss_battle = true then (
-            Audio.play game.musicplayer 2;
+            (* Audio.play game.musicplayer 2; *)
             Game_loop.boss_battle)
           else (
-            Audio.play game.musicplayer 1;
+            (* Audio.play game.musicplayer 1; *)
             Game_loop.call_encounter)
         in
         in_battle := true;
@@ -47,8 +47,8 @@ let main () =
           Player.steps := 0
         done;
         encounter := Game_loop.rng ();
-        in_battle := false;
-        Audio.play game.musicplayer 0)
+        in_battle := false)
+        (* Audio.play game.musicplayer 0) *)
   done;
   Game_loop.clean game
 
