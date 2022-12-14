@@ -19,12 +19,7 @@ type t = {
 }
 (**The type of a value representing an instance of a game.*)
 
-(** 1. initialize the random seed for 2. initialize steps as a ref 0 3. randomly
-    generate an encounter number 4. each time the player moves, incr steps 5.
-    steps = encounter then make battle 6. battle ends return the new player
-    character to the game loop *)
-
-let rng () = 300 + (Random.int 5 * 100)
+let rng () = 5000 + Int.min (Random.int 10 * 100) (Random.int 10 * 100)
 
 (**[init t x y w h fs] creates a fresh game instance, in which the window has
    title [t], x-position [x], y-position [y], width [w], and height [h]. The
