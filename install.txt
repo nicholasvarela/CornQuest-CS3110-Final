@@ -1,7 +1,0 @@
-Install the latest ocaml package for your system.
-Make sure you have the SDL2 library installed by running [sudo apt-get install libsdl2-dev].
-Make sure you have the SDL2 image library installed by running [sudo apt-get install libsdl2-image-dev].
-Make sure you also have the SDL2 bindings for OCaml installed by running [opam install tsdl].
-Make sure you also have the SDL2 image library bindings for OCaml installed by running [opam install tsdl-image].
-
-Lastly, run [make], then [make battle].
