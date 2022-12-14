@@ -19,6 +19,7 @@ type t = {
 }
 (**The type of a value representing an instance of a game.*)
 
+(** [rng] is a function that generates a random number for encounters*)
 let rng () = 5000 + Int.min (Random.int 10 * 100) (Random.int 10 * 100)
 
 (**[init t x y w h fs] creates a fresh game instance, in which the window has
@@ -78,6 +79,7 @@ let init t x y w h fs =
       }
   | Error (`Msg err) -> failwith err
 
+(** [pick_enems] randomly picks a character from characters.json to battle*)
 let pick_enems () =
   let arr =
     [|
@@ -93,6 +95,8 @@ let pick_enems () =
   in
   e
 
+(**[get_item arr -> int -> unit] takes in a character [actor]'s consumable bucket array
+   and increases the consumable at index [i] by a random amount between 1 and 5*)
 let get_item (arr : Character.consumable_bucket array) i =
   let dropped_amt = 1 + Random.int 4 in
   arr.(i) <- { (arr.(i)) with amt = arr.(i).amt + dropped_amt };
@@ -101,7 +105,7 @@ let get_item (arr : Character.consumable_bucket array) i =
     ^
     if dropped_amt = 1 then arr.(i).name
     else string_of_int dropped_amt ^ " " ^ arr.(i).name ^ "s\n")
-
+(**[drop_items actor -> character -> unit] takes in a character [actor] and randomly chooses a consumable to increase*)
 let drop_items actor =
   let arr = Character.get_inv actor in
   let rand = Random.float 1. in
@@ -112,6 +116,7 @@ let drop_items actor =
   else if rand <= 0.8 then get_item arr 4
   else get_item arr 5
 
+(** [call_encounter actor -> actor] takes in a character and initiates a battle. Returns another character once the battle is over*)
 let call_encounter a =
   let e = pick_enems () in
   let _ =
@@ -132,6 +137,7 @@ let call_encounter a =
           ch
       | None -> failwith "Not reachable")
 
+(**[boss_battle a : character -> character] calls a boss battle with player character [a] and returns the modified player character after the battle is over.*)
 let boss_battle a =
   let boss =
     Character.parse_character "Marthia Pollocus"
