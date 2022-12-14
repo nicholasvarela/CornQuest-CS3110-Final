@@ -95,8 +95,9 @@ let pick_enems () =
   in
   e
 
-(**[get_item arr -> int -> unit] takes in a character [actor]'s consumable bucket array
-   and increases the consumable at index [i] by a random amount between 1 and 5*)
+(**[get_item arr -> int -> unit] takes in a character [actor]'s consumable
+   bucket array and increases the consumable at index [i] by a random amount
+   between 1 and 5*)
 let get_item (arr : Character.consumable_bucket array) i =
   let dropped_amt = 1 + Random.int 4 in
   arr.(i) <- { (arr.(i)) with amt = arr.(i).amt + dropped_amt };
@@ -105,7 +106,9 @@ let get_item (arr : Character.consumable_bucket array) i =
     ^
     if dropped_amt = 1 then "a " ^ arr.(i).name ^ ". \n"
     else string_of_int dropped_amt ^ " " ^ arr.(i).name ^ "s. \n")
-(**[drop_items actor -> character -> unit] takes in a character [actor] and randomly chooses a consumable to increase*)
+
+(**[drop_items actor -> character -> unit] takes in a character [actor] and
+   randomly chooses a consumable to increase*)
 let drop_items actor =
   let arr = Character.get_inv actor in
   let rand = Random.float 1. in
@@ -116,7 +119,8 @@ let drop_items actor =
   else if rand <= 0.8 then get_item arr 4
   else get_item arr 5
 
-(** [call_encounter actor -> actor] takes in a character and initiates a battle. Returns another character once the battle is over*)
+(** [call_encounter actor -> actor] takes in a character and initiates a battle.
+    Returns another character once the battle is over*)
 let call_encounter a =
   let e = pick_enems () in
   ANSITerminal.print_string [ ANSITerminal.yellow ]
@@ -135,7 +139,9 @@ let call_encounter a =
           ch
       | None -> failwith "Not reachable")
 
-(**[boss_battle a : character -> character] calls a boss battle with player character [a] and returns the modified player character after the battle is over.*)
+(**[boss_battle a : character -> character] calls a boss battle with player
+   character [a] and returns the modified player character after the battle is
+   over.*)
 let boss_battle a =
   let boss =
     Character.parse_character "Marthia Pollocus"
