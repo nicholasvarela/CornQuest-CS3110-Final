@@ -113,11 +113,10 @@ let drop_items actor =
   else get_item arr 5
 
 let marthia =
-  Character.parse_character "Marthia Pollocus and the Weather Machine"
-    [ 0.7; 0.3; 0.; 0.; 0.; 0. ]
+  Character.parse_character "Marthia Pollocus" [ 0.2; 0.1; 0.3; 0.3; 0.1; 0.1 ]
 
 let call_encounter a =
-  let e = if a.Character.lvl = 5 then marthia else pick_enems () in
+  let e = pick_enems () in
   let _ =
     ANSITerminal.print_string [ ANSITerminal.yellow ]
       ("Encountered " ^ e.name ^ "!")
@@ -130,10 +129,6 @@ let call_encounter a =
       exit 0)
     else
       match a with
-      | Some ch when e = marthia ->
-          ANSITerminal.print_string [ ANSITerminal.red ]
-            "Congratulations Hero! You Win!";
-          exit 0
       | Some ch ->
           let _ = drop_items ch in
           print_endline "Please return to the GUI";
@@ -158,7 +153,7 @@ let boss_battle a =
       | Some ch ->
           let _ = drop_items ch in
           ANSITerminal.print_string [ ANSITerminal.green ]
-            "\nCongratulations, You have won!";
+            "\nCongratulations hero, You have won!";
           ch
       | None -> failwith "Not reachable")
 
