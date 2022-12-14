@@ -21,7 +21,7 @@
         "mana_potion": 1,
         "wrath_potion": 1,
         "magic_potion": 1,
-        "super_speed": 1,
+        "super_speed": 0,
         "deal_with_devil": 1
     },
     "Martha Pollocus": {
@@ -50,7 +50,7 @@
         "deal_with_devil": 0
     },
     "Clocktower Fiend": {
-        "hp": 60.0,
+        "hp": 40.0,
         "maxhp": 60.0,
         "mana": 0.0,
         "maxmana": 0.0,
@@ -100,7 +100,7 @@
         "deal_with_devil": 0
     },
     "Gorge Gorgon": {
-        "hp": 75.0,
+        "hp": 50.0,
         "maxhp": 100.0,
         "mana": 100.0,
         "maxmana": 100.0,

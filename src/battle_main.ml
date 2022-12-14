@@ -105,7 +105,7 @@ let print_items actor first_time =
   done
 
 let rec check_health (actor, enem) =
-  if Character.get_attribute_val "hp" enem <= 0. then
+  if Character.get_attribute_val "hp" enem < 1. then
     let _ = print_endline (enem.name ^ " was defeated!") in
     let experienced_char = { actor with exp = actor.exp + enem.exp } in
     let out =

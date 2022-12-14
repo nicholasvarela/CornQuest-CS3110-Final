@@ -352,7 +352,7 @@
     },
     "potion of wrath": {
         "skill_type": "Physical",
-        "description": "Potion of extreme wrath. Greatly increases strength for 4 turns, but lowers defense, magic resist, and speed. Hurts to drink, and costs 10HP to use. ",
+        "description": "Potion of extreme wrath. Restores 10HP. Greatly increases strength for 4 turns,\nbut lowers defense, magic resist, and speed. ",
         "change_to_affect": 1.0,
         "base_dmg": 0.0,
         "dmg_scailing": 0.0,
