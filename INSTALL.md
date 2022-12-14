@@ -23,7 +23,7 @@ For Ubuntu (Linux or WSL with Ubuntu users, Windows 11 users may ignore this ste
   export LIBGL_ALWAYS_INDIRECT=1
   ```
   - Before running the game on terminal, start your window server of choice, and at launch tick off "disable access control"
-  - If X Window Server will not run on your computer, or if the gui does not open despite following the above steps, it is recommended you run this program in the OCaml VM environment that you can find in the CS3110 [textbook](https://cs3110.github.io/textbook/chapters/appendix/vm.html?highlight=virtual%20machine).
+  - If X Window Server will not run on your computer, or if the GUI does not open despite following the above steps, it is recommended you run this program in the OCaml VM environment that you can find in the CS3110 [textbook](https://cs3110.github.io/textbook/chapters/appendix/vm.html?highlight=virtual%20machine).
 
 Now, install `sdl2` for your operating system.
 
