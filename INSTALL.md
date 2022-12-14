@@ -21,7 +21,6 @@ For Ubuntu (Linux or WSL with Ubuntu users, Windows 11 users may ignore this ste
   export DISPLAY=:0 # in WSL 1
   export DISPLAY=$(awk '/nameserver / {print $2; exit}' /etc/resolv.conf 2>/dev/null):0 # in WSL 2
   export LIBGL_ALWAYS_INDIRECT=1
-
   ```
   - Before running the game on terminal, start your window server of choice, and at launch tick off "disable access control"
 
@@ -42,7 +41,6 @@ Next, install the required dependencies using `opam`:
 ```
 $ opam install ANSITerminal
 $ opam install tsdl-image
-
 ```
 
 You have finished installing Cornquest!
@@ -53,5 +51,4 @@ If you encounter an issue while running `make play` it may be because your versi
 ```
 $ opam update
 $ opam upgrade
-
 ```
