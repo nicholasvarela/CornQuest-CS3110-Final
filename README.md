@@ -1,6 +1,6 @@
 # cs3110-final-project
 
-#Installation
+# Installation
 See [INSTALL.md](./INSTALL.md) for more instructions.
 
 # Contributors
