@@ -4,29 +4,29 @@ open Yojson
 
 (*Testing Plan: Our plan for testing is to test as many parts of the codebase
   using automated OUnit testing. We tested components as they were built. For
-  example, one of our first sprints included the creation of the
-  chraracter.ml/character.mli files to represent a sprite in our RPG. We tested
-  that subsection before using the character.ml representation, in our battle
-  simulation, whose functionality is mostly under battle.ml/battle.mli*)
+  example, one of our first sprints included the creation of the [Character] to
+  represent a sprite in our RPG. We tested that subsection before using the
+  [Character] representation in our battle simulation, whose functionality is
+  mostly under [Battle].*)
 
-(*Manually Tested Components battle.ml functions attack had a random call, so
-  they could not be tested with OUnit battle.ml functions. We focused on testing
-  functions that were exposed in the respective .mli file, internal functions
-  were solved indirectly. GUI Components like gameobj.ml, tilemap.ml and
-  tileset.ml textman.mli*)
+(*Manually Tested Components: Attacks in the battle systems [Battle] have a
+  random roll, so they could not be accurately tested with OUnit battle.ml
+  functions. We focused on testing functions that were exposed in the respective
+  .mli files, internal functions were solved indirectly. We also manually tested
+  GUI Components like [Player], [Tilemap], [Tileset] and [Textman]. We were
+  advised by our PM that we watch out for the game crashing with unusual input.
+  Therefore, we manually tested unsual inputs in terminal while running the demo
+  battle system. *)
 
-(*OUnit Tested Componenets : character.ml/character.mi -We utilized OUnit and
-  glass box testing in order to throughly test that our implementation of
-  character worked as expected. Since, we predicted that sprites would be used
-  throughout our game, we made sure to be especially careful in testing the
-  getters/setter of the character's attributes Command.ml was another OUnit
-  tested module since it did not have to do with the GUI. We throughly tested
-  the Command.parse in order with Glassbox testing in order to insure that it
-  processed user input correctly. This was critical in ensuring that the user
-  had a seamlyess gameplay that was not interupted by typeos in their input
-  strings. We were advised by our PM that we watch out for the game crashing
-  with unsualy input so we created [parse_test_fail] to ensure that these string
-  raised failures which could be caught by our battle and adventure modules. *)
+(*OUnit Tested Componenets : [Character] -We utilized OUnit and glass box
+  testing in order to throughly test that our implementation of character worked
+  as expected. Since, we predicted that sprites would be used throughout our
+  game, we made sure to be especially careful in testing the getters/setter of
+  the character's attributes. [Character] is the only non-GUI, non-[Battle]
+  module that truly modifies the state of the program, as this module passes a
+  new character into the new state in the GUI. Employing OUnit testing here was
+  a strategic choice and helped immensely in ensuring as much correctness as
+  possible.*)
 
 (*Argument for correctness of program given testing strategy:
 
@@ -34,7 +34,19 @@ open Yojson
   tests each subcomponenet of our project. Through Glass Box and Black Box
   testing we ensured that functions produced output as prescribed by their
   respective .mli files. This ensured that functions which utilized their
-  already produced functions only had to be tested for new functionality. *)
+  already produced functions only had to be tested for new functionality. Aside
+  from that, all components of the program that could possibly change the state
+  of the game have been tested for errors, proving the correctness of
+  Cornquest's battle functionality. For the GUI aspect of the game, as only
+  movement and encounters have been implemented at this point in time, it is
+  fairly straightforward to see if things are not working as intended, hence we
+  rely on manual testing a lot here.
+
+  In sum, the [Battle] and [Character] modules have been thouroughly tested by
+  OUnit, and GUI components were tested manually. Since the former two modules
+  modify the state by passing a new player character into the new state, given
+  that the former two have been tested to be correct, it is sufficient to say
+  that the program has been sufficiently tested.*)
 
 let demon1 : Character.character = Character.start_character "Demoman"
 let chris : Character.character = Character.start_character "Chris"
