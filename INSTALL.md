@@ -1,4 +1,4 @@
-# Install Cornquest
+# Install CornQuest
 
 First, install OCaml and set it up as the CS3110 [textbook](https://cs3110.github.io/textbook/chapters/preface/install.html) specifies.
 
@@ -54,7 +54,7 @@ $ opam install tsdl-image
 $ opam install tsdl-mixer
 ```
 
-You have finished installing Cornquest!
+You have finished installing CornQuest!
 
 To run the program, run `make play`. This will launch the game window and load up the battle system in terminal. Open the terminal in fullscreen for the best experience!
 
