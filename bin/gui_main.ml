@@ -15,6 +15,7 @@ let main () =
       Constants.screen_width Constants.screen_height false
   in
   Driver.read_logo_files "data/title.txt";
+  print_endline "For the best experience, open the terminal in fullscreen!";
   let encounter = ref (Game_loop.rng ()) in
   while game.running do
     frame_start := Int32.to_int (Sdl.get_ticks ());

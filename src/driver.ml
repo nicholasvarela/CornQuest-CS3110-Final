@@ -241,6 +241,7 @@ let start a e =
     | "Clocktower Fiend" -> "clockfiend.txt"
     | "Hovian Plaza Serpent" -> "hoserp.txt"
     | "Gorge Gorgon" -> "gorgegon.txt"
+    | "Martha Pollocus and the Weather Machine" -> "martha.txt"
     | _ -> failwith "unreachable"
   in
   read_logo_files
