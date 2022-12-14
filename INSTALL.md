@@ -23,9 +23,7 @@ For Ubuntu (Linux or WSL with Ubuntu users, Windows 11 users may ignore this ste
   export LIBGL_ALWAYS_INDIRECT=1
 
   ```
-
-  -Before running the game on terminal, start your window server of choice, and at launch tick off "disable access control"
-
+  - Before running the game on terminal, start your window server of choice, and at launch tick off "disable access control"
 
 Now, install `sdl2` for your operating system.
 
