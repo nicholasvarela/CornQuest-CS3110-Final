@@ -80,7 +80,7 @@ val use_skill : skill -> character -> character -> character * character * bool
    a chance to hit calculated on [target]'s [Speed] and [user]'s [Accuracy], and
    a chance to apply status effects based on [sk.chance_to_affect]*)
 
-val use_consumable : consumable -> character -> int -> character
+val use_consumable : consumable -> character -> int -> character * bool
 (**[use_consumable consumable char int] returns a character with [int] number of
    [consumeable] used *)
 
@@ -101,7 +101,10 @@ val get_skills : character -> skill option array
 (**[get_skills actor] returns an array containing the skills of [actor]*)
 
 val get_description_skill : skill -> string
+(**[get_description_skill skl] returns the descriptions string of skill skl *)
+
 val get_description_item : consumable -> string
+(**[get_description_item csm] returns the descriptions string of consumable csm *)
 
 val get_inv : character -> consumable_bucket array
 (**[get_skills actor] returns the consumable inventory of [actor]*)
@@ -124,6 +127,10 @@ val get_temp_value : string -> character -> float
 val start_character : string -> character
 (**[start_character name] is a level 1 default starting character named [name]
    with initialized attributes.*)
+
+val parse_character : string -> float list -> character
+(**[parse_character nme lst] parses a new character with default temp values
+   from the json located at data/characters.json *)
 
 val change_temps_from_skill : skill -> character -> character
 (**[change_temps_from_skill] returns a character with temporary modified by
@@ -159,4 +166,8 @@ val headbutt : skill
 val tsu : skill
 val chainlight : skill
 val piercing_light : skill
-val dark : skill
+val nosferatu : skill
+
+val parse_character : string -> float list -> character
+(**[parse_character nme hit_chances] creates a new character with data from
+   character.json with matching name = nme*)

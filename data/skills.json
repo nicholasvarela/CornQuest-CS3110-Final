@@ -134,7 +134,7 @@
         "luck-effect": 0.0,
         "luck-turns": -1
     },
-    "doubleslash": {
+    "double slash": {
         "skill_type": "Physical",
         "description": "Type: Physical, Base damage: 4, Scaling 70 %\nDouble slashes enemy.  ",
         "change_to_affect": 0.3,
@@ -188,7 +188,7 @@
         "luck-effect": 0.0,
         "luck-turns": -1
     },
-    "Nosferatu": {
+    "nosferatu": {
         "skill_type": "Magic",
         "description": "Base damage: 30, Scaling 40 %\nA powerful dark magic spell, which lowers magic reist, luck and and chance to hit",
         "change_to_affect": 0.6,
@@ -298,11 +298,11 @@
     },
     "mana potion": {
         "skill_type": "Magic",
-        "description": "Restores 50 Mana",
+        "description": "Restores 80 Mana",
         "change_to_affect": 1.0,
         "base_dmg": 0.0,
         "dmg_scailing": 0.0,
-        "mp_cost": -100.0,
+        "mp_cost": -80.0,
         "hp_cost": 0.0,
         "hp-effect": 0.0,
         "hp-turns": -1,
@@ -325,7 +325,7 @@
     },
     "health potion": {
         "skill_type": "Physical",
-        "description": "Restores 30 health",
+        "description": "Restores 100 health",
         "change_to_affect": 1.0,
         "base_dmg": 0.0,
         "dmg_scailing": 0.0,
@@ -335,10 +335,10 @@
         "hp-turns": -1,
         "mana-effect": 0.0,
         "mana-turns": -1,
-        "strength-effect": -8.0,
-        "strength-turns": 0,
+        "strength-effect": 0.0,
+        "strength-turns": -1,
         "defense-effect": 0.0,
-        "defense-turns": 0,
+        "defense-turns": -1,
         "magicresist-effect": 0.0,
         "magicresist-turns": -1,
         "speed-effect": 0.0,
@@ -352,7 +352,7 @@
     },
     "potion of wrath": {
         "skill_type": "Physical",
-        "description": "Potion of extreme wrath. Greatly increases strength for 4 turns, but lowers defense, magic resist, and speed. Hurts to drink, and costs 10HP to use. ",
+        "description": "Potion of extreme wrath. Restores 10HP. Greatly increases strength for 4 turns,\nbut lowers defense, magic resist, and speed. ",
         "change_to_affect": 1.0,
         "base_dmg": 0.0,
         "dmg_scailing": 0.0,
@@ -363,7 +363,7 @@
         "mana-effect": 0.0,
         "mana-turns": -1,
         "strength-effect": 20.0,
-        "strength-turns": 0,
+        "strength-turns": 4,
         "defense-effect": -5.0,
         "defense-turns": 4,
         "magicresist-effect": -5.0,
@@ -374,12 +374,12 @@
         "accuracy-turns": -1,
         "magicpower-effect": 0.0,
         "magicpower-turns": -1,
-        "luck-effect": 0.0,
-        "luck-turns": -1
+        "luck-effect": 20.0,
+        "luck-turns": 4
     },
     "spellflux elixir": {
         "skill_type": "Magic",
-        "description": "This potion creatly increases magic power, but lowers strength and defense.",
+        "description": "This potion greatly increases magic power, but lowers strength and defense.",
         "change_to_affect": 1.0,
         "base_dmg": 0.0,
         "dmg_scailing": 0.0,
@@ -433,7 +433,7 @@
     },
     "deal with devil": {
         "skill_type": "Physical",
-        "description": "Sacrifice 50hp to greatly increase max hp, max mana, strength, defense, magic resist, speed, accuracy, magic power.",
+        "description": "Sacrifice 50hp to greatly increase max hp, max mana, strength,\ndefense, magic resist, speed, accuracy, magic power.",
         "change_to_affect": 1.0,
         "base_dmg": 0.0,
         "dmg_scailing": 0.0,

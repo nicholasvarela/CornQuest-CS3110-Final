@@ -5,6 +5,8 @@ exception FaultyImage
 
 type t = CornECS.entity
 
+let steps = ref 0
+
 let create_player fl ren =
   CornECS.next_id () |> Sprite.b |> AnimatedSprite.b |> KeyboardController.b
   |> Renderable.s (Textman.load_texture fl ren, ren)
@@ -131,7 +133,8 @@ let update e m =
     if ytar > ypos then update_vel e 0 Constants.player_speed;
     if ytar < ypos then update_vel e 0 (-Constants.player_speed))
   else TargetPosition.set e (Position.get e);
-  update_pos e
+  update_pos e;
+  steps := !steps + Int.abs (xtar - xpos) + Int.abs (ytar - ypos)
 
 (**[set_spawn player m] sets the [player]'s spawn point on map [m].*)
 let set_spawn player m =

@@ -38,3 +38,5 @@ val init_anims :
 (**[init_anims player n e s w] initializes the [player]'s animations such that
    the spritesheet [n] is associated with the direction [North], the spritesheet
    [e] is associated with the direction [East]..., and so on.*)
+   
+val steps : int ref

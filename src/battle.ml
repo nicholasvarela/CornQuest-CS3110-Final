@@ -56,7 +56,8 @@ let attack (enem : Character.character) (actor : Character.character) =
     enem
 
 let guard (actor : Character.character) =
-  let out = Character.adjust_temps (Defense 10., 1) actor in
+  let a = Character.adjust_temps (Defense 10., 1) actor in
+  let out = Character.adjust_temps (MagicResist 10., 1) a in
   let _ = if List.length actor.enem_hit_chances != 0 then wait () in
   out
 
@@ -77,7 +78,7 @@ let rec skill_traversal (actor, enem) lst rand index =
 
 let rec enem_spell_helper (actor, enem) lst rand cnt acc =
   match lst with
-  | [] -> failwith "invalid enemy"
+  | [] -> failwith "invalid enemy spells"
   | h :: t ->
       let chance = h +. acc in
       if rand <= chance then (

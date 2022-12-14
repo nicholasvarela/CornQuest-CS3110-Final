@@ -28,12 +28,12 @@ open Yojson
   with unsualy input so we created [parse_test_fail] to ensure that these string
   raised failures which could be caught by our battle and adventure modules. *)
 
-(*Arugment for correctness of program given testing strategy:
+(*Argument for correctness of program given testing strategy:
 
   Our testing method proves correctness of our program because it rigorouly
   tests each subcomponenet of our project. Through Glass Box and Black Box
   testing we ensured that functions produced output as prescribed by their
-  respective .mli files. This ensured that functions which utalized there
+  respective .mli files. This ensured that functions which utilized their
   already produced functions only had to be tested for new functionality. *)
 
 let demon1 : Character.character = Character.start_character "Demoman"
@@ -56,6 +56,8 @@ let demon6_adjust = Character.adjust 10. demon1 "speed"
 let demon7_adjust = Character.adjust 10. demon1 "accuracy"
 let demon8_adjust = Character.adjust 10. demon1 "magic power"
 let demon9_adjust = Character.adjust 10. demon1 "luck"
+let martha = Character.parse_character "Martha Pollocus" []
+let serpent = Character.parse_character "Hovian Plaza Serpent" []
 let start_test (name : string) : test = name >:: fun _ -> assert_equal true true
 
 let get_attribute_test (name : string) (character : Character.character)
@@ -73,17 +75,6 @@ let get_temp_value_test (name : string) (character : Character.character)
   assert_equal expected_output (Character.get_temp_value attr character)
     ~printer:(fun x -> string_of_float x)
 
-let parse_test (name : string) (input_string : string)
-    (expected_output : Command.command) : test =
-  name >:: fun _ -> assert_equal expected_output (Command.parse input_string)
-
-let parse_test_fail (name : string) (input_string : string)
-    (expected_output : Command.command) : test =
-  name >:: fun _ ->
-  try assert_equal expected_output (Command.parse input_string) with
-  | Command.Malformed -> assert_equal true true
-  | Command.Empty -> assert_equal true true
-
 let basic_charcter_tests =
   [
     get_attribute_test "initial hp of default chracter" demon1 "hp" 100.;
@@ -95,9 +86,9 @@ let basic_charcter_tests =
     get_attribute_test "initial magic_resist of default chracter" demon1
       "magic resist" 10.;
     get_attribute_test "initial accuracy of default chracter" demon1 "accuracy"
-      10.;
-    get_attribute_test "initial magic_power of default chracter" demon1 "magic"
-      10.;
+      1000.;
+    get_attribute_test "initial magic_power of default chracter" demon1
+      "magic power" 10.;
     get_attribute_test "initial luck of default chracter" demon1 "luck" 10.;
     get_attribute_test "adjusted by 10  hp of default chracter" demon1_adjust
       "hp" 110.;
@@ -110,9 +101,9 @@ let basic_charcter_tests =
     get_attribute_test "adjusted by 10  magic_resist of default chracter"
       demon5_adjust "magic resist" 20.;
     get_attribute_test "adjusted by 10  accuracy of default chracter"
-      demon7_adjust "accuracy" 20.;
+      demon7_adjust "accuracy" 1010.;
     get_attribute_test "adjusted by 10  magic_power of default chracter"
-      demon8_adjust "magic" 20.;
+      demon8_adjust "magic power" 20.;
     get_attribute_test "adjusted by 10  luck of default chracter" demon9_adjust
       "luck" 20.
     (* get_curr_attr_test "get_curr_attr hp default character" demon1 "maxmana"
@@ -131,34 +122,32 @@ let basic_charcter_tests =
     get_temp_value_test "initial tmp of magic power of daemon " demon1
       "magic power" 0.;
     get_temp_value_test "change temp luck" chris "luck" 2.;
-    get_temp_value_test "change temp defense" chris2 "defense" 2.;
+    get_temp_value_test "change temp luck" chris "luck" 2.;
+    get_temp_value_test "change temp defenasdfse" chris2 "defense" 2.;
     get_temp_value_test "change temp luck" chris4 "luck" 2.;
     get_temp_value_test "change temp speed" chris5 "speed" 2.;
     get_temp_value_test "change temp luck" daniel "luck" (-3.0);
     get_temp_value_test "change temp defense" daniel2 "defense" (-3.);
     get_temp_value_test "change temp luck" daniel4 "luck" (-3.0);
-    parse_test "Parse [Go North]" "Go North" (Go North);
-    parse_test "Parse [Go South]" "Go South" (Go South);
-    parse_test "Parse [Go East]" "Go East" (Go East);
-    parse_test "Parse [Quit]" "Quit" Quit;
-    parse_test "Parse [Fight Guard]" "battle guard" (Fight Guard);
-    parse_test "Parse [Fight flee ]" "battle flee " (Fight Flee);
-    parse_test_fail "Parse [Fight ]" "battle " Quit;
-    parse_test_fail "Malformed  [Fight ]" "battle " Quit;
-    parse_test_fail "Malformed  string  [Fight ] should throw" "battle " Quit;
-    parse_test_fail "Invalid Spell should throw malfored  [Fight ]" "battle "
-      Quit;
-    parse_test_fail "Invalid command should throw malformed  [Goo home]"
-      "battle " Quit;
-    parse_test_fail "Invalid location should throw malformed  [Go olin ]"
-      "battle " Quit;
-    parse_test_fail "New line invalid input should throw malformed [\n] " "\n "
-      Quit;
-    parse_test_fail "Escape sequence throws malformed test 1 " "\n " Quit;
-    parse_test_fail "Escape sequence throws malformed test 2 \\' " "\\' " Quit;
-    parse_test_fail "Escape sequence throws malformed test 3 \\ " "\\ " Quit;
-    parse_test_fail "blank input throws malformed " "" Quit;
-    parse_test_fail "blank input throws malformed " " " Quit;
+    get_attribute_test "initial hp of martha" martha "hp" 100.;
+    get_attribute_test "initial mana of martha" martha "mana" 200.;
+    get_attribute_test "initial strength of martha" martha "strength" 10.;
+    get_attribute_test "initial defense of martha" martha "defense" 10.;
+    get_attribute_test "initial magic_resist of martha" martha "magic resist"
+      14.;
+    get_attribute_test "initial accuracy of martha" martha "accuracy" 100000.;
+    get_attribute_test "initial magic_power of martha" martha "magic power" 12.;
+    get_attribute_test "initial luck of martha" martha "luck" 12.;
+    get_attribute_test "initial hp of serpent" serpent "hp" 30.;
+    get_attribute_test "initial mana of serpent" serpent "mana" 70.;
+    get_attribute_test "initial strength of serpent" serpent "strength" 22.;
+    get_attribute_test "initial defense of serpent" serpent "defense" 10.;
+    get_attribute_test "initial magic_resist of serpent" serpent "magic resist"
+      7.;
+    get_attribute_test "initial accuracy of serpent" serpent "accuracy" 10.;
+    get_attribute_test "initial magic_power of serpent" serpent "magic power"
+      12.;
+    get_attribute_test "initial luck of serpent" serpent "luck" 12.;
   ]
 
 let test_suite =

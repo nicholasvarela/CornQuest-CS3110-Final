@@ -19,6 +19,13 @@ type t = {
 }
 (**The type of a value representing an instance of a game.*)
 
+(** 1. initialize the random seed for 2. initialize steps as a ref 0 3. randomly
+    generate an encounter number 4. each time the player moves, incr steps 5.
+    steps = encounter then make battle 6. battle ends return the new player
+    character to the game loop *)
+
+let rng () = 300 + (Random.int 5 * 100)
+
 (**[init t x y w h fs] creates a fresh game instance, in which the window has
    title [t], x-position [x], y-position [y], width [w], and height [h]. The
    game window will be fullscreen if [fs] is [true]. *)
@@ -75,6 +82,60 @@ let init t x y w h fs =
         map;
       }
   | Error (`Msg err) -> failwith err
+
+let pick_enems () =
+  let arr =
+    [|
+      Character.parse_character "Clocktower Fiend" [ 0.7; 0.3; 0.; 0.; 0.; 0. ];
+      Character.parse_character "Hovian Plaza Serpent"
+        [ 0.2; 0.0; 0.2; 0.4; 0.1; 0.1 ];
+      Character.parse_character "Gorge Gorgon" [ 0.2; 0.1; 0.2; 0.2; 0.1; 0.2 ];
+    |]
+  in
+  let rand = Random.float 1. in
+  let e =
+    if rand < 0.4 then arr.(0) else if rand < 0.8 then arr.(1) else arr.(2)
+  in
+  e
+
+let get_item (arr : Character.consumable_bucket array) i =
+  let dropped_amt = 1 + Random.int 4 in
+  arr.(i) <- { (arr.(i)) with amt = arr.(i).amt + dropped_amt };
+  ANSITerminal.print_string [ ANSITerminal.green ]
+    ("Enemy dropped "
+    ^
+    if dropped_amt = 1 then arr.(i).name
+    else string_of_int dropped_amt ^ " " ^ arr.(i).name ^ "s\n")
+
+let drop_items actor =
+  let arr = Character.get_inv actor in
+  let rand = Random.float 1. in
+  if rand <= 0.3 then get_item arr 0
+  else if rand <= 0.5 then get_item arr 1
+  else if rand <= 0.6 then get_item arr 2
+  else if rand <= 0.7 then get_item arr 3
+  else if rand <= 0.8 then get_item arr 4
+  else get_item arr 5
+
+let call_encounter a =
+  let e = pick_enems () in
+  let _ =
+    ANSITerminal.print_string [ ANSITerminal.yellow ]
+      ("Encountered " ^ e.name ^ "!")
+  in
+  let _ = Battle_main.wait () in
+  try Battle_main.start a e
+  with Battle_main.Battle_Over a -> (
+    if a = None then (
+      ANSITerminal.print_string [ ANSITerminal.red ] "Game Over";
+      exit 0)
+    else
+      match a with
+      | Some ch ->
+          let _ = drop_items ch in
+          print_endline "Please return to the GUI";
+          ch
+      | None -> failwith "Not reachable")
 
 (**[handle_events game] handles events of the game instance [game].*)
 let handle_events game =

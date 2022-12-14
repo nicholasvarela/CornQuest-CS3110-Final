@@ -1,51 +1,10 @@
-open Game
 open Battle
 open Character
 
 exception Battle_Over of Character.character option
 
-let actor : Character.character = Character.start_character "Demoman"
 let first_time_skill = ref true
 let first_time_item = ref true
-
-let enem : Character.character =
-  {
-    name = "Marthia Pollocus";
-    hp = HP 100.;
-    maxhp = HP 100.;
-    mana = Mana 200.;
-    maxmana = Mana 200.;
-    exp = 25;
-    lvl = 1;
-    str = Strength 10.;
-    def = Defense 10.;
-    mr = MagicResist 10.;
-    spd = Speed 2.;
-    acc = Accuracy 100000.;
-    mag = MagicPower 10.;
-    luk = Luck 10.;
-    enem_hit_chances = [ 0.0; 0.5; 0.0; 0.5; 0.1; 0.1 ];
-    skillset =
-      [|
-        Some Character.tsu;
-        Some Character.blood;
-        Some Character.piercing_light;
-        Some Character.dark;
-      |];
-    inv = [||];
-    temp_stats =
-      [|
-        (HP 0., -1);
-        (Mana 0., -1);
-        (Strength 0., -1);
-        (Defense 0., -1);
-        (MagicResist 0., -1);
-        (Speed 0., -1);
-        (Accuracy 0., -1);
-        (MagicPower 0., -1);
-        (Luck 0., -1);
-      |];
-  }
 
 let read_logo_files filename =
   let listener = open_in filename in
@@ -146,11 +105,11 @@ let print_items actor first_time =
   done
 
 let rec check_health (actor, enem) =
-  if Character.get_attribute_val "hp" enem <= 0. then
+  if Character.get_attribute_val "hp" enem < 1. then
     let _ = print_endline (enem.name ^ " was defeated!") in
     let experienced_char = { actor with exp = actor.exp + enem.exp } in
     let out =
-      if experienced_char.exp mod 25 = 0 then level_up experienced_char
+      if experienced_char.exp >= 50 then level_up experienced_char
       else experienced_char
     in
     raise (Battle_Over (Some out))
@@ -160,15 +119,17 @@ let rec check_health (actor, enem) =
   else (actor, enem)
 
 and item_menu_helper (actor, enem) arr i =
-  let a = Character.use_consumable arr.(i).item actor i in
-  let e' = Character.clear_temps (ref enem) in
-  let a2, e2 = Battle.pick_enemy_move (a, e') in
-  let a2', e2' = check_health (a2, e2) in
-  turn_handler (a2', e2') true
+  let a, did_action = Character.use_consumable arr.(i).item actor i in
+  if not did_action then item_menu (actor, enem)
+  else
+    let e' = Character.clear_temps (ref enem) in
+    let a2, e2 = Battle.pick_enemy_move (a, e') in
+    let a2', e2' = check_health (a2, e2) in
+    turn_handler (a2', e2') true
 
 and item_info_helper (actor, enem) arr i =
   ANSITerminal.print_string [ ANSITerminal.default ]
-    (get_description_item arr.(0).item ^ "\n");
+    (get_description_item arr.(i).item ^ "\n");
   item_menu (actor, enem)
 
 and item_menu (actor, enem) =
@@ -192,10 +153,10 @@ and item_menu (actor, enem) =
   | "back" -> turn_handler (actor, enem) false
   | _ ->
       ANSITerminal.print_string [ ANSITerminal.red ]
-        "That's not a valid item. Please try again";
+        "That's not a valid item. Please try again\n";
       item_menu (actor, enem)
 
-and skill_menu_helper arr i =
+and skill_menu_helper (actor, enem) arr i =
   let a, e, b =
     Character.use_skill (Character.unwrap_skill arr.(i)) actor enem
   in
@@ -207,7 +168,7 @@ and skill_menu_helper arr i =
     turn_handler (a2', e2') true
   else skill_menu (a', e')
 
-and skill_info_helper arr i =
+and skill_info_helper (actor, enem) arr i =
   ANSITerminal.print_string [ ANSITerminal.default ]
     ((Character.unwrap_skill arr.(i)).description ^ "\n");
   skill_menu (actor, enem)
@@ -218,16 +179,19 @@ and skill_menu (actor, enem) =
   let inp = read_line () in
   match inp with
   | s when String.length s = 0 -> skill_menu (actor, enem)
-  | s when inp = sk1 -> skill_menu_helper arr 0
-  | s when inp = sk2 -> skill_menu_helper arr 1
-  | s when inp = sk3 -> skill_menu_helper arr 2
-  | s when inp = sk4 -> skill_menu_helper arr 0
+  | s when inp = sk1 -> skill_menu_helper (actor, enem) arr 0
+  | s when inp = sk2 -> skill_menu_helper (actor, enem) arr 1
+  | s when inp = sk3 -> skill_menu_helper (actor, enem) arr 2
+  | s when inp = sk4 -> skill_menu_helper (actor, enem) arr 3
   | "back" -> turn_handler (actor, enem) false
-  | s when s = "info " ^ sk1 -> skill_info_helper arr 0
-  | s when s = "info " ^ sk2 -> skill_info_helper arr 1
-  | s when s = "info " ^ sk3 -> skill_info_helper arr 2
-  | s when s = "info " ^ sk4 -> skill_info_helper arr 3
-  | _ -> skill_menu (actor, enem)
+  | s when s = "info " ^ sk1 -> skill_info_helper (actor, enem) arr 0
+  | s when s = "info " ^ sk2 -> skill_info_helper (actor, enem) arr 1
+  | s when s = "info " ^ sk3 -> skill_info_helper (actor, enem) arr 2
+  | s when s = "info " ^ sk4 -> skill_info_helper (actor, enem) arr 3
+  | _ ->
+      ANSITerminal.print_string [ ANSITerminal.red ]
+        "That's not a valid skill. Please try again\n";
+      skill_menu (actor, enem)
 
 and turn_handler (actor, enem) made_action =
   ANSITerminal.print_string [ ANSITerminal.white ]
@@ -264,27 +228,16 @@ and turn_handler (actor, enem) made_action =
       print_skills actor first_time_skill;
       skill_menu (actor, enem)
   | "escape" ->
-      print_endline "You flee!";
+      print_endline "You flee! Please return to the GUI.";
       raise (Battle_Over (Some actor))
   | "item" ->
       print_items actor first_time_item;
       item_menu (actor, enem)
   | _ -> turn_handler (actor, enem) false
 
-(** [main ()] prompts for the game to play, then starts it. *)
-let main () =
+let start a b =
   read_logo_files "data/title.txt";
   ANSITerminal.print_string [ ANSITerminal.yellow ]
     "\n\n\
-     Choose a move: attack, guard, skill, item, or escape. What will you do? \n\n";
-  turn_handler (actor, enem) false
-
-(* print_endline "Please enter the name of the game file you want to load.\n";
-   print_string "> "; match read_line () with | exception End_of_file -> () |
-   file_name -> ( let file = data_dir_prefix ^ file_name ^ ".json" in try if
-   Sys.file_exists file then play_game file else raise Not_found with Not_found
-   -> ANSITerminal.prerr_string [ ANSITerminal.cyan ] "File not found,
-   terminating.\n") *)
-
-(* Execute the game engine. *)
-let () = main ()
+     Choose a move: attack, guard, skill, item or escape. What will you do? \n\n";
+  turn_handler (a, b) false

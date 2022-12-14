@@ -12,7 +12,7 @@ utop:
 	OCAMLRUNPARAM=b dune utop src
 
 battle:
-	OCAMLRUNPARAM=b dune exec bin/battle_main.exe
+	OCAMLRUNPARAM=b dune exec bin/demo_battle.exe
 
 gui:
 	OCAMLRUNPARAM=b dune exec bin/gui_main.exe
