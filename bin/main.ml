@@ -14,7 +14,7 @@ let main () =
     Game_loop.init "bruh" Sdl.Window.pos_centered Sdl.Window.pos_centered
       Constants.screen_width Constants.screen_height false
   in
-  Driver.read_logo_files "data/title.txt";
+  Battle_handler.read_logo_files "data/title.txt";
   print_endline "For the best experience, open the terminal in fullscreen!";
   let encounter = ref (Game_loop.rng ()) in
   while game.running do

@@ -4,7 +4,7 @@ let actor : Character.character = Character.start_character "Demoman"
 
 let enem : Character.character = Character.parse_character "Hovian Plaza Serpent" [ 0.2; 0.0; 0.2; 0.4; 0.1; 0.1 ]
 
-let main () = Driver.start actor enem 
+let main () = Battle_handler.start actor enem 
 
 (* print_endline "Please enter the name of the game file you want to load.\n";
    print_string "> "; match read_line () with | exception End_of_file -> () |
