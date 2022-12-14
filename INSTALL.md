@@ -27,7 +27,7 @@ For Ubuntu (Linux or WSL with Ubuntu users, Windows 11 users may ignore this ste
 
 Now, install `sdl2` for your operating system.
 
-- On macOS:
+- On macOS (Source: Homebrew install instructions):
   - Homebrew: 
     - `brew install pkgconfig`
     - `brew install sdl2`
