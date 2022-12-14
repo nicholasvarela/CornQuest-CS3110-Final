@@ -44,20 +44,33 @@ module Renderable :
 (**Module representing the "renderable" property, possessed by components that
    are renderable onscreen/visible.*)
 
-module Transform : CornECS.COMPONENT
-(**Module representing the "transform" component, bound to entities that
-   transform [Velocity]s and [Position]s.*)
+module Animated :
+  CornECS.PROPERTY
+    with type t = (dir, Tsdl.Sdl.texture * Tsdl.Sdl.rect Seq.t) Hashtbl.t
+(**Module representing the "animated" property, possessed by components that are
+   animated based on the direction they face.*)
+
+module FrameCycle : CornECS.PROPERTY with type t = int
+(**Module representing the "frame cycle" property, possessed by components that
+   have frame-cycle dependent behavior (such as animation).*)
 
 module Sprite : CornECS.COMPONENT
 (**A [Sprite] is a [Rectangle] that is [Renderable], has [Velocity] and
    [Position] properties, is capable of [Moving], and is facing a [Direction].
-   It also has a [Collider] component.
 
    When creating an entity with the [Sprite] component, be sure to provide it a
    valid [Sdl.texture] and [Sdl.renderer] via [Textman.load_texture].*)
 
 module KeyboardController : CornECS.COMPONENT
 (**A [KeyboardController] is a component attached to [Sprite]s that are
-   controlled by the keyboard. It requires listening to the [Keyboard] as well
-   as the ability to [Transform] the sprite and move it to different
-   [TargetPosition]s on the map.*)
+   controlled by the keyboard. It requires listening to the [Keyboard].*)
+
+module AnimatedSprite : CornECS.COMPONENT
+(**An [AnimatedSprite] is a [Sprite] that is also animated.
+
+   When creating an entity with the [AnimatedSprite] component, be sure to
+   provide it a valid [Sdl.renderer], as well as valid [Sdl.texture]s to switch
+   between.*)
+
+module Cam : CornECS.COMPONENT
+(**A [Cam] component.*)

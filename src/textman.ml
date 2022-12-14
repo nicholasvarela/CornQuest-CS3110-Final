@@ -7,4 +7,22 @@ let load_texture file_name ren =
   Sdl.free_surface tmpSurface;
   tex
 
-let draw tex ren src dst = Sdl.render_copy ~src ~dst ren tex |> Util.unwrap
+let draw ?(offset = (0, 0)) tex ren src dst =
+  let true_dst =
+    Sdl.Rect.create
+      (Sdl.Rect.x dst - fst offset)
+      (Sdl.Rect.y dst - snd offset)
+      (Sdl.Rect.w dst) (Sdl.Rect.h dst)
+  in
+  Sdl.render_copy ~src ~dst:true_dst ren tex |> Util.unwrap
+
+let draw_flipped ?(offset = (0, 0)) tex ren src dst =
+  let true_dst =
+    Sdl.Rect.create
+      (Sdl.Rect.x dst - fst offset)
+      (Sdl.Rect.y dst - snd offset)
+      (Sdl.Rect.w dst) (Sdl.Rect.h dst)
+  in
+
+  Sdl.render_copy_ex ~src ~dst:true_dst ren tex 0. None Sdl.Flip.horizontal
+  |> Util.unwrap

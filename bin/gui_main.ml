@@ -7,8 +7,8 @@ let main () =
   let frame_start = ref 0 in
   let frame_time = ref 0 in
   let game =
-    Game_loop.init "bruh" Sdl.Window.pos_centered Sdl.Window.pos_centered 1280
-      960 false
+    Game_loop.init "bruh" Sdl.Window.pos_centered Sdl.Window.pos_centered
+      Constants.screen_width Constants.screen_height false
   in
   while game.running do
     frame_start := Int32.to_int (Sdl.get_ticks ());

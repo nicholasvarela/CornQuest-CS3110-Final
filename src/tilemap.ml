@@ -61,20 +61,23 @@ let load_map fl ren =
     spawn;
   }
 
-let draw_map m ren =
-  for i = 0 to Array2.dim1 m.tiles - 1 do
-    for j = 0 to Array2.dim2 m.tiles - 1 do
+let draw_map m ren cam =
+  for i = 0 to m.height - 1 do
+    for j = 0 to m.width - 1 do
       Sdl.Rect.set_x m.dst (j * Constants.tilesize);
       Sdl.Rect.set_y m.dst (i * Constants.tilesize);
       match Array2.get m.tiles i j with
-      | i ->
-          Textman.draw
+      | ind ->
+          Textman.draw ~offset:(Camera.get_pos cam)
             (Tileset.get_tex m.tileset)
             ren
-            (Tileset.get_tile m.tileset i)
+            (Tileset.get_tile m.tileset ind)
             m.dst
     done
   done
 
 let get_spawn m = m.spawn
 let scale m = Constants.tilesize / m.tilesize
+let get_tile m (x, y) = m.tiles.{y, x}
+let get_tileset m = m.tileset
+let get_dim m = (m.width * Constants.tilesize, m.height * Constants.tilesize)

@@ -2,7 +2,6 @@
 
 open Tsdl
 open Tsdl_image
-open Components
 
 type t = {
   title : string;
@@ -14,24 +13,11 @@ type t = {
   mutable running : bool;
   win : Sdl.window;
   ren : Sdl.renderer;
-  player : CornECS.entity;
+  cam : Camera.t;
+  player : Player.t;
   map : Tilemap.t;
 }
 (**The type of a value representing an instance of a game.*)
-
-(**[set_spawn player m] sets the [player]'s spawn point on map [m].*)
-let set_spawn player m =
-  let spawn_x = Tilemap.get_spawn m |> fst in
-  let spawn_y = (Tilemap.get_spawn m |> snd) - Constants.tilesize in
-  Rectangle.set player
-    ( fst (Rectangle.get player),
-      Sdl.Rect.create
-        (spawn_x * Tilemap.scale m)
-        (spawn_y * Tilemap.scale m)
-        Constants.tilesize Constants.tilesize );
-  Position.set player (spawn_x * Tilemap.scale m, spawn_y * Tilemap.scale m);
-  TargetPosition.set player
-    (spawn_x * Tilemap.scale m, spawn_y * Tilemap.scale m)
 
 (**[init t x y w h fs] creates a fresh game instance, in which the window has
    title [t], x-position [x], y-position [y], width [w], and height [h]. The
@@ -45,12 +31,35 @@ let init t x y w h fs =
       let window = Sdl.create_window t ~x ~y ~w ~h flags |> Util.unwrap in
       print_endline "Window created.";
 
-      let renderer = Sdl.create_renderer ~index:(-1) window |> Util.unwrap in
+      let renderer =
+        Sdl.create_renderer ~index:(-1)
+          ?flags:(Some Sdl.Renderer.(accelerated + presentvsync))
+          window
+        |> Util.unwrap
+      in
       Sdl.set_render_draw_color renderer 255 255 255 255 |> Util.unwrap;
       print_endline "Renderer created.";
-      let map = Tilemap.load_map "data/cave.json" renderer in
-      let player = Player.create_player "data/front.png" renderer in
-      set_spawn player map;
+      let map =
+        Tilemap.load_map (Constants.data_dir_prefix ^ "cave.json") renderer
+      in
+      let player =
+        Player.create_player (Constants.data_dir_prefix ^ "front.png") renderer
+      in
+      let cam = Camera.create_camera player in
+      let n =
+        Textman.load_texture (Constants.data_dir_prefix ^ "back.png") renderer
+      in
+      let e =
+        Textman.load_texture (Constants.data_dir_prefix ^ "side.png") renderer
+      in
+      let w_tex =
+        Textman.load_texture (Constants.data_dir_prefix ^ "side.png") renderer
+      in
+      let s =
+        Textman.load_texture (Constants.data_dir_prefix ^ "front.png") renderer
+      in
+      Player.set_spawn player map;
+      Player.init_anims player ~n ~e ~s ~w:w_tex;
       {
         title = t;
         xpos = x;
@@ -62,6 +71,7 @@ let init t x y w h fs =
         win = window;
         ren = renderer;
         player;
+        cam;
         map;
       }
   | Error (`Msg err) -> failwith err
@@ -78,14 +88,16 @@ let handle_events game =
 
 (**[update game] updates all objects in the game instance [game] that need
    updating.*)
-let update game = Player.update game.player
+let update game =
+  Camera.track game.cam game.player;
+  Player.update game.player game.map
 
 (**[render game] first clears the renderer in the game instance [game], then
    renders all objects in said instance that need rendering.*)
 let render game =
   Sdl.render_clear game.ren |> Util.unwrap;
-  Tilemap.draw_map game.map game.ren;
-  Player.draw game.player;
+  Tilemap.draw_map game.map game.ren game.cam;
+  Player.draw game.player game.cam;
   Sdl.render_present game.ren
 
 (**[clean game] "cleans" the game instance [game] by destroying the game window,
@@ -94,7 +106,8 @@ let clean game =
   Sdl.quit_sub_system Sdl.Init.everything;
   Sdl.destroy_window game.win;
   Sdl.destroy_renderer game.ren;
-  CornECS.delete game.player;
+  Components.CornECS.delete game.player;
+  Camera.delete game.cam;
 
   Sdl.quit ();
   print_endline "Game cleaned."

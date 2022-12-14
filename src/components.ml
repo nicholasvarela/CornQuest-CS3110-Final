@@ -11,7 +11,27 @@ module Position = struct
   type pos = int * int
   (**Type representing position, in the form of cartesian coordinates.*)
 
-  include (val CornECS.new_property () : CornECS.PROPERTY with type t = pos)
+  include (val CornECS.new_property () ~default:(0, 0) : CornECS.PROPERTY
+             with type t = pos)
+end
+
+module Animated = struct
+  type animations = (dir, Sdl.texture * Sdl.rect Seq.t) Hashtbl.t
+  (**Type representing the animations an [Animated] component could have, in the
+     form of a hashtable mapping directions to tuples containing textures as
+     well as sequences of [Sdl.rect]s meant to represent animation frames.*)
+
+  include (val CornECS.new_property ~default:(Hashtbl.create 4) ()
+             : CornECS.PROPERTY
+             with type t = animations)
+end
+
+module FrameCycle = struct
+  type frames = int
+  (**Type representing the number of frames in a cycle.*)
+
+  include (val CornECS.new_property ~default:2 () : CornECS.PROPERTY
+             with type t = frames)
 end
 
 module Keyboard = struct
@@ -35,7 +55,8 @@ module TargetPosition = struct
   type tar = int * int
   (**Type representing target position, in the form of cartesian coordinates.*)
 
-  include (val CornECS.new_property () : CornECS.PROPERTY with type t = tar)
+  include (val CornECS.new_property () ~default:(0, 0) : CornECS.PROPERTY
+             with type t = tar)
 end
 
 module Velocity = struct
@@ -75,16 +96,6 @@ module Renderable = struct
              with type t = resources)
 end
 
-module Transform = struct
-  include
-    (val CornECS.new_component [ (module Position); (module Velocity) ] [])
-end
-
-module Collider = struct
-  include
-    (val CornECS.new_component [ (module Rectangle) ] [ (module Transform) ])
-end
-
 module Sprite = struct
   include (val CornECS.new_component
                  [
@@ -96,12 +107,19 @@ module Sprite = struct
                    (module Moving);
                    (module TargetPosition);
                  ]
-                 [ (module Collider) ] : CornECS.COMPONENT)
+                 [] : CornECS.COMPONENT)
+end
+
+module AnimatedSprite = struct
+  include (val CornECS.new_component
+                 [ (module Animated); (module FrameCycle) ]
+                 [ (module Sprite) ] : CornECS.COMPONENT)
 end
 
 module KeyboardController = struct
-  include
-    (val CornECS.new_component
-           [ (module Keyboard) ]
-           [ (module Sprite); (module Transform) ])
+  include (val CornECS.new_component [ (module Keyboard) ] [])
+end
+
+module Cam = struct
+  include (val CornECS.new_component [ (module Position) ] [])
 end
