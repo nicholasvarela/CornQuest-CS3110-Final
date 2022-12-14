@@ -38,7 +38,7 @@ Now, install `sdl2` for your operating system.
     - `port install libsdl2`
 
 - On Ubuntu (or WSL with Ubuntu):
-  - `sudo-apt get update`
+  - `sudo apt-get update`
   - `sudo apt install libffi-dev`
   - `sudo apt install libsdl2-dev`
   - `sudo apt install libsdl2-image-dev`
