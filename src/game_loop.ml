@@ -19,13 +19,6 @@ type t = {
 }
 (**The type of a value representing an instance of a game.*)
 
-(**[create_player fl ren] creates a player entity with textures loaded from the
-   file [fl] using the renderer [ren].*)
-let create_player fl ren =
-  CornECS.next_id () |> Sprite.b |> KeyboardController.b
-  |> Renderable.s (Textman.load_texture fl ren, ren)
-  |> Position.s (0, 0)
-
 (**[set_spawn player m] sets the [player]'s spawn point on map [m].*)
 let set_spawn player m =
   let spawn_x = Tilemap.get_spawn m |> fst in
@@ -36,7 +29,19 @@ let set_spawn player m =
         (spawn_x * Tilemap.scale m)
         (spawn_y * Tilemap.scale m)
         Constants.tilesize Constants.tilesize );
-  Position.set player (spawn_x * Tilemap.scale m, spawn_y * Tilemap.scale m)
+  Position.set player (spawn_x * Tilemap.scale m, spawn_y * Tilemap.scale m);
+  TargetPosition.set player
+    (spawn_x * Tilemap.scale m, spawn_y * Tilemap.scale m)
+
+(** 1. initialize the random seed for 2. initialize steps as a ref 0 3. randomly
+    generate an encounter number 4. each time the player moves, incr steps 5.
+    steps = encounter then make battle 6. battle ends return the new player
+    character to the game loop *)
+
+let rng () =
+  let a = 300 + (Random.int 5 * 100) in
+  print_endline (string_of_int a);
+  a
 
 (**[init t x y w h fs] creates a fresh game instance, in which the window has
    title [t], x-position [x], y-position [y], width [w], and height [h]. The
@@ -49,12 +54,11 @@ let init t x y w h fs =
       print_endline "Subsystems initialized.";
       let window = Sdl.create_window t ~x ~y ~w ~h flags |> Util.unwrap in
       print_endline "Window created.";
-
       let renderer = Sdl.create_renderer ~index:(-1) window |> Util.unwrap in
       Sdl.set_render_draw_color renderer 255 255 255 255 |> Util.unwrap;
       print_endline "Renderer created.";
       let map = Tilemap.load_map "data/cave.json" renderer in
-      let player = create_player "data/front.png" renderer in
+      let player = Player.create_player "data/front.png" renderer in
       set_spawn player map;
       {
         title = t;
@@ -71,26 +75,40 @@ let init t x y w h fs =
       }
   | Error (`Msg err) -> failwith err
 
+let call_encounter a =
+  let e =
+    Character.parse_character "Martha Pollocus" [ 0.0; 0.0; 1.1; 0.; 0.; 0. ]
+  in
+  try Battle_main.start a e
+  with Battle_main.Battle_Over a -> (
+    if a = None then (
+      ANSITerminal.print_string [ ANSITerminal.red ] "Game Over";
+      exit 0)
+    else
+      match a with
+      | Some ch -> ch
+      | None -> failwith "Not reachable")
+
 (**[handle_events game] handles events of the game instance [game].*)
 let handle_events game =
   let e = Sdl.Event.create () in
   while Sdl.poll_event (Some e) do
-    KeyboardController.handle e game.player;
     match Sdl.Event.(enum (get e typ)) with
     | `Quit -> game.running <- false
     | _ -> ()
-  done
+  done;
+  Player.handle game.player
 
 (**[update game] updates all objects in the game instance [game] that need
    updating.*)
-let update game = KeyboardController.update game.player
+let update game = Player.update game.player
 
 (**[render game] first clears the renderer in the game instance [game], then
    renders all objects in said instance that need rendering.*)
 let render game =
   Sdl.render_clear game.ren |> Util.unwrap;
   Tilemap.draw_map game.map game.ren;
-  Sprite.draw game.player;
+  Player.draw game.player;
   Sdl.render_present game.ren
 
 (**[clean game] "cleans" the game instance [game] by destroying the game window,

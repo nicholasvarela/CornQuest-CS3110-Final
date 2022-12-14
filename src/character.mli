@@ -159,4 +159,8 @@ val headbutt : skill
 val tsu : skill
 val chainlight : skill
 val piercing_light : skill
-val dark : skill
+val nosferatu : skill
+
+val parse_character : string -> float list -> character
+(**[parse_character nme hit_chances] creates a new character with data from
+   character.json with matching name = nme*)

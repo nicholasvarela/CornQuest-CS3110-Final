@@ -12,7 +12,49 @@ module IntEnt : ENTITY = struct
   let incr = incr
 end
 
-module Make (K : ENTITY) = struct
+module type S = sig
+  exception Property_error of string
+  exception Empty_components
+
+  type entity
+
+  module type BASEPROP = sig
+    val bind : entity -> unit
+    val remove : entity -> unit
+  end
+
+  module type PROPERTY = sig
+    type t
+
+    val bind : entity -> unit
+    val get : entity -> t
+    val set : entity -> t -> unit
+    val s : t -> entity -> entity
+    val remove : entity -> unit
+  end
+
+  module type COMPONENT = sig
+    val bind : entity -> unit
+    val b : entity -> entity
+    val remove : entity -> unit
+    val bound : entity -> bool
+    val iter : (entity -> unit) -> unit
+  end
+
+  val next_id : unit -> entity
+  val delete : entity -> unit
+
+  val new_component :
+    (module BASEPROP) list -> (module COMPONENT) list -> (module COMPONENT)
+
+  val new_property : ?default:'a -> unit -> (module PROPERTY with type t = 'a)
+  val iter : (entity -> unit) -> entity list -> (module COMPONENT) list -> unit
+  val iter_all : (entity -> unit) -> (module COMPONENT) list -> unit
+  val filter : entity list -> (module COMPONENT) list -> entity list
+  val filter_all : (module COMPONENT) list -> entity list
+end
+
+module Make (K : ENTITY) : S = struct
   exception Property_error of string
   exception Empty_components
 
