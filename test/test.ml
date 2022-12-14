@@ -29,11 +29,13 @@ open Yojson
   raised failures which could be caught by our battle and adventure modules. *)
 
 (*Argument for correctness of program given testing strategy:
+(*Argument for correctness of program given testing strategy:
 
   Our testing method proves correctness of our program because it rigorously
   tests each subcomponent of our project. Through Glass Box and Black Box
   testing we ensured that functions produced output as prescribed by their
   respective .mli files. This ensured that functions which utilized there
+  respective .mli files. This ensured that functions which utilized their
   already produced functions only had to be tested for new functionality. *)
 
 let demon1 : Character.character = Character.start_character "Demoman"
