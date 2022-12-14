@@ -138,9 +138,9 @@ let boss_battle a =
       [ 0.2; 0.1; 0.3; 0.3; 0.1; 0.1 ]
   in
   ANSITerminal.print_string [ ANSITerminal.red ]
-    "Encountered Martha Pollocus and the Weather Machine!\n";
+    "Encountered Martha Pollocus and the Weather Machine!";
   ANSITerminal.print_string [ ANSITerminal.cyan ]
-    "You feel like you're going to have a bad four years.";
+    "You feel like you're going to have a bad 4 years.";
   let _ = Battle_handler.wait () in
   try Battle_handler.start a boss
   with Battle_handler.Battle_Over a -> (
@@ -152,7 +152,7 @@ let boss_battle a =
       | Some ch ->
           let _ = drop_items ch in
           ANSITerminal.print_string [ ANSITerminal.green ]
-            "\nCongratulations hero, You have won!";
+            "\nCongratulations, You have won!";
           ch
       | None -> failwith "Not reachable")
 

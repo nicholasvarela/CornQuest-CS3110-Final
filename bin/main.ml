@@ -3,8 +3,10 @@ open Game
 
 let in_battle = ref false
 let ch = ref (Character.start_character "Huy")
+let do_boss_battle = ref false
 
 let main () =
+  if !ch.lvl = 6 then do_boss_battle := true;
   Random.self_init ();
   let fps = 60 in
   let frame_delay = 1000 / fps in
@@ -16,8 +18,6 @@ let main () =
   in
   Battle_handler.read_logo_files "data/title.txt";
   print_endline "For the best experience, open the terminal in fullscreen!";
-  print_endline
-    "You hear thunder rumbling... Grow stronger before the calamity arrives.";
   let encounter = ref (Game_loop.rng ()) in
   while game.running do
     frame_start := Int32.to_int (Sdl.get_ticks ());
@@ -30,10 +30,14 @@ let main () =
 
     if !in_battle = false then
       if !Player.steps >= !encounter then (
+        let f =
+          if !do_boss_battle = true then Game_loop.boss_battle
+          else Game_loop.call_encounter
+        in
         in_battle := true;
         let i = ref true in
         while !i do
-          ch := Game_loop.call_encounter !ch;
+          ch := f !ch;
           i := false;
           Player.steps := 0
         done;
