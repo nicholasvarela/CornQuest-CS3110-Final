@@ -15,4 +15,3 @@ let screen_width = 640
 
 (**Height of game window.*)
 let screen_height = 480
-
