@@ -28,8 +28,15 @@ For Ubuntu (Linux or WSL with Ubuntu users, Windows 11 users may ignore this ste
 Now, install `sdl2` for your operating system.
 
 - On macOS:
-  - Homebrew:
+  - Homebrew: 
+    - "brew install pkgconfig"
+    - "brew install sdl2"
+    - "brew install sdl2_image"
+    - "brew install sdl2_ttf"
   - MacPorts:
+    -port install pkgconfig
+    -port install libsdl2
+
 - On Ubuntu (or WSL with Ubuntu):
   - `sudo-apt get update`
   - `sudo apt install libffi-dev`
