@@ -29,13 +29,13 @@ Now, install `sdl2` for your operating system.
 
 - On macOS:
   - Homebrew: 
-    - "brew install pkgconfig"
-    - "brew install sdl2"
-    - "brew install sdl2_image"
-    - "brew install sdl2_ttf"
+    - `brew install pkgconfig`
+    - `brew install sdl2`
+    - `brew install sdl2_image`
+    - `brew install sdl2_ttf`
   - MacPorts:
-    -port install pkgconfig
-    -port install libsdl2
+    - `port install pkgconfig`
+    - `port install libsdl2`
 
 - On Ubuntu (or WSL with Ubuntu):
   - `sudo-apt get update`
