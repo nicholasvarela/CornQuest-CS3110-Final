@@ -15,24 +15,26 @@ open Yojson
   were solved indirectly. GUI Components like gameobj.ml, tilemap.ml and
   tileset.ml textman.mli*)
 
-(*OUnit Tested Componenets : character.ml/character.mi -We utilized OUnit and
-  glass box testing in order to throughly test that our implementation of
+(*OUnit Tested Components : character.ml/character.mi -We utilized OUnit and
+  glass box testing in order to thoroughly test that our implementation of
   character worked as expected. Since, we predicted that sprites would be used
   throughout our game, we made sure to be especially careful in testing the
   getters/setter of the character's attributes Command.ml was another OUnit
-  tested module since it did not have to do with the GUI. We throughly tested
+  tested module since it did not have to do with the GUI. We thoroughly tested
   the Command.parse in order with Glassbox testing in order to insure that it
   processed user input correctly. This was critical in ensuring that the user
-  had a seamlyess gameplay that was not interupted by typeos in their input
+  had a seamless gameplay that was not interrupted by typos in their input
   strings. We were advised by our PM that we watch out for the game crashing
-  with unsualy input so we created [parse_test_fail] to ensure that these string
+  with unusual input so we created [parse_test_fail] to ensure that these string
   raised failures which could be caught by our battle and adventure modules. *)
 
 (*Argument for correctness of program given testing strategy:
+(*Argument for correctness of program given testing strategy:
 
-  Our testing method proves correctness of our program because it rigorouly
-  tests each subcomponenet of our project. Through Glass Box and Black Box
+  Our testing method proves correctness of our program because it rigorously
+  tests each subcomponent of our project. Through Glass Box and Black Box
   testing we ensured that functions produced output as prescribed by their
+  respective .mli files. This ensured that functions which utilized there
   respective .mli files. This ensured that functions which utilized their
   already produced functions only had to be tested for new functionality. *)
 
