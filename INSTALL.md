@@ -13,7 +13,7 @@ This is free software: you are free to change and redistribute it.
 There is NO WARRANTY, to the extent permitted by law.
 ```
 
-For Ubuntu (Linux or WSL with Ubuntu users, Windows 10 only):
+For Ubuntu (Linux or WSL with Ubuntu users, Windows 11 users may ignore this step):
   - Install a window server that supports the X Window System. You can find  more information on setting this up, and a list of window servers [here](https://wiki.ubuntu.com/WSL#Running_Graphical_Applications)
   - Navigate to "~./bshrc" in your home directory and add these following lines of code:
 
