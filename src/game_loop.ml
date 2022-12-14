@@ -1,4 +1,4 @@
-(** Represents the central game loop*)
+(** Represents the central game loop. *)
 
 open Tsdl
 open Tsdl_image
@@ -16,6 +16,7 @@ type t = {
   cam : Camera.t;
   player : Player.t;
   map : Tilemap.t;
+  musicplayer : Audio.t;
 }
 (**The type of a value representing an instance of a game.*)
 
@@ -28,56 +29,55 @@ let rng () = 5000 + Int.min (Random.int 10 * 100) (Random.int 10 * 100)
 let init t x y w h fs =
   (* let x = Sys.command "make battle" in *)
   let flags = if fs then Sdl.Window.fullscreen else Sdl.Window.windowed in
-  match Sdl.init Sdl.Init.everything with
-  | Ok _ ->
-      print_endline "Subsystems initialized.";
-      let window = Sdl.create_window t ~x ~y ~w ~h flags |> Util.unwrap in
-      print_endline "Window created.";
-
-      let renderer =
-        Sdl.create_renderer ~index:(-1)
-          ?flags:(Some Sdl.Renderer.(accelerated + presentvsync))
-          window
-        |> Util.unwrap
-      in
-      Sdl.set_render_draw_color renderer 255 255 255 255 |> Util.unwrap;
-      print_endline "Renderer created.";
-      let map =
-        Tilemap.load_map (Constants.data_dir_prefix ^ "cave.json") renderer
-      in
-      let player =
-        Player.create_player (Constants.data_dir_prefix ^ "front.png") renderer
-      in
-      let cam = Camera.create_camera player in
-      let n =
-        Textman.load_texture (Constants.data_dir_prefix ^ "back.png") renderer
-      in
-      let e =
-        Textman.load_texture (Constants.data_dir_prefix ^ "side.png") renderer
-      in
-      let w_tex =
-        Textman.load_texture (Constants.data_dir_prefix ^ "side.png") renderer
-      in
-      let s =
-        Textman.load_texture (Constants.data_dir_prefix ^ "front.png") renderer
-      in
-      Player.set_spawn player map;
-      Player.init_anims player ~n ~e ~s ~w:w_tex;
-      {
-        title = t;
-        xpos = x;
-        ypos = y;
-        w;
-        h;
-        running = true;
-        fullscreen = fs;
-        win = window;
-        ren = renderer;
-        player;
-        cam;
-        map;
-      }
-  | Error (`Msg err) -> failwith err
+  Sdl.init Sdl.Init.everything |> Result.get_ok;
+  let musicplayer = Audio.init () in
+  let window = Sdl.create_window t ~x ~y ~w ~h flags |> Result.get_ok in
+  Audio.load_music musicplayer (Constants.data_dir_prefix ^ "martha.wav") 2;
+  Audio.load_music musicplayer (Constants.data_dir_prefix ^ "cavetheme.wav") 0;
+  Audio.load_music musicplayer (Constants.data_dir_prefix ^ "buster.wav") 1;
+  let renderer =
+    Sdl.create_renderer ~index:(-1)
+      ?flags:(Some Sdl.Renderer.(accelerated + presentvsync))
+      window
+    |> Result.get_ok
+  in
+  Sdl.set_render_draw_color renderer 255 255 255 255 |> Result.get_ok;
+  let map =
+    Tilemap.load_map (Constants.data_dir_prefix ^ "cave.json") renderer
+  in
+  let player =
+    Player.create_player (Constants.data_dir_prefix ^ "front.png") renderer
+  in
+  let cam = Camera.create_camera player in
+  let n =
+    Textman.load_texture (Constants.data_dir_prefix ^ "back.png") renderer
+  in
+  let e =
+    Textman.load_texture (Constants.data_dir_prefix ^ "side.png") renderer
+  in
+  let w_tex =
+    Textman.load_texture (Constants.data_dir_prefix ^ "side.png") renderer
+  in
+  let s =
+    Textman.load_texture (Constants.data_dir_prefix ^ "front.png") renderer
+  in
+  Player.set_spawn player map;
+  Player.init_anims player ~n ~e ~s ~w:w_tex;
+  {
+    title = t;
+    xpos = x;
+    ypos = y;
+    w;
+    h;
+    running = true;
+    fullscreen = fs;
+    win = window;
+    ren = renderer;
+    player;
+    cam;
+    map;
+    musicplayer;
+  }
 
 (** [pick_enems] randomly picks a character from characters.json to battle*)
 let pick_enems () =
@@ -103,8 +103,8 @@ let get_item (arr : Character.consumable_bucket array) i =
   ANSITerminal.print_string [ ANSITerminal.green ]
     ("Enemy dropped "
     ^
-    if dropped_amt = 1 then arr.(i).name
-    else string_of_int dropped_amt ^ " " ^ arr.(i).name ^ "s\n")
+    if dropped_amt = 1 then "a " ^ arr.(i).name ^ ". \n"
+    else string_of_int dropped_amt ^ " " ^ arr.(i).name ^ "s. \n")
 (**[drop_items actor -> character -> unit] takes in a character [actor] and randomly chooses a consumable to increase*)
 let drop_items actor =
   let arr = Character.get_inv actor in
@@ -119,21 +119,19 @@ let drop_items actor =
 (** [call_encounter actor -> actor] takes in a character and initiates a battle. Returns another character once the battle is over*)
 let call_encounter a =
   let e = pick_enems () in
-  let _ =
-    ANSITerminal.print_string [ ANSITerminal.yellow ]
-      ("Encountered " ^ e.name ^ "!")
-  in
-  let _ = Battle_handler.wait () in
+  ANSITerminal.print_string [ ANSITerminal.yellow ]
+    ("Encountered " ^ e.name ^ "!");
+  Battle_handler.wait ();
   try Battle_handler.start a e
   with Battle_handler.Battle_Over a -> (
     if a = None then (
-      ANSITerminal.print_string [ ANSITerminal.red ] "\nGame Over";
+      ANSITerminal.print_string [ ANSITerminal.red ] "\nGame Over \n";
       exit 0)
     else
       match a with
       | Some ch ->
           let _ = drop_items ch in
-          print_endline "Please return to the GUI";
+          print_endline "Please return to the GUI. \n";
           ch
       | None -> failwith "Not reachable")
 
@@ -158,7 +156,7 @@ let boss_battle a =
       | Some ch ->
           let _ = drop_items ch in
           ANSITerminal.print_string [ ANSITerminal.green ]
-            "\nCongratulations, You have won!";
+            "\nCongratulations hero, You have won! \n";
           ch
       | None -> failwith "Not reachable")
 
@@ -181,7 +179,7 @@ let update game =
 (**[render game] first clears the renderer in the game instance [game], then
    renders all objects in said instance that need rendering.*)
 let render game =
-  Sdl.render_clear game.ren |> Util.unwrap;
+  Sdl.render_clear game.ren |> Result.get_ok;
   Tilemap.draw_map game.map game.ren game.cam;
   Player.draw game.player game.cam;
   Sdl.render_present game.ren

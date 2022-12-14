@@ -24,7 +24,7 @@ let rec paste curr size lim acc =
 (**[make_anim tex] is the sequence of squares (represented by [Sdl.rect]s) of
    size [Constants.spritesize] contained in the texture [tex].*)
 let make_anim tex =
-  let _, _, (w, h) = Sdl.query_texture tex |> Util.unwrap in
+  let _, _, (w, h) = Sdl.query_texture tex |> Result.get_ok in
   paste 0 Constants.spritesize w [] |> List.to_seq |> Seq.cycle
 
 (**[add_anim dir anim] associates the direction [dir] with the spritesheet
