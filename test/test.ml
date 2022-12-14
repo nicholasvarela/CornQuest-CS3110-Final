@@ -75,17 +75,6 @@ let get_temp_value_test (name : string) (character : Character.character)
   assert_equal expected_output (Character.get_temp_value attr character)
     ~printer:(fun x -> string_of_float x)
 
-let parse_test (name : string) (input_string : string)
-    (expected_output : Command.command) : test =
-  name >:: fun _ -> assert_equal expected_output (Command.parse input_string)
-
-let parse_test_fail (name : string) (input_string : string)
-    (expected_output : Command.command) : test =
-  name >:: fun _ ->
-  try assert_equal expected_output (Command.parse input_string) with
-  | Command.Malformed -> assert_equal true true
-  | Command.Empty -> assert_equal true true
-
 let basic_charcter_tests =
   [
     get_attribute_test "initial hp of default chracter" demon1 "hp" 100.;
