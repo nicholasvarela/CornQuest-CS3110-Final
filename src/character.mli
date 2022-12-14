@@ -80,7 +80,7 @@ val use_skill : skill -> character -> character -> character * character * bool
    a chance to hit calculated on [target]'s [Speed] and [user]'s [Accuracy], and
    a chance to apply status effects based on [sk.chance_to_affect]*)
 
-val use_consumable : consumable -> character -> int -> character
+val use_consumable : consumable -> character -> int -> character * bool
 (**[use_consumable consumable char int] returns a character with [int] number of
    [consumeable] used *)
 

@@ -78,7 +78,7 @@ let rec skill_traversal (actor, enem) lst rand index =
 
 let rec enem_spell_helper (actor, enem) lst rand cnt acc =
   match lst with
-  | [] -> failwith "invalid enemy"
+  | [] -> failwith "invalid enemy spells"
   | h :: t ->
       let chance = h +. acc in
       if rand <= chance then (

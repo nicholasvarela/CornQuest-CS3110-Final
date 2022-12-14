@@ -2,7 +2,7 @@ open Game
 (** [main ()] prompts for the game to play, then starts it. *)
 let actor : Character.character = Character.start_character "Demoman"
 
-let enem : Character.character = Character.parse_character "Martha Pollocus" [ 0.2; 0.1; 0.3; 0.1; 0.2; 0.1 ]
+let enem : Character.character = Character.parse_character "Hovian Plaza Serpent" [ 0.2; 0.0; 0.2; 0.4; 0.1; 0.1 ]
 
 let main () = Battle_main.start actor enem 
 

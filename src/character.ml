@@ -522,24 +522,21 @@ let print_skills (arr : skill option array) =
           ^ String.sub dots 0 (37 - minus)
           ^
           if sk.skill_type = Physical then
-            string_of_int (int_of_float sk.hp_cost) ^ " HP.."
+            string_of_int (int_of_float sk.hp_cost) ^ " HP..."
           else string_of_int (int_of_float sk.mp_cost) ^ " Mana")
   done
 
+let forget_skill_helper (arr : skill option array) sk i =
+  arr.(i) <- Some sk;
+  ANSITerminal.print_string [ ANSITerminal.magenta ]
+    ("Learned " ^ sk.name ^ "! Please return to the GUI.")
+
 let rec forget_skill (arr : skill option array) sk =
   match read_line () with
-  | s when s = (unwrap_skill arr.(0)).name ->
-      arr.(0) <- Some sk;
-      print_endline ("Learned " ^ sk.name ^ "!")
-  | s when s = (unwrap_skill arr.(1)).name ->
-      arr.(1) <- Some sk;
-      print_endline ("Learned " ^ sk.name ^ "!")
-  | s when s = (unwrap_skill arr.(2)).name ->
-      arr.(2) <- Some sk;
-      print_endline ("Learned " ^ sk.name ^ "!")
-  | s when s = (unwrap_skill arr.(3)).name ->
-      arr.(3) <- Some sk;
-      print_endline ("Learned " ^ sk.name ^ "!")
+  | s when s = (unwrap_skill arr.(0)).name -> forget_skill_helper arr sk 0
+  | s when s = (unwrap_skill arr.(1)).name -> forget_skill_helper arr sk 1
+  | s when s = (unwrap_skill arr.(2)).name -> forget_skill_helper arr sk 2
+  | s when s = (unwrap_skill arr.(3)).name -> forget_skill_helper arr sk 3
   | s when s = "none" -> print_endline "Didn't learn new skill."
   | _ ->
       print_endline "That is not a valid skill. Please try again.";
@@ -551,7 +548,7 @@ let learn_skill_helper (arr : skill option array) sk =
     if arr.(!i) = None then (
       arr.(!i) <- Some sk;
       i := 100;
-      print_endline ("Learned " ^ sk.name ^ "!"))
+      print_endline ("Learned " ^ sk.name ^ "! Please return to the GUI."))
     else if !i = 3 then (
       print_endline
         "You cannot learn any more skills. Select a skill to discard, or type \
@@ -564,7 +561,7 @@ let learn_skill_helper (arr : skill option array) sk =
 let rec learn_skill (curr_skills : skill option array) ran lvl =
   if not ran then
     ANSITerminal.print_string [ ANSITerminal.magenta ]
-      "\nChoose a spell to learn:\n";
+      "\nChoose a skill to learn:\n";
   let arr =
     if lvl = 2 then lvl_1_spells
     else if lvl = 3 then lvl_2_spells
@@ -627,6 +624,7 @@ let level_up actor =
   {
     actor_final with
     lvl = actor_final.lvl + 1;
+    exp = 0;
     hp = hpmax;
     maxhp = hpmax;
     mana = manamax;
@@ -892,12 +890,12 @@ let use_skill sk user target =
             else (user.name ^ " doesn't", [ ANSITerminal.red ])
           in
           ANSITerminal.print_string lst
-            ("\n" ^ nm ^ " have enough mana to use " ^ sk.name ^ "\n")
+            ("\n" ^ nm ^ " have enough mana to use " ^ sk.name ^ "\n\n")
         in
         if List.length user.enem_hit_chances = 0 then (user, target, false)
         else (target, user, false)
   | Physical ->
-      if get_attribute_val "hp" user > sk.hp_cost then (
+      if get_attribute_val "hp" user > sk.hp_cost then
         let avoid = get_attribute_val "speed" target in
         let player_hit_chance =
           if sk.hp_cost < 0. || sk.dmg_scaling = 0.0 then 1.
@@ -905,43 +903,68 @@ let use_skill sk user target =
             ((get_total_attr_val "accuracy" user +. 60.) /. 100.0)
             -. (0.001 *. (avoid *. avoid))
         in
+        let _ =
+          if List.length user.enem_hit_chances = 0 then
+            ANSITerminal.print_string [ ANSITerminal.blue ]
+              ("You used " ^ sk.name ^ "!")
+        in
         let rand0 = Random.float 1. in
         let _ = if sk.hp_cost >= 0. then wait 0 in
         if rand0 <= player_hit_chance then (
-          let _ =
-            if List.length user.enem_hit_chances = 0 then
-              let suffix = if sk.mp_cost < 0. then "\n" else "" in
-              ANSITerminal.print_string [ ANSITerminal.blue ]
-                ("You used " ^ sk.name ^ "!" ^ suffix)
-          in
-          let _ = wait () in
           let dmg =
-            let raw =
-              (unwrap_attr user.str +. (unwrap_attr user.mag *. sk.dmg_scaling))
-              /. (1. +. (unwrap_attr target.mag /. 50.))
-            in
-            if raw > 0. then raw else 0.
+            if sk.dmg_scaling = 0. then 0.
+            else
+              let raw =
+                (unwrap_attr user.str
+                +. (unwrap_attr user.mag *. sk.dmg_scaling))
+                /. (1. +. (unwrap_attr target.mag /. 50.))
+              in
+              if raw > 0. then raw else 0.
           in
           let new_targ_stp1 = adjust (-.dmg) target "hp" in
+          let _ =
+            if sk.dmg_scaling > 0. then
+              print_string ("Dealt " ^ string_of_float dmg ^ " damage.\n")
+            else if sk.hp_cost > 0. then (
+              print_string
+                ("\nSacrificed " ^ string_of_float sk.hp_cost ^ " HP.\n");
+              wait ())
+            else
+              print_endline
+                ("\nRestored "
+                ^ string_of_int (int_of_float (-1. *. sk.hp_cost))
+                ^ " HP")
+          in
           let rand = Random.float 1. in
           let new_targ =
             if rand <= sk.chance_to_affect then
-              change_temps_from_skill sk new_targ_stp1
+              let tg = change_temps_from_skill sk new_targ_stp1 in
+              let _ = wait () in
+              tg
             else new_targ_stp1
           in
-          let new_usr = adjust (-.sk.hp_cost) target "hp" in
+          let new_usr = adjust (-.sk.hp_cost) user "hp" in
           print_endline "";
-          (new_usr, new_targ, true))
-        else
-          let new_usr = adjust (-.sk.hp_cost) target "hp" in
-          print_endline (user.name ^ " missed!");
           if List.length new_usr.enem_hit_chances = 0 then
-            (new_usr, target, true)
-          else (target, new_usr, true))
+            (new_usr, new_targ, true)
+          else (new_targ, new_usr, true))
+        else
+          let new_usr = adjust (-.sk.hp_cost) user "hp" in
+          let nm, a, b =
+            if List.length new_usr.enem_hit_chances = 0 then
+              ("You", new_usr, target)
+            else (user.name, target, new_usr)
+          in
+          let _ = print_endline (nm ^ " missed!\n") in
+          (a, b, true)
       else
         let _ =
+          let nm =
+            if List.length user.enem_hit_chances = 0 then "\nYou don't "
+            else "\n" ^ user.name ^ " doesn't "
+          in
           ANSITerminal.print_string [ ANSITerminal.yellow ]
-            ("You don't have enough hp to use " ^ sk.name ^ "\n")
+            (nm ^ "have enough hp to use " ^ sk.name ^ "\n\n")
         in
         if List.length user.enem_hit_chances = 0 then (user, target, false)
         else (target, user, false)
@@ -951,9 +974,6 @@ let use_skill sk user target =
           if List.length user.enem_hit_chances = 0 then
             ANSITerminal.print_string [ ANSITerminal.blue ]
               ("You used " ^ sk.name ^ "!")
-          else
-            ANSITerminal.print_string [ ANSITerminal.red ]
-              (user.name ^ " used " ^ sk.name ^ "!\n")
         in
         let new_usr = adjust (-.sk.mp_cost) user "mana" in
         let avoid = get_attribute_val "speed" target in
@@ -983,28 +1003,30 @@ let use_skill sk user target =
         let _ =
           let nm, lst =
             if List.length user.enem_hit_chances = 0 then
-              ("You don't", [ ANSITerminal.yellow ])
-            else (user.name ^ " doesn't", [ ANSITerminal.red ])
+              ("\nYou don't", [ ANSITerminal.yellow ])
+            else ("\n" ^ user.name ^ " doesn't", [ ANSITerminal.red ])
           in
           ANSITerminal.print_string lst
-            (nm ^ " have enough mana to use " ^ sk.name ^ "\n")
+            (nm ^ " have enough mana to use " ^ sk.name ^ "\n\n")
         in
         if List.length user.enem_hit_chances = 0 then (user, target, false)
         else (target, user, false)
 
 let use_consumable csbl ch idx =
-  let new_ch, _, _ = use_skill csbl ch ch in
-  let new_ch' =
-    if get_attribute_val "hp" new_ch > get_total_attr_val "maxhp" new_ch then
-      { new_ch with hp = HP (get_total_attr_val "maxhp" new_ch) }
-    else if
-      get_attribute_val "mana" new_ch > get_total_attr_val "maxmana" new_ch
-    then { new_ch with mana = Mana (get_total_attr_val "maxmana" new_ch) }
-    else new_ch
-  in
-  let x = new_ch'.inv.(idx) in
-  new_ch'.inv.(idx) <- { x with amt = x.amt - 1 };
-  new_ch'
+  let new_ch, _, did_action = use_skill csbl ch ch in
+  if not did_action then (ch, false)
+  else
+    let new_ch' =
+      if get_attribute_val "hp" new_ch > get_total_attr_val "maxhp" new_ch then
+        { new_ch with hp = HP (get_total_attr_val "maxhp" new_ch) }
+      else if
+        get_attribute_val "mana" new_ch > get_total_attr_val "maxmana" new_ch
+      then { new_ch with mana = Mana (get_total_attr_val "maxmana" new_ch) }
+      else new_ch
+    in
+    let x = new_ch'.inv.(idx) in
+    new_ch'.inv.(idx) <- { x with amt = x.amt - 1 };
+    (new_ch', true)
 
 let get_description_skill s = s.description
 let get_description_item i = get_description_skill i

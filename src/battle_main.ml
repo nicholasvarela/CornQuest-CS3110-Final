@@ -109,7 +109,7 @@ let rec check_health (actor, enem) =
     let _ = print_endline (enem.name ^ " was defeated!") in
     let experienced_char = { actor with exp = actor.exp + enem.exp } in
     let out =
-      if experienced_char.exp mod 25 = 0 then level_up experienced_char
+      if experienced_char.exp >= 50 then level_up experienced_char
       else experienced_char
     in
     raise (Battle_Over (Some out))
@@ -119,15 +119,17 @@ let rec check_health (actor, enem) =
   else (actor, enem)
 
 and item_menu_helper (actor, enem) arr i =
-  let a = Character.use_consumable arr.(i).item actor i in
-  let e' = Character.clear_temps (ref enem) in
-  let a2, e2 = Battle.pick_enemy_move (a, e') in
-  let a2', e2' = check_health (a2, e2) in
-  turn_handler (a2', e2') true
+  let a, did_action = Character.use_consumable arr.(i).item actor i in
+  if not did_action then item_menu (actor, enem)
+  else
+    let e' = Character.clear_temps (ref enem) in
+    let a2, e2 = Battle.pick_enemy_move (a, e') in
+    let a2', e2' = check_health (a2, e2) in
+    turn_handler (a2', e2') true
 
 and item_info_helper (actor, enem) arr i =
   ANSITerminal.print_string [ ANSITerminal.default ]
-    (get_description_item arr.(0).item ^ "\n");
+    (get_description_item arr.(i).item ^ "\n");
   item_menu (actor, enem)
 
 and item_menu (actor, enem) =
@@ -151,7 +153,7 @@ and item_menu (actor, enem) =
   | "back" -> turn_handler (actor, enem) false
   | _ ->
       ANSITerminal.print_string [ ANSITerminal.red ]
-        "That's not a valid item. Please try again";
+        "That's not a valid item. Please try again\n";
       item_menu (actor, enem)
 
 and skill_menu_helper (actor, enem) arr i =
@@ -186,7 +188,10 @@ and skill_menu (actor, enem) =
   | s when s = "info " ^ sk2 -> skill_info_helper (actor, enem) arr 1
   | s when s = "info " ^ sk3 -> skill_info_helper (actor, enem) arr 2
   | s when s = "info " ^ sk4 -> skill_info_helper (actor, enem) arr 3
-  | _ -> skill_menu (actor, enem)
+  | _ ->
+      ANSITerminal.print_string [ ANSITerminal.red ]
+        "That's not a valid skill. Please try again\n";
+      skill_menu (actor, enem)
 
 and turn_handler (actor, enem) made_action =
   ANSITerminal.print_string [ ANSITerminal.white ]
@@ -223,7 +228,7 @@ and turn_handler (actor, enem) made_action =
       print_skills actor first_time_skill;
       skill_menu (actor, enem)
   | "escape" ->
-      print_endline "You flee!";
+      print_endline "You flee! Please return to the GUI.";
       raise (Battle_Over (Some actor))
   | "item" ->
       print_items actor first_time_item;
