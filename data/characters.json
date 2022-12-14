@@ -5,7 +5,7 @@
         "mana": 100.0,
         "maxmana": 100.0,
         "exp": 0,
-        "lvl": 1,
+        "lvl": 6,
         "def": 10.0,
         "spd": 10.0,
         "mr": 10.0,
@@ -24,12 +24,12 @@
         "super_speed": 0,
         "deal_with_devil": 1
     },
-    "Marthia Pollocus and the Weather Machine": {
+    "Marthia Pollocus": {
         "hp": 100.0,
         "maxhp": 100.0,
         "mana": 200.0,
         "maxmana": 200.0,
-        "exp": 25,
+        "exp": 50,
         "lvl": 1,
         "def": 10.0,
         "spd": 2.0,

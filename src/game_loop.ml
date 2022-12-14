@@ -122,13 +122,35 @@ let call_encounter a =
   try Battle_handler.start a e
   with Battle_handler.Battle_Over a -> (
     if a = None then (
-      ANSITerminal.print_string [ ANSITerminal.red ] "Game Over";
+      ANSITerminal.print_string [ ANSITerminal.red ] "\nGame Over";
       exit 0)
     else
       match a with
       | Some ch ->
           let _ = drop_items ch in
           print_endline "Please return to the GUI";
+          ch
+      | None -> failwith "Not reachable")
+
+let boss_battle a =
+  let boss =
+    Character.parse_character "Marthia Pollocus"
+      [ 0.2; 0.1; 0.3; 0.3; 0.1; 0.1 ]
+  in
+  ANSITerminal.print_string [ ANSITerminal.red ]
+    "Encountered Martha Pollocus and the Weather Machine!";
+  let _ = Battle_handler.wait () in
+  try Battle_handler.start a boss
+  with Battle_handler.Battle_Over a -> (
+    if a = None then (
+      ANSITerminal.print_string [ ANSITerminal.red ] "\nGame Over\n\n";
+      exit 0)
+    else
+      match a with
+      | Some ch ->
+          let _ = drop_items ch in
+          ANSITerminal.print_string [ ANSITerminal.green ]
+            "\nCongratulations, You have won!";
           ch
       | None -> failwith "Not reachable")
 

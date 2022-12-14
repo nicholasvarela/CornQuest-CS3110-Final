@@ -228,8 +228,15 @@ and turn_handler (actor, enem) made_action =
       print_skills actor first_time_skill;
       skill_menu (actor, enem)
   | "escape" ->
-      print_endline "You flee! Please return to the GUI.";
-      raise (Battle_Over (Some actor))
+      if enem.name = "Marthia Pollocus" then
+        let _ =
+          ANSITerminal.print_string [ ANSITerminal.yellow ]
+            "It's a boss battle! You can't escape!\n"
+        in
+        turn_handler (actor, enem) false
+      else
+        let _ = print_endline "You flee! Please return to the GUI." in
+        raise (Battle_Over (Some actor))
   | "item" ->
       print_items actor first_time_item;
       item_menu (actor, enem)
@@ -241,7 +248,7 @@ let start a e =
     | "Clocktower Fiend" -> "clockfiend.txt"
     | "Hovian Plaza Serpent" -> "hoserp.txt"
     | "Gorge Gorgon" -> "gorgegon.txt"
-    | "Marthia Pollocus and the Weather Machine" -> "martha.txt"
+    | "Marthia Pollocus" -> "martha.txt"
     | _ -> failwith "unreachable"
   in
   read_logo_files
