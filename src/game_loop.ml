@@ -94,7 +94,7 @@ let get_item (arr : Character.consumable_bucket array) i =
     ("Enemy dropped "
     ^
     if dropped_amt = 1 then arr.(i).name
-    else string_of_int dropped_amt ^ " " ^ arr.(i).name)
+    else string_of_int dropped_amt ^ " " ^ arr.(i).name ^ "s\n")
 
 let drop_items actor =
   let arr = Character.get_inv actor in
@@ -108,7 +108,6 @@ let drop_items actor =
 
 let call_encounter a =
   let e = pick_enems () in
-  let e = { e with hp = HP 1. } in
   let _ =
     ANSITerminal.print_string [ ANSITerminal.yellow ]
       ("Encountered " ^ e.name ^ "!")
