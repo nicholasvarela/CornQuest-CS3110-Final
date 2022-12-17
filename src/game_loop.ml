@@ -16,7 +16,7 @@ type t = {
   cam : Camera.t;
   player : Player.t;
   map : Tilemap.t;
-  musicplayer : Audio.t;
+  (* musicplayer : Audio.t; *)
 }
 (**The type of a value representing an instance of a game.*)
 
@@ -27,11 +27,11 @@ let init t x y w h fs =
   (* let x = Sys.command "make battle" in *)
   let flags = if fs then Sdl.Window.fullscreen else Sdl.Window.windowed in
   Sdl.init Sdl.Init.everything |> Result.get_ok;
-  let musicplayer = Audio.init () in
+  (* let musicplayer = Audio.init () in *)
   let window = Sdl.create_window t ~x ~y ~w ~h flags |> Result.get_ok in
-  Audio.load_music musicplayer (Constants.data_dir_prefix ^ "martha.wav") 2;
+  (* Audio.load_music musicplayer (Constants.data_dir_prefix ^ "martha.wav") 2;
   Audio.load_music musicplayer (Constants.data_dir_prefix ^ "cavetheme.wav") 0;
-  Audio.load_music musicplayer (Constants.data_dir_prefix ^ "buster.wav") 1;
+  Audio.load_music musicplayer (Constants.data_dir_prefix ^ "buster.wav") 1; *)
   let renderer =
     Sdl.create_renderer ~index:(-1)
       ?flags:(Some Sdl.Renderer.(accelerated + presentvsync))
@@ -70,7 +70,7 @@ let init t x y w h fs =
     player;
     cam;
     map;
-    musicplayer;
+    (* musicplayer; *)
   }
 
 (**[handle_events game] handles events of the game instance [game].*)

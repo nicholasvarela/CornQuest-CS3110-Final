@@ -1,4 +1,4 @@
-open Tsdl_mixer
+(* open Tsdl_mixer
 
 (**Sample size used for audio playback.*)
 let samp_size = 2048
@@ -30,4 +30,4 @@ let play (sys : t) id =
     | 0 -> ()
     | 1 -> failwith "Failed to play music."
     | _ -> failwith "unreachable")
-(*TODO: Pause the current track when [play] is called instead of killing it*)
+TODO: Pause the current track when [play] is called instead of killing it *)
