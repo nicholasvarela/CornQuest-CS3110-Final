@@ -44,15 +44,21 @@ module Renderable :
 (**Module representing the "renderable" property, possessed by components that
    are renderable onscreen/visible.*)
 
-module Animated :
+module IdleAnim :
   CornECS.PROPERTY
-    with type t = (dir, Tsdl.Sdl.texture * Tsdl.Sdl.rect Seq.t) Hashtbl.t
-(**Module representing the "animated" property, possessed by components that are
-   animated based on the direction they face.*)
+    with type t = (dir, Tsdl.Sdl.texture * Tsdl.Sdl.rect) Hashtbl.t
+(**Module representing the "idle animation" property, possessed by components
+   that switch textures based on the direction they face.*)
 
-module FrameCycle : CornECS.PROPERTY with type t = int
-(**Module representing the "frame cycle" property, possessed by components that
-   have frame-cycle dependent behavior (such as animation).*)
+module WalkAnim :
+  CornECS.PROPERTY
+    with type t = (dir, Tsdl.Sdl.texture * Tsdl.Sdl.rect array) Hashtbl.t
+(**Module representing the "walking animation" property, possessed by components
+   that are animated based on the direction they are moving in.*)
+
+module Frames : CornECS.PROPERTY with type t = int
+(**Module representing the "frames" property, possessed by components that have
+   frame-dependent behavior (such as animated sprites).*)
 
 module Sprite : CornECS.COMPONENT
 (**A [Sprite] is a [Rectangle] that is [Renderable], has [Velocity] and

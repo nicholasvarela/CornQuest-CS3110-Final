@@ -5,8 +5,6 @@ exception FaultyImage
 
 type t = CornECS.entity
 
-let steps = ref 0
-
 let create_player fl ren =
   CornECS.next_id () |> Sprite.b |> AnimatedSprite.b |> KeyboardController.b
   |> Renderable.s (Textman.load_texture fl ren, ren)
@@ -25,53 +23,62 @@ let rec paste curr size lim acc =
    size [Constants.spritesize] contained in the texture [tex].*)
 let make_anim tex =
   let _, _, (w, h) = Sdl.query_texture tex |> Result.get_ok in
-  paste 0 Constants.spritesize w [] |> List.to_seq |> Seq.cycle
+  paste 0 Constants.spritesize w [] |> Array.of_list
 
-(**[add_anim dir anim] associates the direction [dir] with the spritesheet
-   [sprst] for the [Animated] entity [e]. Requires: [sprst] is a valid
-   [Sdl.texture] that has a width which is divisible by [Constants.spritesize].*)
-let add_anim e dir sprst =
-  Hashtbl.add (Animated.get e) dir (sprst, make_anim sprst)
+(**[add_walk_anim e dir sprst] associates the direction [dir] with the
+   spritesheet [sprst] for the [WalkAnim]s of entity [e]. Requires: [sprst] is a
+   valid [Sdl.texture] that has a width divisible by [Constants.spritesize].*)
+let add_walk_anim e dir sprst =
+  Hashtbl.add (WalkAnim.get e) dir (sprst, make_anim sprst)
+
+(**[add_idle_tex e dir sprst fr] associates the direction [dir] with frame [fr]
+   on the spritesheet [sprst] for the [IdleAnim]s of entity [e].
+
+   Requires: [sprst] is a valid [Sdl.texture] that has a width divisible by
+   [Constants.spritesize]. [fr] is a valid frame on [sprst].*)
+
+let add_idle_anim e dir sprst fr =
+  Hashtbl.add (IdleAnim.get e) dir (sprst, (make_anim sprst).(fr))
 
 let init_anims player ~n ~e ~s ~w =
-  add_anim player North n;
-  add_anim player East e;
-  add_anim player South s;
-  add_anim player West w
+  add_walk_anim player North n;
+  add_walk_anim player East e;
+  add_walk_anim player South s;
+  add_walk_anim player West w;
+  add_idle_anim player North n 1;
+  add_idle_anim player East e 1;
+  add_idle_anim player South s 1;
+  add_idle_anim player West w 1
 
 [@@@warning "-8"]
 
-(**[hd seq] is the head of [seq].*)
-let hd (Seq.Cons (h, _)) = h
+(**[get_anim e dir fr] is the texture and rectangle to be displayed if [e] was
+   facing [dir] and on frame [fr].
 
-(**[tl seq] is the tail of [seq].*)
-let tl (Seq.Cons (_, t)) = t ()
-
-(**[get_anim e dir] is the texture and rectangle to be displayed if [e] was
-   facing [dir].*)
-let get_anim e dir =
-  ( Hashtbl.find (Animated.get e) dir |> fst,
-    Hashtbl.find (Animated.get e) dir |> snd |> (fun thunk -> thunk ()) |> hd )
+   Requires: [fr] is within bounds for the animation associated with [dir].*)
+let get_anim e dir fr =
+  ( Hashtbl.find (WalkAnim.get e) dir |> fst,
+    Hashtbl.find (WalkAnim.get e) dir |> snd |> fun a -> Array.get a fr )
 
 let draw e cam =
+  let curr_frame = Frames.get e in
+  let anim_frame = curr_frame / Constants.anim_speed in
   let _, ren = Renderable.get e in
   let _, dst = Rectangle.get e in
   let dir = Direction.get e in
-  let tex, fst_sq =
-    match dir with
-    | North -> get_anim e North
-    | East -> get_anim e East
-    | South -> get_anim e South
-    | West -> get_anim e West
+  let tex, src =
+    get_anim e dir anim_frame
+    (* else Hashtbl.find (IdleAnim.get e) dir *)
   in
-  Rectangle.set e (fst_sq, dst);
+  Rectangle.set e (src, dst);
   Renderable.set e (tex, ren);
-  (* FrameCycle.get e () |> hd |> string_of_int |> print_endline; *)
+  if Moving.get e then Frames.set e (curr_frame + 1);
+  if Frames.get e / Constants.anim_speed > 1 then Frames.set e 0;
   if dir = East then
-    Textman.draw_flipped ~offset:(Camera.get_pos cam) tex ren fst_sq dst
+    Textman.draw_flipped ~offset:(Camera.get_pos cam) tex ren src dst
     (*if the player is facing [East], then horizontally flip its side texture
       when rendering it.*)
-  else Textman.draw ~offset:(Camera.get_pos cam) tex ren fst_sq dst
+  else Textman.draw ~offset:(Camera.get_pos cam) tex ren src dst
 
 (**[update_vel e x y] updates the [Velocity] of entity [e], making its
    x-directional speed [x] and its y-directional speed [y].*)
@@ -90,22 +97,24 @@ let update_pos e =
 
 let handle e =
   let target = TargetPosition.get e in
-  if (Keyboard.get e).{Sdl.Scancode.w} = 1 && not (Moving.get e) then (
-    Moving.set e true;
-    Direction.set e North;
-    TargetPosition.set e (fst target, snd target - Constants.tilesize));
-  if (Keyboard.get e).{Sdl.Scancode.a} = 1 && not (Moving.get e) then (
-    Moving.set e true;
-    Direction.set e West;
-    TargetPosition.set e (fst target - Constants.tilesize, snd target));
-  if (Keyboard.get e).{Sdl.Scancode.s} = 1 && not (Moving.get e) then (
-    Moving.set e true;
-    Direction.set e South;
-    TargetPosition.set e (fst target, snd target + Constants.tilesize));
-  if (Keyboard.get e).{Sdl.Scancode.d} = 1 && not (Moving.get e) then (
-    Moving.set e true;
-    Direction.set e East;
-    TargetPosition.set e (fst target + Constants.tilesize, snd target))
+  if not (Moving.get e) then
+    if (Keyboard.get e).{Sdl.Scancode.w} = 1 then (
+      Moving.set e true;
+      Direction.set e North;
+      TargetPosition.set e (fst target, snd target - Constants.tilesize))
+    else if (Keyboard.get e).{Sdl.Scancode.a} = 1 then (
+      Moving.set e true;
+      Direction.set e West;
+      TargetPosition.set e (fst target - Constants.tilesize, snd target))
+    else if (Keyboard.get e).{Sdl.Scancode.s} = 1 then (
+      Moving.set e true;
+      Direction.set e South;
+      TargetPosition.set e (fst target, snd target + Constants.tilesize))
+    else if (Keyboard.get e).{Sdl.Scancode.d} = 1 then (
+      Moving.set e true;
+      Direction.set e East;
+      TargetPosition.set e (fst target + Constants.tilesize, snd target))
+    else Moving.set e false
 
 (**[check e m (x, y)] checks if [e] will collide with a collidable tile on [m]
    at the pixel coordinates [(x,y)]. Requires: [x] and [y] must both be divisors
@@ -124,17 +133,16 @@ let check_collision e m =
 let update e m =
   let xtar, ytar = TargetPosition.get e in
   let xpos, ypos = Position.get e in
-  if TargetPosition.get e = Position.get e then (
+  (* if TargetPosition.get e = Position.get e then (
     Moving.set e false;
-    update_vel e 0 0);
+    update_vel e 0 0); *)
   if not (check_collision e m) then (
     if xtar > xpos then update_vel e Constants.player_speed 0;
     if xtar < xpos then update_vel e (-Constants.player_speed) 0;
     if ytar > ypos then update_vel e 0 Constants.player_speed;
     if ytar < ypos then update_vel e 0 (-Constants.player_speed))
-  else TargetPosition.set e (Position.get e);
-  update_pos e;
-  steps := !steps + Int.abs (xtar - xpos) + Int.abs (ytar - ypos)
+  else TargetPosition.set e (xpos, ypos);
+  update_pos e
 
 (**[set_spawn player m] sets the [player]'s spawn point on map [m].*)
 let set_spawn player m =

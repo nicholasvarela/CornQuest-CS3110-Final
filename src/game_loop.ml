@@ -20,8 +20,6 @@ type t = {
 }
 (**The type of a value representing an instance of a game.*)
 
-let rng () = 5000 + Int.min (Random.int 10 * 100) (Random.int 10 * 100)
-
 (**[init t x y w h fs] creates a fresh game instance, in which the window has
    title [t], x-position [x], y-position [y], width [w], and height [h]. The
    game window will be fullscreen if [fs] is [true]. *)
@@ -51,17 +49,14 @@ let init t x y w h fs =
   let n =
     Textman.load_texture (Constants.data_dir_prefix ^ "back.png") renderer
   in
-  let e =
-    Textman.load_texture (Constants.data_dir_prefix ^ "side.png") renderer
-  in
-  let w_tex =
+  let side =
     Textman.load_texture (Constants.data_dir_prefix ^ "side.png") renderer
   in
   let s =
     Textman.load_texture (Constants.data_dir_prefix ^ "front.png") renderer
   in
   Player.set_spawn player map;
-  Player.init_anims player ~n ~e ~s ~w:w_tex;
+  Player.init_anims player ~n ~e:side ~s ~w:side;
   {
     title = t;
     xpos = x;
@@ -77,82 +72,6 @@ let init t x y w h fs =
     map;
     musicplayer;
   }
-
-let pick_enems () =
-  let arr =
-    [|
-      Character.parse_character "Clocktower Fiend" [ 0.7; 0.3; 0.; 0.; 0.; 0. ];
-      Character.parse_character "Hovian Plaza Serpent"
-        [ 0.2; 0.0; 0.2; 0.4; 0.1; 0.1 ];
-      Character.parse_character "Gorge Gorgon" [ 0.2; 0.1; 0.2; 0.2; 0.1; 0.2 ];
-    |]
-  in
-  let rand = Random.float 1. in
-  let e =
-    if rand < 0.4 then arr.(0) else if rand < 0.8 then arr.(1) else arr.(2)
-  in
-  e
-
-let get_item (arr : Character.consumable_bucket array) i =
-  let dropped_amt = 1 + Random.int 4 in
-  arr.(i) <- { (arr.(i)) with amt = arr.(i).amt + dropped_amt };
-  ANSITerminal.print_string [ ANSITerminal.green ]
-    ("Enemy dropped "
-    ^
-    if dropped_amt = 1 then "a " ^ arr.(i).name ^ ". \n"
-    else string_of_int dropped_amt ^ " " ^ arr.(i).name ^ "s. \n")
-
-let drop_items actor =
-  let arr = Character.get_inv actor in
-  let rand = Random.float 1. in
-  if rand <= 0.3 then get_item arr 0
-  else if rand <= 0.5 then get_item arr 1
-  else if rand <= 0.6 then get_item arr 2
-  else if rand <= 0.7 then get_item arr 3
-  else if rand <= 0.8 then get_item arr 4
-  else get_item arr 5
-
-let call_encounter a =
-  let e = pick_enems () in
-  ANSITerminal.print_string [ ANSITerminal.yellow ]
-    ("Encountered " ^ e.name ^ "!");
-  Battle_handler.wait ();
-  try Battle_handler.start a e
-  with Battle_handler.Battle_Over a -> (
-    if a = None then (
-      ANSITerminal.print_string [ ANSITerminal.red ] "\nGame Over \n";
-      exit 0)
-    else
-      match a with
-      | Some ch ->
-          let _ = drop_items ch in
-          print_endline "Please return to the GUI. \n";
-          ch
-      | None -> failwith "Not reachable")
-
-let boss_battle a =
-  let boss =
-    Character.parse_character "Marthia Pollocus"
-      [ 0.2; 0.1; 0.3; 0.3; 0.1; 0.1 ]
-  in
-  ANSITerminal.print_string [ ANSITerminal.red ]
-    "Encountered Martha Pollocus and the Weather Machine!";
-  ANSITerminal.print_string [ ANSITerminal.cyan ]
-    "You feel like you're going to have a bad 4 years.";
-  let _ = Battle_handler.wait () in
-  try Battle_handler.start a boss
-  with Battle_handler.Battle_Over a -> (
-    if a = None then (
-      ANSITerminal.print_string [ ANSITerminal.red ] "\nGame Over\n\n";
-      exit 0)
-    else
-      match a with
-      | Some ch ->
-          let _ = drop_items ch in
-          ANSITerminal.print_string [ ANSITerminal.green ]
-            "\nCongratulations hero, You have won! \n";
-          ch
-      | None -> failwith "Not reachable")
 
 (**[handle_events game] handles events of the game instance [game].*)
 let handle_events game =
@@ -186,6 +105,4 @@ let clean game =
   Sdl.destroy_renderer game.ren;
   Components.CornECS.delete game.player;
   Camera.delete game.cam;
-
-  Sdl.quit ();
-  print_endline "Game cleaned."
+  Sdl.quit ()

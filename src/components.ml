@@ -15,22 +15,33 @@ module Position = struct
              with type t = pos)
 end
 
-module Animated = struct
-  type animations = (dir, Sdl.texture * Sdl.rect Seq.t) Hashtbl.t
-  (**Type representing the animations an [Animated] component could have, in the
-     form of a hashtable mapping directions to tuples containing textures as
-     well as sequences of [Sdl.rect]s meant to represent animation frames.*)
+module IdleAnim = struct
+  type animations = (dir, Sdl.texture * Sdl.rect) Hashtbl.t
+  (**Type representing a series of idle animations, in the form of a hashtable
+     mapping directions to tuples containing textures and [Sdl.rect]s, which
+     represent idle animations.*)
 
   include (val CornECS.new_property ~default:(Hashtbl.create 4) ()
              : CornECS.PROPERTY
              with type t = animations)
 end
 
-module FrameCycle = struct
-  type frames = int
-  (**Type representing the number of frames in a cycle.*)
+module WalkAnim = struct
+  type animations = (dir, Sdl.texture * Sdl.rect array) Hashtbl.t
+  (**Type representing the animations an [Animated] component could have, in the
+     form of a hashtable mapping directions to tuples containing textures as
+     well as arrays of [Sdl.rect]s meant to represent animation frames.*)
 
-  include (val CornECS.new_property ~default:2 () : CornECS.PROPERTY
+  include (val CornECS.new_property ~default:(Hashtbl.create 4) ()
+             : CornECS.PROPERTY
+             with type t = animations)
+end
+
+module Frames = struct
+  type frames = int
+  (**Type meant to serve as a frame counter (for animated components).*)
+
+  include (val CornECS.new_property ~default:0 () : CornECS.PROPERTY
              with type t = frames)
 end
 
@@ -112,7 +123,7 @@ end
 
 module AnimatedSprite = struct
   include (val CornECS.new_component
-                 [ (module Animated); (module FrameCycle) ]
+                 [ (module WalkAnim); (module IdleAnim); (module Frames) ]
                  [ (module Sprite) ] : CornECS.COMPONENT)
 end
 

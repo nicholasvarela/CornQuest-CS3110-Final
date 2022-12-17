@@ -68,10 +68,7 @@ let demon6_adjust = Character.adjust 10. demon1 "speed"
 let demon7_adjust = Character.adjust 10. demon1 "accuracy"
 let demon8_adjust = Character.adjust 10. demon1 "magic power"
 let demon9_adjust = Character.adjust 10. demon1 "luck"
-
-let martha =
-  Character.parse_character "Marthia Pollocus" []
-
+let martha = Character.parse_character "Marthia Pollocus" []
 let serpent = Character.parse_character "Hovian Plaza Serpent" []
 let start_test (name : string) : test = name >:: fun _ -> assert_equal true true
 

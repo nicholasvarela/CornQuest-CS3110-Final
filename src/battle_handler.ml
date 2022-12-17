@@ -8,11 +8,12 @@ let first_time_item = ref true
 
 let read_logo_files filename =
   let listener = open_in filename in
+  print_newline ();
   try
     while true do
       print_endline (input_line listener)
     done
-  with End_of_file -> print_endline ""
+  with End_of_file -> print_newline ()
 
 let data_dir_prefix = "data" ^ Filename.dir_sep
 let dots = "......................................."
@@ -252,7 +253,8 @@ let start a e =
     | _ -> failwith "unreachable"
   in
   read_logo_files
-    ("data" ^ Filename.dir_sep ^ "ascii" ^ Filename.dir_sep ^ enem_art);
+    (Constants.data_dir_prefix ^ Filename.dir_sep ^ "ascii" ^ Filename.dir_sep
+   ^ enem_art);
   ANSITerminal.print_string [ ANSITerminal.yellow ]
     "\n\n\
      Choose a move: attack, guard, skill, item or escape. What will you do? \n\n";
